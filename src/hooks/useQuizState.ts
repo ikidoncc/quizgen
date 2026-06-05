@@ -67,11 +67,19 @@ export function useQuizState() {
 		setState(() => ({ ...INITIAL_STATE }));
 	}, []);
 
-	const advanceQuestion = useCallback((isCorrect: boolean, isSkip: boolean = false) => {
+	const answerQuestion = useCallback((isCorrect: boolean) => {
 		setState((s) => ({
 			...s,
 			score: isCorrect ? s.score + 1 : s.score,
-			skippedCount: isSkip ? s.skippedCount + 1 : s.skippedCount,
+			currentQuestionIndex: s.currentQuestionIndex + 1,
+			timeLeft: TIMER_DURATION,
+		}));
+	}, []);
+
+	const skipQuestion = useCallback(() => {
+		setState((s) => ({
+			...s,
+			skippedCount: s.skippedCount + 1,
 			currentQuestionIndex: s.currentQuestionIndex + 1,
 			timeLeft: TIMER_DURATION,
 		}));
@@ -87,7 +95,8 @@ export function useQuizState() {
 		setQuizData,
 		resetQuiz,
 		deleteQuiz,
-		advanceQuestion,
+		answerQuestion,
+		skipQuestion,
 		setTimeLeft,
 	};
 }

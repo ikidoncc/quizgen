@@ -15,7 +15,8 @@ export function App() {
 		setQuizData,
 		resetQuiz,
 		deleteQuiz,
-		advanceQuestion,
+		answerQuestion,
+		skipQuestion,
 		setTimeLeft,
 	} = useQuizState();
 
@@ -126,14 +127,14 @@ export function App() {
 						timeLeft={state.timeLeft}
 						timerPaused={modalConfig.isOpen}
 						onTick={setTimeLeft}
-						onAnswer={(isCorrect) => advanceQuestion(isCorrect)}
-						onSkip={() => advanceQuestion(false, true)}
+						onAnswer={(isCorrect) => answerQuestion(isCorrect)}
+						onSkip={() => skipQuestion()}
 						onSkipRequest={() =>
 							showModal({
 								title: "Pular Pergunta",
 								message: "Deseja pular esta pergunta?",
 								onConfirm: () => {
-									advanceQuestion(false, true);
+									skipQuestion();
 									closeModal();
 								},
 								onCancel: closeModal,

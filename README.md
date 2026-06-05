@@ -27,15 +27,15 @@ Create quizzes from text using a simple `Q/A/O` format. Built with React 19, Typ
 
 ### Desktop
 
-| Create Quiz                                  | Quiz Running                             |
-| -------------------------------------------- | ---------------------------------------- |
-| ![Desktop Create](./doc/screenshots/creation-desktop.png) | ![Desktop Quiz](./doc/screenshots/quiz-desktop.png) |
+| Create Quiz                                  | Quiz Running                             | History                                   |
+| -------------------------------------------- | ---------------------------------------- | ----------------------------------------- |
+| ![Desktop Create](./doc/screenshots/creation-desktop.png) | ![Desktop Quiz](./doc/screenshots/quiz-desktop.png) | ![Desktop History](./doc/screenshots/history-desktop.png) |
 
 ### Mobile
 
-| Create Quiz                                | Quiz Running                           |
-| ------------------------------------------ | -------------------------------------- |
-| ![Mobile Create](./doc/screenshots/creation-mobile.png) | ![Mobile Quiz](./doc/screenshots/quiz-mobile.png) |
+| Create Quiz                                | Quiz Running                           | History                                 |
+| ------------------------------------------ | -------------------------------------- | --------------------------------------- |
+| ![Mobile Create](./doc/screenshots/creation-mobile.png) | ![Mobile Quiz](./doc/screenshots/quiz-mobile.png) | ![Mobile History](./doc/screenshots/history-mobile.png) |
 
 ---
 
@@ -138,31 +138,6 @@ src/
 └── app.tsx         # Root application component
 ```
 
----
-
-## Deployment
-
-Build the project:
-
-```bash
-npm run build
-```
-
-The production files will be generated in:
-
-```text
-dist/
-```
-
-Compatible with:
-
-* Vercel
-* Netlify
-* GitHub Pages
-* Cloudflare Pages
-
----
-
 ## Roadmap
 
 Potential future improvements:
@@ -183,6 +158,6 @@ This project is licensed under the MIT License.
 
 ## Author
 
-Developed by **Your Name**
+Developed by **João Antonio (Ikidon)**
 
-GitHub: https://github.com/your-username
+GitHub: https://github.com/ikidoncc

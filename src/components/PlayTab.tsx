@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import { useTranslation } from "../i18n/I18nProvider";
 import { useTimer } from "../hooks/useTimer";
 import type { Question } from "../types";
 import { normalizeText } from "../utils/quiz";
@@ -42,6 +43,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 	onDelete,
 	onTick,
 }) => {
+	const { t } = useTranslation();
 	const [selectedOption, setSelectedOption] = useState<string | null>(null);
 	const [showFeedback, setShowFeedback] = useState(false);
 	const [isAnswering, setIsAnswering] = useState(true);
@@ -52,15 +54,15 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 		isTimerEnabled && isAnswering && !timerPaused,
 		timeLeft,
 		onTick,
-		() => onSkip(), // onTimeout
+		() => onSkip(),
 	);
 
 	if (!currentQ) {
 		return (
 			<div className="bg-surface p-6 rounded-lg shadow-md border border-overlay text-center">
-				<p className="text-muted font-medium">Erro ao carregar pergunta.</p>
+				<p className="text-muted font-medium">{t("play.error")}</p>
 				<button onClick={onReset} className="text-primary font-bold underline hover:opacity-80 mt-4" type="button">
-					Reiniciar Quizz
+					{t("play.restartButton")}
 				</button>
 			</div>
 		);
@@ -95,7 +97,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 						type="button"
 					>
 						<RotateCcw className="w-3 h-3 mr-1" />
-						Reiniciar
+						{t("play.restart")}
 					</button>
 					<button
 						onClick={onDelete}
@@ -103,21 +105,21 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 						type="button"
 					>
 						<Trash2 className="w-3 h-3 mr-1" />
-						Excluir
+						{t("play.delete")}
 					</button>
 				</div>
 				<div className="text-right">
 					<span className="block text-xs font-medium text-muted">
-						Pergunta {currentQuestionIndex + 1} de {quizData.length}
+						{t("play.questionCount", { current: currentQuestionIndex + 1, total: quizData.length })}
 					</span>
 					<span className="block text-xs text-primary font-bold">
-						Pontos: {score}
+						{t("play.score", { score })}
 					</span>
 					{isTimerEnabled && (
 						<span
 							className={cn("block text-xs font-bold mt-1 transition-colors", timeLeft <= 10 ? "text-danger animate-pulse" : "text-primary")}
 						>
-							Tempo: {timeLeft}s
+							{t("play.timer", { time: timeLeft })}
 						</span>
 					)}
 				</div>
@@ -168,12 +170,11 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 				>
 					{isCorrectSelection ? (
 						<>
-							<CheckCircle className="w-5 h-5 mr-2" /> Correto!
+							<CheckCircle className="w-5 h-5 mr-2" /> {t("play.correct")}
 						</>
 					) : (
 						<>
-							<AlertTriangle className="w-5 h-5 mr-2" /> Incorreto. A resposta
-							era: {currentQ.answer}
+							<AlertTriangle className="w-5 h-5 mr-2" /> {t("play.incorrect", { answer: currentQ.answer })}
 						</>
 					)}
 				</div>
@@ -187,8 +188,8 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 						type="button"
 					>
 						{currentQuestionIndex + 1 === quizData.length
-							? "Ver Resultado"
-							: "Próxima Pergunta"}
+							? t("play.showResults")
+							: t("play.nextQuestion")}
 						<ArrowRight className="w-5 h-5 ml-2" />
 					</button>
 				) : (
@@ -198,7 +199,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 						type="button"
 					>
 						<SkipForward className="w-5 h-5 mr-2" />
-						Pular Pergunta
+						{t("play.skip")}
 					</button>
 				)}
 			</div>

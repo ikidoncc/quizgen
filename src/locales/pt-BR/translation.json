@@ -1,0 +1,73 @@
+{
+  "app": {
+    "title": "QuizGen",
+    "subtitle": "Crie seu quizz a partir de um texto"
+  },
+  "lang": {
+    "pt-BR": "Português",
+    "en": "English"
+  },
+  "nav": {
+    "create": "Criar Quizz",
+    "play": "Jogar Quizz"
+  },
+  "empty": {
+    "message": "Nenhum quizz gerado ainda.",
+    "action": "Ir para Criar Quizz"
+  },
+  "footer": "QuizGen © 2026 • Feito com React + Tailwind v4",
+  "create": {
+    "heading": "Colar Conteúdo",
+    "formatLabel": "Formato:",
+    "formatExample": "Q: Pergunta?\nA: Resposta\nO: Opção Incorreta (Opcional)",
+    "placeholder": "Cole seu texto aqui...",
+    "timerLabel": "Habilitar temporizador ({{count}} minuto por questão)",
+    "timerLabel_plural": "Habilitar temporizador ({{count}} minutos por questão)",
+    "submit": "Gerar Quizz",
+    "error": "Nenhuma pergunta encontrada. Use o formato Q: Pergunta e A: Resposta."
+  },
+  "play": {
+    "error": "Erro ao carregar pergunta.",
+    "restartButton": "Reiniciar Quizz",
+    "restart": "Reiniciar",
+    "delete": "Excluir",
+    "questionCount": "Pergunta {{current}} de {{total}}",
+    "score": "Pontos: {{score}}",
+    "timer": "Tempo: {{time}}s",
+    "correct": "Correto!",
+    "incorrect": "Incorreto. A resposta era: {{answer}}",
+    "showResults": "Ver Resultado",
+    "nextQuestion": "Próxima Pergunta",
+    "skip": "Pular Pergunta"
+  },
+  "results": {
+    "title": "Quizz Finalizado!",
+    "correctLabel": "Acertos",
+    "skippedLabel": "Puladas",
+    "wrongLabel": "Erros",
+    "perfect": "Desempenho perfeito! Parabéns!",
+    "goodEffort": "Ótimo esforço! Continue praticando.",
+    "newQuiz": "Novo Quizz"
+  },
+  "modal": {
+    "title": {
+      "error": "Erro",
+      "skip": "Pular Pergunta",
+      "reset": "Reiniciar Quizz",
+      "delete": "Excluir Quizz"
+    },
+    "message": {
+      "skip": "Deseja pular esta pergunta?",
+      "reset": "Deseja reiniciar este quizz?",
+      "delete": "Deseja excluir este quizz?"
+    },
+    "confirm": "Sim",
+    "cancel": "Não",
+    "ok": "OK"
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Escuro",
+    "auto": "Auto"
+  }
+}

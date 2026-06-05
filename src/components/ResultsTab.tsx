@@ -1,5 +1,6 @@
 import { RefreshCw, Trophy } from "lucide-react";
 import type React from "react";
+import { useTranslation } from "../i18n/I18nProvider";
 
 interface ResultsTabProps {
 	score: number;
@@ -14,6 +15,7 @@ export const ResultsTab: React.FC<ResultsTabProps> = ({
 	skippedCount,
 	onNewQuiz,
 }) => {
+	const { t } = useTranslation();
 	const wrongCount = totalQuestions - score - skippedCount;
 
 	return (
@@ -22,7 +24,7 @@ export const ResultsTab: React.FC<ResultsTabProps> = ({
 				<Trophy className="w-12 h-12 text-warning" />
 			</div>
 			<h2 className="text-2xl font-bold mb-4 text-main font-serif">
-				Quizz Finalizado!
+				{t("results.title")}
 			</h2>
 			<p className="text-5xl font-bold text-primary mb-6 tracking-tighter">
 				{score}{" "}
@@ -36,26 +38,26 @@ export const ResultsTab: React.FC<ResultsTabProps> = ({
 					<span className="block text-secondary font-bold text-xl">
 						{score}
 					</span>
-					<span className="text-secondary/80 font-medium">Acertos</span>
+					<span className="text-secondary/80 font-medium">{t("results.correctLabel")}</span>
 				</div>
 				<div className="bg-warning/10 p-4 rounded-xl border border-warning/20">
 					<span className="block text-warning font-bold text-xl">
 						{skippedCount}
 					</span>
-					<span className="text-warning/80 font-medium">Puladas</span>
+					<span className="text-warning/80 font-medium">{t("results.skippedLabel")}</span>
 				</div>
 				<div className="bg-danger/10 p-4 rounded-xl border border-danger/20">
 					<span className="block text-danger font-bold text-xl">
 						{wrongCount}
 					</span>
-					<span className="text-danger/80 font-medium">Erros</span>
+					<span className="text-danger/80 font-medium">{t("results.wrongLabel")}</span>
 				</div>
 			</div>
 
 			<p className="text-subtle mb-8 italic">
 				{score === totalQuestions
-					? "Desempenho perfeito! Parabéns!"
-					: "Ótimo esforço! Continue praticando."}
+					? t("results.perfect")
+					: t("results.goodEffort")}
 			</p>
 
 			<button
@@ -64,7 +66,7 @@ export const ResultsTab: React.FC<ResultsTabProps> = ({
 				type="button"
 			>
 				<RefreshCw className="w-5 h-5 mr-2" />
-				Novo Quizz
+				{t("results.newQuiz")}
 			</button>
 		</div>
 	);

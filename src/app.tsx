@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
+import { useTranslation } from "./i18n/I18nProvider";
 import { CreateTab } from "./components/CreateTab";
+import { LangSelect } from "./components/LangSelect";
 import { Modal } from "./components/Modal";
 import { PlayTab } from "./components/PlayTab";
 import { ResultsTab } from "./components/ResultsTab";
@@ -16,6 +18,7 @@ function tabClass(currentTab: Tab, tab: Tab): string {
 }
 
 export function App() {
+	const { t } = useTranslation();
 	const { theme, setTheme } = useTheme();
 	const {
 		state,
@@ -61,13 +64,16 @@ export function App() {
 					<div className="invisible w-10 sm:w-32"></div>
 					<div className="text-center group cursor-default">
 						<h1 className="text-4xl font-black text-primary tracking-tight transition-transform group-hover:scale-105">
-							QuizGen
+							{t("app.title")}
 						</h1>
 						<p className="text-subtle font-medium">
-							Crie seu quizz a partir de um texto
+							{t("app.subtitle")}
 						</p>
 					</div>
-					<ThemeSelect value={theme} onChange={setTheme} />
+					<div className="flex items-center gap-2">
+						<LangSelect />
+						<ThemeSelect value={theme} onChange={setTheme} />
+					</div>
 				</div>
 			</header>
 
@@ -77,14 +83,14 @@ export function App() {
 					className={cn("px-6 py-3 font-bold transition-all border-b-2 -mb-0.5", tabClass(state.currentTab, "create"))}
 					type="button"
 				>
-					Criar Quizz
+					{t("nav.create")}
 				</button>
 				<button
 					onClick={() => setTab("play")}
 					className={cn("px-6 py-3 font-bold transition-all border-b-2 -mb-0.5", tabClass(state.currentTab, "play"))}
 					type="button"
 				>
-					Jogar Quizz
+					{t("nav.play")}
 				</button>
 			</nav>
 
@@ -94,20 +100,20 @@ export function App() {
 						onGenerate={setQuizData}
 						initialTimerEnabled={state.isTimerEnabled}
 						onError={(msg) =>
-							showModal({ title: "Erro", message: msg, confirmText: "OK", onConfirm: closeModal })
+							showModal({ title: t("modal.title.error"), message: msg, confirmText: t("modal.ok"), onConfirm: closeModal })
 						}
 					/>
 				) : state.quizData.length === 0 ? (
 					<div className="text-center py-16 bg-surface/50 rounded-3xl border border-dashed border-overlay">
 						<p className="text-muted mb-6 font-medium">
-							Nenhum quizz gerado ainda.
+							{t("empty.message")}
 						</p>
 						<button
 							onClick={() => setTab("create")}
 							className="text-primary font-bold underline hover:opacity-80 transition-all"
 							type="button"
 						>
-							Ir para Criar Quizz
+							{t("empty.action")}
 						</button>
 					</div>
 				) : isGameOver ? (
@@ -131,8 +137,8 @@ export function App() {
 						onSkip={() => skipQuestion()}
 						onSkipRequest={() =>
 							showModal({
-								title: "Pular Pergunta",
-								message: "Deseja pular esta pergunta?",
+								title: t("modal.title.skip"),
+								message: t("modal.message.skip"),
 								onConfirm: () => {
 									skipQuestion();
 									closeModal();
@@ -142,8 +148,8 @@ export function App() {
 						}
 						onReset={() =>
 							showModal({
-								title: "Reiniciar Quizz",
-								message: "Deseja reiniciar este quizz?",
+								title: t("modal.title.reset"),
+								message: t("modal.message.reset"),
 								onConfirm: () => {
 									resetQuiz();
 									closeModal();
@@ -153,8 +159,8 @@ export function App() {
 						}
 						onDelete={() =>
 							showModal({
-								title: "Excluir Quizz",
-								message: "Deseja excluir este quizz?",
+								title: t("modal.title.delete"),
+								message: t("modal.message.delete"),
 								onConfirm: () => {
 									deleteQuiz();
 									closeModal();
@@ -167,7 +173,7 @@ export function App() {
 			</main>
 
 			<footer className="mt-12 text-center text-muted/40 text-xs font-medium">
-				QuizGen &copy; 2026 • Made with React + Tailwind v4
+				{t("footer")}
 			</footer>
 
 			<Modal

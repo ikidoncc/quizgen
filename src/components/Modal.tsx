@@ -1,5 +1,6 @@
 import { Check, X } from "lucide-react";
 import type React from "react";
+import { useTranslation } from "../i18n/I18nProvider";
 
 interface ModalProps {
 	isOpen: boolean;
@@ -17,9 +18,11 @@ export const Modal: React.FC<ModalProps> = ({
 	message,
 	onConfirm,
 	onCancel,
-	confirmText = "Sim",
-	cancelText = "Não",
+	confirmText,
+	cancelText,
 }) => {
+	const { t } = useTranslation();
+
 	if (!isOpen) return null;
 
 	return (
@@ -36,7 +39,7 @@ export const Modal: React.FC<ModalProps> = ({
 						type="button"
 					>
 						<Check className="w-4 h-4 mr-1" />
-						{confirmText}
+						{confirmText ?? t("modal.confirm")}
 					</button>
 					{onCancel && (
 						<button
@@ -45,7 +48,7 @@ export const Modal: React.FC<ModalProps> = ({
 							type="button"
 						>
 							<X className="w-4 h-4 mr-1" />
-							{cancelText}
+							{cancelText ?? t("modal.cancel")}
 						</button>
 					)}
 				</div>

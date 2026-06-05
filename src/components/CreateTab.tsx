@@ -2,9 +2,13 @@ import { Wand2 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
-import { Checkbox } from "./Checkbox";
 import type { Question } from "../types";
-import { parseQuizText, prepareQuizOptions, TIMER_DURATION } from "../utils/quiz";
+import {
+	parseQuizText,
+	prepareQuizOptions,
+	TIMER_DURATION,
+} from "../utils/quiz";
+import { Checkbox } from "./Checkbox";
 
 function validateQuizInput(
 	input: string,
@@ -48,12 +52,12 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 	};
 
 	return (
-		<div className="bg-surface p-6 rounded-lg shadow-md border border-overlay transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
-			<h2 className="text-xl font-semibold mb-4 text-main font-serif">
+		<div className="fade-in slide-in-from-bottom-2 animate-in rounded-lg border border-overlay bg-surface p-6 shadow-md transition-all duration-300">
+			<h2 className="mb-4 font-semibold font-serif text-main text-xl">
 				{t("create.heading")}
 			</h2>
-			<p className="text-sm text-subtle mb-4">{t("create.formatLabel")}</p>
-			<pre className="bg-overlay p-2 rounded text-xs mb-4 text-muted border border-overlay overflow-x-auto">
+			<p className="mb-4 text-sm text-subtle">{t("create.formatLabel")}</p>
+			<pre className="mb-4 overflow-x-auto rounded border border-overlay bg-overlay p-2 text-muted text-xs">
 				{t("create.formatExample")}
 			</pre>
 
@@ -61,11 +65,11 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 				<textarea
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
-					className="w-full h-64 p-3 bg-base border border-overlay text-main rounded-md focus:ring-2 focus:ring-primary focus:outline-none mb-4 transition-all placeholder:text-muted/50"
+					className="mb-4 h-64 w-full rounded-md border border-overlay bg-base p-3 text-main transition-all placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary"
 					placeholder={t("create.placeholder")}
 				/>
 
-				<div className="flex items-center mb-6">
+				<div className="mb-6 flex items-center">
 					<Checkbox
 						id="timer-checkbox"
 						checked={timerEnabled}
@@ -73,7 +77,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					/>
 					<label
 						htmlFor="timer-checkbox"
-						className="ml-2 text-sm font-medium text-main cursor-pointer select-none"
+						className="ml-2 cursor-pointer select-none font-medium text-main text-sm"
 					>
 						{t("create.timerLabel", { count: TIMER_DURATION / 60 })}
 					</label>
@@ -81,10 +85,10 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 
 				<button
 					disabled={isGenerating}
-					className="w-full flex items-center justify-center bg-primary text-white font-bold py-3 px-4 rounded hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] shadow-sm"
+					className="flex w-full items-center justify-center rounded bg-primary px-4 py-3 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
 					type="submit"
 				>
-					<Wand2 className="w-5 h-5 mr-2" />
+					<Wand2 className="mr-2 h-5 w-5" />
 					{t("create.submit")}
 				</button>
 			</form>

@@ -22,7 +22,7 @@ export function useTimer(
 			intervalRef.current = window.setInterval(() => {
 				const nextTime = timeLeftRef.current - 1;
 				onTickRef.current(nextTime);
-				
+
 				if (nextTime === 0) {
 					if (intervalRef.current) clearInterval(intervalRef.current);
 					onTimeoutRef.current();

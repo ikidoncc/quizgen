@@ -1,13 +1,13 @@
 import {
 	createContext,
-	useContext,
-	useState,
-	useCallback,
-	useEffect,
 	type ReactNode,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
 } from "react";
-import ptBR from "../locales/pt-BR/translation.json";
 import en from "../locales/en/translation.json";
+import ptBR from "../locales/pt-BR/translation.json";
 
 type Languages = "pt-BR" | "en";
 

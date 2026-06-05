@@ -26,28 +26,28 @@ export const Modal: React.FC<ModalProps> = ({
 	if (!isOpen) return null;
 
 	return (
-		<div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-			<div className="bg-surface rounded-lg shadow-xl max-w-sm w-full overflow-hidden border border-overlay animate-in fade-in zoom-in duration-200">
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm transition-opacity">
+			<div className="fade-in zoom-in w-full max-w-sm animate-in overflow-hidden rounded-lg border border-overlay bg-surface shadow-xl duration-200">
 				<div className="p-6">
-					<h3 className="text-lg font-bold text-main mb-2">{title}</h3>
+					<h3 className="mb-2 font-bold text-lg text-main">{title}</h3>
 					<p className="text-subtle">{message}</p>
 				</div>
-				<div className="bg-overlay/50 px-6 py-4 flex flex-row-reverse space-x-2 space-x-reverse">
+				<div className="flex flex-row-reverse space-x-2 space-x-reverse bg-overlay/50 px-6 py-4">
 					<button
 						onClick={onConfirm}
-						className="flex items-center bg-primary text-white px-4 py-2 rounded font-semibold hover:opacity-90 transition-all active:scale-95"
+						className="flex items-center rounded bg-primary px-4 py-2 font-semibold text-white transition-all hover:opacity-90 active:scale-95"
 						type="button"
 					>
-						<Check className="w-4 h-4 mr-1" />
+						<Check className="mr-1 h-4 w-4" />
 						{confirmText ?? t("modal.confirm")}
 					</button>
 					{onCancel && (
 						<button
 							onClick={onCancel}
-							className="flex items-center bg-surface border border-overlay text-main px-4 py-2 rounded font-semibold hover:bg-overlay transition-all active:scale-95"
+							className="flex items-center rounded border border-overlay bg-surface px-4 py-2 font-semibold text-main transition-all hover:bg-overlay active:scale-95"
 							type="button"
 						>
-							<X className="w-4 h-4 mr-1" />
+							<X className="mr-1 h-4 w-4" />
 							{cancelText ?? t("modal.cancel")}
 						</button>
 					)}

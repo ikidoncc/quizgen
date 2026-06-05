@@ -44,33 +44,39 @@ export const ThemeSelect: React.FC<ThemeSelectProps> = ({
 		<div className="relative inline-block text-left" ref={containerRef}>
 			<button
 				onClick={() => setIsOpen(!isOpen)}
-				className="flex items-center justify-center sm:justify-between w-10 sm:w-32 bg-surface border border-overlay text-main text-xs rounded-lg p-2 outline-none cursor-pointer hover:bg-overlay transition-all active:scale-95"
+				className="flex w-10 cursor-pointer items-center justify-center rounded-lg border border-overlay bg-surface p-2 text-main text-xs outline-none transition-all hover:bg-overlay active:scale-95 sm:w-32 sm:justify-between"
 				type="button"
 			>
 				<span className="flex items-center">
-					<SelectedIcon className="w-4 h-4" />
-					<span className="hidden sm:inline ml-2">{selectedTheme.label}</span>
+					<SelectedIcon className="h-4 w-4" />
+					<span className="ml-2 hidden sm:inline">{selectedTheme.label}</span>
 				</span>
 				<ChevronDown
-					className={cn("w-4 h-4 ml-1 hidden sm:block transition-transform duration-200", isOpen && "rotate-180")}
+					className={cn(
+						"ml-1 hidden h-4 w-4 transition-transform duration-200 sm:block",
+						isOpen && "rotate-180",
+					)}
 				/>
 			</button>
 
 			{isOpen && (
-				<div className="absolute right-0 mt-2 w-32 bg-surface border border-overlay rounded-lg shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+				<div className="fade-in slide-in-from-top-1 absolute right-0 z-50 mt-2 w-32 animate-in overflow-hidden rounded-lg border border-overlay bg-surface shadow-lg duration-200">
 					{themes.map((themeItem) => {
 						const Icon = themeItem.Icon;
 						return (
 							<button
 								type="button"
 								key={themeItem.value}
-								className={cn("w-full px-4 py-3 text-xs text-main hover:bg-overlay cursor-pointer flex items-center transition-colors", value === themeItem.value && "bg-overlay/50 font-bold")}
+								className={cn(
+									"flex w-full cursor-pointer items-center px-4 py-3 text-main text-xs transition-colors hover:bg-overlay",
+									value === themeItem.value && "bg-overlay/50 font-bold",
+								)}
 								onClick={() => {
 									onChange(themeItem.value);
 									setIsOpen(false);
 								}}
 							>
-								<Icon className="w-4 h-4" />
+								<Icon className="h-4 w-4" />
 								<span className="ml-2">{themeItem.label}</span>
 							</button>
 						);

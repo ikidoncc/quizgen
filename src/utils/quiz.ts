@@ -55,7 +55,10 @@ export function parseQuizText(input: string): Question[] {
 	return parsedData;
 }
 
-function collectUniqueOptions(q: { answer: string; manualOptions: string[] }): Map<string, string> {
+function collectUniqueOptions(q: {
+	answer: string;
+	manualOptions: string[];
+}): Map<string, string> {
 	const map = new Map<string, string>();
 
 	const addIfUnique = (text: string) => {
@@ -87,8 +90,7 @@ function fillWithDistractors(
 		const normA = normalizeText(a);
 		const normCorrect = normalizeText(correctAnswer);
 		return (
-			normA !== normCorrect &&
-			!manualOptions.map(normalizeText).includes(normA)
+			normA !== normCorrect && !manualOptions.map(normalizeText).includes(normA)
 		);
 	});
 
@@ -113,7 +115,12 @@ export function prepareQuizOptions(
 
 	return data.map((q) => {
 		const uniqueOptions = collectUniqueOptions(q);
-		const filledOptions = fillWithDistractors(uniqueOptions, allAnswers, q.answer, q.manualOptions);
+		const filledOptions = fillWithDistractors(
+			uniqueOptions,
+			allAnswers,
+			q.answer,
+			q.manualOptions,
+		);
 
 		return {
 			...q,

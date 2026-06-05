@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import { useTranslation } from "./i18n/I18nProvider";
 import { CreateTab } from "./components/CreateTab";
 import { LangSelect } from "./components/LangSelect";
 import { Modal } from "./components/Modal";
@@ -8,6 +7,7 @@ import { ResultsTab } from "./components/ResultsTab";
 import { ThemeSelect } from "./components/ThemeSelect";
 import { useQuizState } from "./hooks/useQuizState";
 import { useTheme } from "./hooks/useTheme";
+import { useTranslation } from "./i18n/I18nProvider";
 import type { Tab } from "./types";
 import { cn } from "./utils/cn";
 
@@ -45,9 +45,12 @@ export function App() {
 		onConfirm: () => {},
 	});
 
-	const showModal = useCallback((config: Omit<typeof modalConfig, "isOpen">) => {
-		setModalConfig({ ...config, isOpen: true });
-	}, []);
+	const showModal = useCallback(
+		(config: Omit<typeof modalConfig, "isOpen">) => {
+			setModalConfig({ ...config, isOpen: true });
+		},
+		[],
+	);
 
 	const closeModal = useCallback(() => {
 		setModalConfig((prev) => ({ ...prev, isOpen: false }));
@@ -58,17 +61,14 @@ export function App() {
 		state.currentQuestionIndex >= state.quizData.length;
 
 	return (
-		<div className="container mx-auto px-4 py-8 max-w-2xl min-h-screen flex flex-col">
-			<header className="flex flex-col items-center mb-10">
-				<div className="w-full flex justify-between items-center mb-6">
-					<div className="invisible w-10 sm:w-32"></div>
-					<div className="text-center group cursor-default">
-						<h1 className="text-4xl font-black text-primary tracking-tight transition-transform group-hover:scale-105">
+		<div className="container mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-8">
+			<header className="mb-10 flex flex-col items-center">
+				<div className="flex w-full flex-col items-center gap-6">
+					<div className="group cursor-default text-center">
+						<h1 className="font-black text-4xl text-primary tracking-tight transition-transform group-hover:scale-105">
 							{t("app.title")}
 						</h1>
-						<p className="text-subtle font-medium">
-							{t("app.subtitle")}
-						</p>
+						<p className="font-medium text-subtle">{t("app.subtitle")}</p>
 					</div>
 					<div className="flex items-center gap-2">
 						<LangSelect />
@@ -77,17 +77,23 @@ export function App() {
 				</div>
 			</header>
 
-			<nav className="flex border-b border-overlay mb-8">
+			<nav className="mb-8 flex border-overlay border-b">
 				<button
 					onClick={() => setTab("create")}
-					className={cn("px-6 py-3 font-bold transition-all border-b-2 -mb-0.5", tabClass(state.currentTab, "create"))}
+					className={cn(
+						"-mb-0.5 border-b-2 px-6 py-3 font-bold transition-all",
+						tabClass(state.currentTab, "create"),
+					)}
 					type="button"
 				>
 					{t("nav.create")}
 				</button>
 				<button
 					onClick={() => setTab("play")}
-					className={cn("px-6 py-3 font-bold transition-all border-b-2 -mb-0.5", tabClass(state.currentTab, "play"))}
+					className={cn(
+						"-mb-0.5 border-b-2 px-6 py-3 font-bold transition-all",
+						tabClass(state.currentTab, "play"),
+					)}
 					type="button"
 				>
 					{t("nav.play")}
@@ -100,17 +106,20 @@ export function App() {
 						onGenerate={setQuizData}
 						initialTimerEnabled={state.isTimerEnabled}
 						onError={(msg) =>
-							showModal({ title: t("modal.title.error"), message: msg, confirmText: t("modal.ok"), onConfirm: closeModal })
+							showModal({
+								title: t("modal.title.error"),
+								message: msg,
+								confirmText: t("modal.ok"),
+								onConfirm: closeModal,
+							})
 						}
 					/>
 				) : state.quizData.length === 0 ? (
-					<div className="text-center py-16 bg-surface/50 rounded-3xl border border-dashed border-overlay">
-						<p className="text-muted mb-6 font-medium">
-							{t("empty.message")}
-						</p>
+					<div className="rounded-3xl border border-overlay border-dashed bg-surface/50 py-16 text-center">
+						<p className="mb-6 font-medium text-muted">{t("empty.message")}</p>
 						<button
 							onClick={() => setTab("create")}
-							className="text-primary font-bold underline hover:opacity-80 transition-all"
+							className="font-bold text-primary underline transition-all hover:opacity-80"
 							type="button"
 						>
 							{t("empty.action")}
@@ -172,7 +181,7 @@ export function App() {
 				)}
 			</main>
 
-			<footer className="mt-12 text-center text-muted/40 text-xs font-medium">
+			<footer className="mt-12 text-center font-medium text-muted/40 text-xs">
 				{t("footer")}
 			</footer>
 

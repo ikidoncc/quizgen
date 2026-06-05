@@ -8,11 +8,11 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
-import { useTranslation } from "../i18n/I18nProvider";
 import { useTimer } from "../hooks/useTimer";
+import { useTranslation } from "../i18n/I18nProvider";
 import type { Question } from "../types";
-import { normalizeText } from "../utils/quiz";
 import { cn } from "../utils/cn";
+import { normalizeText } from "../utils/quiz";
 
 interface PlayTabProps {
 	quizData: Question[];
@@ -59,9 +59,13 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 
 	if (!currentQ) {
 		return (
-			<div className="bg-surface p-6 rounded-lg shadow-md border border-overlay text-center">
-				<p className="text-muted font-medium">{t("play.error")}</p>
-				<button onClick={onReset} className="text-primary font-bold underline hover:opacity-80 mt-4" type="button">
+			<div className="rounded-lg border border-overlay bg-surface p-6 text-center shadow-md">
+				<p className="font-medium text-muted">{t("play.error")}</p>
+				<button
+					onClick={onReset}
+					className="mt-4 font-bold text-primary underline hover:opacity-80"
+					type="button"
+				>
 					{t("play.restartButton")}
 				</button>
 			</div>
@@ -88,36 +92,42 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 		selectedOption && normalizeText(selectedOption) === normalizedCorrect;
 
 	return (
-		<div className="bg-surface p-6 rounded-lg shadow-md border border-overlay transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
-			<div className="flex justify-between items-center mb-4 pb-4 border-b border-overlay">
+		<div className="fade-in slide-in-from-bottom-2 animate-in rounded-lg border border-overlay bg-surface p-6 shadow-md transition-all duration-300">
+			<div className="mb-4 flex items-center justify-between border-overlay border-b pb-4">
 				<div className="flex space-x-2">
 					<button
 						onClick={onReset}
-						className="flex items-center text-xs bg-overlay hover:opacity-80 text-main py-1 px-2 rounded transition-all active:scale-95"
+						className="flex items-center rounded bg-overlay px-2 py-1 text-main text-xs transition-all hover:opacity-80 active:scale-95"
 						type="button"
 					>
-						<RotateCcw className="w-3 h-3 mr-1" />
+						<RotateCcw className="mr-1 h-3 w-3" />
 						{t("play.restart")}
 					</button>
 					<button
 						onClick={onDelete}
-						className="flex items-center text-xs bg-danger/10 hover:bg-danger/20 text-danger py-1 px-2 rounded transition-all active:scale-95"
+						className="flex items-center rounded bg-danger/10 px-2 py-1 text-danger text-xs transition-all hover:bg-danger/20 active:scale-95"
 						type="button"
 					>
-						<Trash2 className="w-3 h-3 mr-1" />
+						<Trash2 className="mr-1 h-3 w-3" />
 						{t("play.delete")}
 					</button>
 				</div>
 				<div className="text-right">
-					<span className="block text-xs font-medium text-muted">
-						{t("play.questionCount", { current: currentQuestionIndex + 1, total: quizData.length })}
+					<span className="block font-medium text-muted text-xs">
+						{t("play.questionCount", {
+							current: currentQuestionIndex + 1,
+							total: quizData.length,
+						})}
 					</span>
-					<span className="block text-xs text-primary font-bold">
+					<span className="block font-bold text-primary text-xs">
 						{t("play.score", { score })}
 					</span>
 					{isTimerEnabled && (
 						<span
-							className={cn("block text-xs font-bold mt-1 transition-colors", timeLeft <= 10 ? "text-danger animate-pulse" : "text-primary")}
+							className={cn(
+								"mt-1 block font-bold text-xs transition-colors",
+								timeLeft <= 10 ? "animate-pulse text-danger" : "text-primary",
+							)}
 						>
 							{t("play.timer", { time: timeLeft })}
 						</span>
@@ -126,7 +136,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 			</div>
 
 			<div className="mb-8">
-				<h3 className="text-lg font-medium text-main leading-relaxed">
+				<h3 className="font-medium text-lg text-main leading-relaxed">
 					{currentQ.question}
 				</h3>
 			</div>
@@ -155,7 +165,11 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 							key={option}
 							disabled={!isAnswering}
 							onClick={() => handleOptionClick(option)}
-							className={cn("w-full text-left p-4 border-2 rounded-xl transition-all duration-200", btnClass, isAnswering && "active:scale-[0.99]")}
+							className={cn(
+								"w-full rounded-xl border-2 p-4 text-left transition-all duration-200",
+								btnClass,
+								isAnswering && "active:scale-[0.99]",
+							)}
 							type="button"
 						>
 							{option}
@@ -166,15 +180,21 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 
 			{showFeedback && (
 				<div
-					className={cn("mt-6 p-4 rounded-xl flex items-center justify-center font-bold animate-in zoom-in duration-300", isCorrectSelection ? "bg-secondary/10 text-secondary border border-secondary/20" : "bg-danger/10 text-danger border border-danger/20")}
+					className={cn(
+						"zoom-in mt-6 flex animate-in items-center justify-center rounded-xl p-4 font-bold duration-300",
+						isCorrectSelection
+							? "border border-secondary/20 bg-secondary/10 text-secondary"
+							: "border border-danger/20 bg-danger/10 text-danger",
+					)}
 				>
 					{isCorrectSelection ? (
 						<>
-							<CheckCircle className="w-5 h-5 mr-2" /> {t("play.correct")}
+							<CheckCircle className="mr-2 h-5 w-5" /> {t("play.correct")}
 						</>
 					) : (
 						<>
-							<AlertTriangle className="w-5 h-5 mr-2" /> {t("play.incorrect", { answer: currentQ.answer })}
+							<AlertTriangle className="mr-2 h-5 w-5" />{" "}
+							{t("play.incorrect", { answer: currentQ.answer })}
 						</>
 					)}
 				</div>
@@ -184,21 +204,21 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 				{showFeedback ? (
 					<button
 						onClick={handleNext}
-						className="w-full flex items-center justify-center bg-primary text-white font-bold py-3 px-4 rounded-xl hover:opacity-90 transition-all active:scale-[0.98] shadow-sm animate-in slide-in-from-bottom-1"
+						className="slide-in-from-bottom-1 flex w-full animate-in items-center justify-center rounded-xl bg-primary px-4 py-3 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98]"
 						type="button"
 					>
 						{currentQuestionIndex + 1 === quizData.length
 							? t("play.showResults")
 							: t("play.nextQuestion")}
-						<ArrowRight className="w-5 h-5 ml-2" />
+						<ArrowRight className="ml-2 h-5 w-5" />
 					</button>
 				) : (
 					<button
 						onClick={onSkipRequest}
-						className="w-full flex items-center justify-center bg-surface border-2 border-overlay text-subtle font-bold py-3 px-4 rounded-xl hover:border-muted hover:bg-overlay/20 transition-all active:scale-[0.98]"
+						className="flex w-full items-center justify-center rounded-xl border-2 border-overlay bg-surface px-4 py-3 font-bold text-subtle transition-all hover:border-muted hover:bg-overlay/20 active:scale-[0.98]"
 						type="button"
 					>
-						<SkipForward className="w-5 h-5 mr-2" />
+						<SkipForward className="mr-2 h-5 w-5" />
 						{t("play.skip")}
 					</button>
 				)}

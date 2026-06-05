@@ -16,7 +16,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 	return (
 		<label
 			htmlFor={id}
-			className="inline-flex items-center cursor-pointer select-none group"
+			className="group inline-flex cursor-pointer select-none items-center"
 		>
 			<input
 				id={id}
@@ -27,14 +27,14 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 			/>
 			<span
 				className={cn(
-					"flex items-center justify-center w-4 h-4 rounded border-2 transition-all duration-150 shrink-0",
+					"flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-all duration-150",
 					"peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2",
 					checked
-						? "bg-primary border-primary"
-						: "bg-base border-overlay group-hover:border-primary",
+						? "border-primary bg-primary"
+						: "border-overlay bg-base group-hover:border-primary",
 				)}
 			>
-				{checked && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+				{checked && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
 			</span>
 		</label>
 	);

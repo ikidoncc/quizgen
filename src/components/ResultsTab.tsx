@@ -19,42 +19,48 @@ export const ResultsTab: React.FC<ResultsTabProps> = ({
 	const wrongCount = totalQuestions - score - skippedCount;
 
 	return (
-		<div className="bg-surface p-8 rounded-lg shadow-md text-center border border-overlay transition-all animate-in zoom-in duration-300">
-			<div className="flex justify-center mb-4">
-				<Trophy className="w-12 h-12 text-warning" />
+		<div className="zoom-in animate-in rounded-lg border border-overlay bg-surface p-8 text-center shadow-md transition-all duration-300">
+			<div className="mb-4 flex justify-center">
+				<Trophy className="h-12 w-12 text-warning" />
 			</div>
-			<h2 className="text-2xl font-bold mb-4 text-main font-serif">
+			<h2 className="mb-4 font-bold font-serif text-2xl text-main">
 				{t("results.title")}
 			</h2>
-			<p className="text-5xl font-bold text-primary mb-6 tracking-tighter">
+			<p className="mb-6 font-bold text-5xl text-primary tracking-tighter">
 				{score}{" "}
-				<span className="text-2xl text-muted font-normal">
+				<span className="font-normal text-2xl text-muted">
 					/ {totalQuestions}
 				</span>
 			</p>
 
-			<div className="grid grid-cols-3 gap-4 mb-8 text-sm">
-				<div className="bg-secondary/10 p-4 rounded-xl border border-secondary/20">
-					<span className="block text-secondary font-bold text-xl">
+			<div className="mb-8 grid grid-cols-3 gap-4 text-sm">
+				<div className="rounded-xl border border-secondary/20 bg-secondary/10 p-4">
+					<span className="block font-bold text-secondary text-xl">
 						{score}
 					</span>
-					<span className="text-secondary/80 font-medium">{t("results.correctLabel")}</span>
+					<span className="font-medium text-secondary/80">
+						{t("results.correctLabel")}
+					</span>
 				</div>
-				<div className="bg-warning/10 p-4 rounded-xl border border-warning/20">
-					<span className="block text-warning font-bold text-xl">
+				<div className="rounded-xl border border-warning/20 bg-warning/10 p-4">
+					<span className="block font-bold text-warning text-xl">
 						{skippedCount}
 					</span>
-					<span className="text-warning/80 font-medium">{t("results.skippedLabel")}</span>
+					<span className="font-medium text-warning/80">
+						{t("results.skippedLabel")}
+					</span>
 				</div>
-				<div className="bg-danger/10 p-4 rounded-xl border border-danger/20">
-					<span className="block text-danger font-bold text-xl">
+				<div className="rounded-xl border border-danger/20 bg-danger/10 p-4">
+					<span className="block font-bold text-danger text-xl">
 						{wrongCount}
 					</span>
-					<span className="text-danger/80 font-medium">{t("results.wrongLabel")}</span>
+					<span className="font-medium text-danger/80">
+						{t("results.wrongLabel")}
+					</span>
 				</div>
 			</div>
 
-			<p className="text-subtle mb-8 italic">
+			<p className="mb-8 text-subtle italic">
 				{score === totalQuestions
 					? t("results.perfect")
 					: t("results.goodEffort")}
@@ -62,10 +68,10 @@ export const ResultsTab: React.FC<ResultsTabProps> = ({
 
 			<button
 				onClick={onNewQuiz}
-				className="w-full flex items-center justify-center bg-primary text-white font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all active:scale-[0.98] shadow-sm"
+				className="flex w-full items-center justify-center rounded-xl bg-primary px-8 py-3 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98]"
 				type="button"
 			>
-				<RefreshCw className="w-5 h-5 mr-2" />
+				<RefreshCw className="mr-2 h-5 w-5" />
 				{t("results.newQuiz")}
 			</button>
 		</div>

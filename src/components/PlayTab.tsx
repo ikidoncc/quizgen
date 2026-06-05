@@ -7,7 +7,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTimer } from "../hooks/useTimer";
 import type { Question } from "../types";
 import { normalizeText } from "../utils/quiz";
@@ -50,12 +50,6 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 		onTick,
 		() => onSkip(), // onTimeout
 	);
-
-	useEffect(() => {
-		setSelectedOption(null);
-		setShowFeedback(false);
-		setIsAnswering(true);
-	}, []);
 
 	const handleOptionClick = (option: string) => {
 		if (!isAnswering) return;

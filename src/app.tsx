@@ -117,6 +117,7 @@ export function App() {
 					/>
 				) : (
 					<PlayTab
+						key={state.currentQuestionIndex}
 						quizData={state.quizData}
 						currentQuestionIndex={state.currentQuestionIndex}
 						score={state.score}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Question, QuizState, Tab } from "../types";
 
 const INITIAL_STATE: QuizState = {
@@ -29,9 +29,11 @@ export function useQuizState() {
 		localStorage.setItem("quizgen_state", JSON.stringify(state));
 	}, [state]);
 
-	const setTab = (tab: Tab) => setState((s) => ({ ...s, currentTab: tab }));
+	const setTab = useCallback((tab: Tab) => {
+		setState((s) => ({ ...s, currentTab: tab }));
+	}, []);
 
-	const setQuizData = (data: Question[], timerEnabled: boolean) =>
+	const setQuizData = useCallback((data: Question[], timerEnabled: boolean) => {
 		setState((s) => ({
 			...s,
 			quizData: data,
@@ -42,8 +44,9 @@ export function useQuizState() {
 			timeLeft: 60,
 			currentTab: "play",
 		}));
+	}, []);
 
-	const resetQuiz = () =>
+	const resetQuiz = useCallback(() => {
 		setState((s) => ({
 			...s,
 			currentQuestionIndex: 0,
@@ -51,14 +54,16 @@ export function useQuizState() {
 			skippedCount: 0,
 			timeLeft: 60,
 		}));
+	}, []);
 
-	const deleteQuiz = () =>
+	const deleteQuiz = useCallback(() => {
 		setState((s) => ({
 			...INITIAL_STATE,
 			currentTheme: s.currentTheme, // Preserve theme
 		}));
+	}, []);
 
-	const advanceQuestion = (isCorrect: boolean, isSkip: boolean = false) => {
+	const advanceQuestion = useCallback((isCorrect: boolean, isSkip: boolean = false) => {
 		setState((s) => ({
 			...s,
 			score: isCorrect ? s.score + 1 : s.score,
@@ -66,10 +71,11 @@ export function useQuizState() {
 			currentQuestionIndex: s.currentQuestionIndex + 1,
 			timeLeft: 60,
 		}));
-	};
+	}, []);
 
-	const setTimeLeft = (time: number) =>
+	const setTimeLeft = useCallback((time: number) => {
 		setState((s) => ({ ...s, timeLeft: time }));
+	}, []);
 
 	return {
 		state,

@@ -16,6 +16,15 @@ export function normalizeText(text: string): string {
 		.toLowerCase();
 }
 
+function shuffle<T>(array: T[]): T[] {
+	const result = [...array];
+	for (let i = result.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[result[i], result[j]] = [result[j], result[i]];
+	}
+	return result;
+}
+
 /**
  * Parses quiz text from input string.
  */
@@ -81,7 +90,7 @@ export function prepareQuizOptions(
 				);
 			});
 
-			const shuffledOthers = otherAnswers.sort(() => 0.5 - Math.random());
+			const shuffledOthers = shuffle(otherAnswers);
 
 			while (options.length < 4 && shuffledOthers.length > 0) {
 				const popped = shuffledOthers.pop();
@@ -94,7 +103,7 @@ export function prepareQuizOptions(
 
 		return {
 			...q,
-			options: options.sort(() => 0.5 - Math.random()),
+			options: shuffle(options),
 		} as Question;
 	});
 }

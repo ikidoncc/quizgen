@@ -1,4 +1,5 @@
 import React from 'react';
+import { Check, X } from 'lucide-react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -31,15 +32,17 @@ export const Modal: React.FC<ModalProps> = ({
         <div className="bg-overlay/50 px-6 py-4 flex flex-row-reverse space-x-2 space-x-reverse">
           <button
             onClick={onConfirm}
-            className="bg-iris text-white px-4 py-2 rounded font-semibold hover:opacity-90 transition-all active:scale-95"
+            className="flex items-center bg-primary text-white px-4 py-2 rounded font-semibold hover:opacity-90 transition-all active:scale-95"
           >
+            <Check className="w-4 h-4 mr-1" />
             {confirmText}
           </button>
           {onCancel && (
             <button
               onClick={onCancel}
-              className="bg-surface border border-overlay text-main px-4 py-2 rounded font-semibold hover:bg-overlay transition-all active:scale-95"
+              className="flex items-center bg-surface border border-overlay text-main px-4 py-2 rounded font-semibold hover:bg-overlay transition-all active:scale-95"
             >
+              <X className="w-4 h-4 mr-1" />
               {cancelText}
             </button>
           )}

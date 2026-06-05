@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Question } from '../types';
 import { normalizeText } from '../utils/quiz';
 import { useTimer } from '../hooks/useTimer';
+import { RotateCcw, Trash2, ArrowRight, SkipForward, CheckCircle, AlertTriangle } from 'lucide-react';
 
 interface PlayTabProps {
   quizData: Question[];
@@ -71,14 +72,16 @@ export const PlayTab: React.FC<PlayTabProps> = ({
         <div className="flex space-x-2">
           <button
             onClick={onReset}
-            className="text-xs bg-overlay hover:opacity-80 text-main py-1 px-2 rounded transition-all active:scale-95"
+            className="flex items-center text-xs bg-overlay hover:opacity-80 text-main py-1 px-2 rounded transition-all active:scale-95"
           >
+            <RotateCcw className="w-3 h-3 mr-1" />
             Reiniciar
           </button>
           <button
             onClick={onDelete}
-            className="text-xs bg-love bg-opacity-10 hover:bg-opacity-20 text-love py-1 px-2 rounded transition-all active:scale-95"
+            className="flex items-center text-xs bg-danger/10 hover:bg-danger/20 text-danger py-1 px-2 rounded transition-all active:scale-95"
           >
+            <Trash2 className="w-3 h-3 mr-1" />
             Excluir
           </button>
         </div>
@@ -86,11 +89,11 @@ export const PlayTab: React.FC<PlayTabProps> = ({
           <span className="block text-xs font-medium text-muted">
             Pergunta {currentQuestionIndex + 1} de {quizData.length}
           </span>
-          <span className="block text-xs font-medium text-iris font-bold">
+          <span className="block text-xs font-medium text-primary font-bold">
             Pontos: {score}
           </span>
           {isTimerEnabled && (
-            <span className={`block text-xs font-bold mt-1 transition-colors ${timeLeft <= 10 ? 'text-love animate-pulse' : 'text-iris'}`}>
+            <span className={`block text-xs font-bold mt-1 transition-colors ${timeLeft <= 10 ? 'text-danger animate-pulse' : 'text-primary'}`}>
               Tempo: {timeLeft}s
             </span>
           )}
@@ -109,12 +112,12 @@ export const PlayTab: React.FC<PlayTabProps> = ({
           const normOption = normalizeText(option);
           const isActuallyCorrect = normOption === normalizedCorrect;
           
-          let btnClass = "border-overlay text-main hover:border-iris hover:bg-iris/5";
+          let btnClass = "border-overlay text-main hover:border-primary hover:bg-primary/5";
           if (showFeedback) {
             if (isActuallyCorrect) {
-              btnClass = "border-pine bg-pine/10 text-pine font-bold";
+              btnClass = "border-secondary bg-secondary/10 text-secondary font-bold";
             } else if (isSelected) {
-              btnClass = "border-love bg-love/10 text-love font-bold";
+              btnClass = "border-danger bg-danger/10 text-danger font-bold";
             } else {
               btnClass = "border-overlay text-muted opacity-50";
             }
@@ -134,10 +137,14 @@ export const PlayTab: React.FC<PlayTabProps> = ({
       </div>
 
       {showFeedback && (
-        <div className={`mt-6 p-4 rounded-xl text-center font-bold animate-in zoom-in duration-300 ${
-          isCorrectSelection ? 'bg-pine/10 text-pine border border-pine/20' : 'bg-love/10 text-love border border-love/20'
+        <div className={`mt-6 p-4 rounded-xl flex items-center justify-center font-bold animate-in zoom-in duration-300 ${
+          isCorrectSelection ? 'bg-secondary/10 text-secondary border border-secondary/20' : 'bg-danger/10 text-danger border border-danger/20'
         }`}>
-          {isCorrectSelection ? '✨ Correto!' : `⚠️ Incorreto. A resposta era: ${currentQ.answer}`}
+          {isCorrectSelection ? (
+            <><CheckCircle className="w-5 h-5 mr-2" /> Correto!</>
+          ) : (
+            <><AlertTriangle className="w-5 h-5 mr-2" /> Incorreto. A resposta era: {currentQ.answer}</>
+          )}
         </div>
       )}
 
@@ -145,15 +152,17 @@ export const PlayTab: React.FC<PlayTabProps> = ({
         {showFeedback ? (
           <button
             onClick={handleNext}
-            className="w-full bg-iris text-surface font-bold py-3 px-4 rounded-xl hover:opacity-90 transition-all active:scale-[0.98] shadow-sm animate-in slide-in-from-bottom-1"
+            className="w-full flex items-center justify-center bg-primary text-white font-bold py-3 px-4 rounded-xl hover:opacity-90 transition-all active:scale-[0.98] shadow-sm animate-in slide-in-from-bottom-1"
           >
             {currentQuestionIndex + 1 === quizData.length ? 'Ver Resultado' : 'Próxima Pergunta'}
+            <ArrowRight className="w-5 h-5 ml-2" />
           </button>
         ) : (
           <button
             onClick={onSkip}
-            className="w-full bg-surface border-2 border-overlay text-subtle font-bold py-3 px-4 rounded-xl hover:border-muted hover:bg-overlay/20 transition-all active:scale-[0.98]"
+            className="w-full flex items-center justify-center bg-surface border-2 border-overlay text-subtle font-bold py-3 px-4 rounded-xl hover:border-muted hover:bg-overlay/20 transition-all active:scale-[0.98]"
           >
+            <SkipForward className="w-5 h-5 mr-2" />
             Pular Pergunta
           </button>
         )}

@@ -48,7 +48,7 @@ function App() {
         <div className="w-full flex justify-between items-center mb-6">
           <div className="invisible w-10 sm:w-32"></div>
           <div className="text-center group cursor-default">
-            <h1 className="text-4xl font-black text-iris tracking-tight transition-transform group-hover:scale-105">
+            <h1 className="text-4xl font-black text-primary tracking-tight transition-transform group-hover:scale-105">
               QuizGen
             </h1>
             <p className="text-subtle font-medium">Crie seu quizz a partir de um texto</p>
@@ -62,8 +62,8 @@ function App() {
           onClick={() => setTab('create')}
           className={`px-6 py-3 font-bold transition-all border-b-2 -mb-[2px] ${
             state.currentTab === 'create'
-              ? 'text-iris border-iris opacity-100'
-              : 'text-muted border-transparent opacity-60 hover:text-iris hover:opacity-100'
+              ? 'text-primary border-primary opacity-100'
+              : 'text-muted border-transparent opacity-60 hover:text-primary hover:opacity-100'
           }`}
         >
           Criar Quizz
@@ -72,8 +72,8 @@ function App() {
           onClick={() => setTab('play')}
           className={`px-6 py-3 font-bold transition-all border-b-2 -mb-[2px] ${
             state.currentTab === 'play'
-              ? 'text-iris border-iris opacity-100'
-              : 'text-muted border-transparent opacity-60 hover:text-iris hover:opacity-100'
+              ? 'text-primary border-primary opacity-100'
+              : 'text-muted border-transparent opacity-60 hover:text-primary hover:opacity-100'
           }`}
         >
           Jogar Quizz
@@ -94,7 +94,7 @@ function App() {
                 <p className="text-muted mb-6 font-medium">Nenhum quizz gerado ainda.</p>
                 <button
                   onClick={() => setTab('create')}
-                  className="text-iris font-bold underline hover:opacity-80 transition-all"
+                  className="text-primary font-bold underline hover:opacity-80 transition-all"
                 >
                   Ir para Criar Quizz
                 </button>

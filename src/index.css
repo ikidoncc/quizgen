@@ -7,10 +7,10 @@
   --color-muted: var(--muted);
   --color-subtle: var(--subtle);
   --color-main: var(--text);
-  --color-love: var(--love);
-  --color-pine: var(--pine);
-  --color-iris: var(--iris);
-  --color-gold: var(--gold);
+  --color-danger: var(--danger);
+  --color-secondary: var(--secondary);
+  --color-primary: var(--primary);
+  --color-warning: var(--warning);
 }
 
 :root {
@@ -20,10 +20,10 @@
   --muted: #9893a5;
   --subtle: #797593;
   --text: #575279;
-  --love: #b4637a;
-  --pine: #286983;
-  --iris: #907aa9;
-  --gold: #ea9d34;
+  --danger: #b4637a;
+  --secondary: #286983;
+  --primary: #907aa9;
+  --warning: #ea9d34;
 }
 
 .dark {
@@ -33,10 +33,10 @@
   --muted: #817c9c;
   --subtle: #908caa;
   --text: #e0def4;
-  --love: #eb6f92;
-  --pine: #3e8fb0;
-  --iris: #c4a7e7;
-  --gold: #f6c177;
+  --danger: #eb6f92;
+  --secondary: #3e8fb0;
+  --primary: #c4a7e7;
+  --warning: #f6c177;
 }
 
 body {

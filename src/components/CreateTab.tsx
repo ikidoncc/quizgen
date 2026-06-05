@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Question } from '../types';
 import { parseQuizText, prepareQuizOptions } from '../utils/quiz';
+import { Wand2 } from 'lucide-react';
 
 interface CreateTabProps {
   onGenerate: (data: Question[], timerEnabled: boolean) => void;
@@ -35,7 +36,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({ onGenerate, initialTimerEn
       <textarea
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        className="w-full h-64 p-3 bg-base border border-overlay text-main rounded-md focus:ring-2 focus:ring-iris focus:outline-none mb-4 transition-all placeholder:text-muted/50"
+        className="w-full h-64 p-3 bg-base border border-overlay text-main rounded-md focus:ring-2 focus:ring-primary focus:outline-none mb-4 transition-all placeholder:text-muted/50"
         placeholder="Cole seu texto aqui..."
       />
       
@@ -45,7 +46,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({ onGenerate, initialTimerEn
           id="timer-checkbox"
           checked={timerEnabled}
           onChange={(e) => setTimerEnabled(e.target.checked)}
-          className="w-4 h-4 text-iris bg-base border-overlay rounded focus:ring-iris focus:ring-2 cursor-pointer transition-all"
+          className="w-4 h-4 text-primary bg-base border-overlay rounded focus:ring-primary focus:ring-2 cursor-pointer transition-all"
         />
         <label htmlFor="timer-checkbox" className="ml-2 text-sm font-medium text-main cursor-pointer select-none">
           Habilitar temporizador (1 minuto por questão)
@@ -54,8 +55,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({ onGenerate, initialTimerEn
 
       <button
         onClick={handleGenerate}
-        className="w-full bg-iris text-surface font-bold py-3 px-4 rounded hover:opacity-90 transition-all active:scale-[0.98] shadow-sm"
+        className="w-full flex items-center justify-center bg-primary text-white font-bold py-3 px-4 rounded hover:opacity-90 transition-all active:scale-[0.98] shadow-sm"
       >
+        <Wand2 className="w-5 h-5 mr-2" />
         Gerar Quizz
       </button>
     </div>

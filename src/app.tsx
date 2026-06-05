@@ -52,6 +52,13 @@ export function App() {
 		[addEntry, setQuizData, setHistoryId],
 	);
 
+	const handleDeleteQuizFromPlay = useCallback(() => {
+		if (state.currentHistoryId) {
+			deleteEntry(state.currentHistoryId);
+		}
+		deleteQuiz();
+	}, [state.currentHistoryId, deleteEntry, deleteQuiz]);
+
 	const handleDeleteEntry = useCallback(
 		(id: string) => {
 			deleteEntry(id);
@@ -230,7 +237,7 @@ export function App() {
 								title: t("modal.title.delete"),
 								message: t("modal.message.delete"),
 								onConfirm: () => {
-									deleteQuiz();
+									handleDeleteQuizFromPlay();
 									closeModal();
 								},
 								onCancel: closeModal,

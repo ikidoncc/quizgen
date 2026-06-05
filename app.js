@@ -23,6 +23,46 @@ function normalizeText(text) {
         .toLowerCase();
 }
 
+/**
+ * Custom Modal implementation
+ */
+function showModal({ title, message, onConfirm, onCancel }) {
+    const container = document.getElementById('modal-container');
+    const titleEl = document.getElementById('modal-title');
+    const messageEl = document.getElementById('modal-message');
+    const confirmBtn = document.getElementById('modal-confirm');
+    const cancelBtn = document.getElementById('modal-cancel');
+
+    titleEl.innerText = title;
+    messageEl.innerText = message;
+    
+    container.classList.remove('hidden');
+
+    if (onCancel) {
+        cancelBtn.classList.remove('hidden');
+    } else {
+        cancelBtn.classList.add('hidden');
+    }
+
+    const cleanup = () => {
+        container.classList.add('hidden');
+        confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+    };
+
+    document.getElementById('modal-confirm').addEventListener('click', () => {
+        cleanup();
+        if (onConfirm) onConfirm();
+    });
+
+    if (onCancel) {
+        document.getElementById('modal-cancel').addEventListener('click', () => {
+            cleanup();
+            onCancel();
+        });
+    }
+}
+
 function init() {
     renderCreateTab();
     
@@ -116,20 +156,30 @@ function renderPlayTab() {
     });
 
     document.getElementById('reset-btn').addEventListener('click', () => {
-        if (confirm('Deseja reiniciar este quizz?')) {
-            currentQuestionIndex = 0;
-            score = 0;
-            renderPlayTab();
-        }
+        showModal({
+            title: 'Reiniciar Quizz',
+            message: 'Deseja reiniciar este quizz?',
+            onConfirm: () => {
+                currentQuestionIndex = 0;
+                score = 0;
+                renderPlayTab();
+            },
+            onCancel: () => {}
+        });
     });
 
     document.getElementById('delete-btn').addEventListener('click', () => {
-        if (confirm('Deseja excluir este quizz?')) {
-            quizData = [];
-            currentQuestionIndex = 0;
-            score = 0;
-            switchTab('create');
-        }
+        showModal({
+            title: 'Excluir Quizz',
+            message: 'Deseja excluir este quizz?',
+            onConfirm: () => {
+                quizData = [];
+                currentQuestionIndex = 0;
+                score = 0;
+                switchTab('create');
+            },
+            onCancel: () => {}
+        });
     });
 }
 
@@ -224,7 +274,10 @@ function handleGenerate() {
     });
 
     if (parsedData.length === 0) {
-        alert('Nenhuma pergunta encontrada. Use o formato Q: Pergunta e A: Resposta.');
+        showModal({
+            title: 'Erro',
+            message: 'Nenhuma pergunta encontrada. Use o formato Q: Pergunta e A: Resposta.'
+        });
         return;
     }
 

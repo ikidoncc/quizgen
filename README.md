@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+# QuizGen
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Create quizzes from text using Q/A/O format. Built with React 19 + TypeScript + Tailwind v4 + Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Quiz Generation** — paste text in `Q: Question? / A: Answer / O: Incorrect option` format
+- **Play Mode** — answer questions with instant feedback, optional per-question timer
+- **Results** — score summary with correct/skipped/wrong breakdown
+- **History** — all generated quizzes auto-saved to localStorage (max 20 entries), with replay, clipboard copy, and `.txt` download
+- **Theme** — Light / Dark / Auto (system preference)
+- **i18n** — Portuguese (pt-BR) and English (en), no external i18n packages
+- **Responsive** — mobile-first layout
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [React 19](https://react.dev/) — hooks, `use`, Context API
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS v4](https://tailwindcss.com/) — utility-first CSS
+- [Vite](https://vitejs.dev/) — bundler with Oxc plugin
+- [Biome](https://biomejs.dev/) — lint + format
+- [Lucide React](https://lucide.dev/) — icons
 
-## Expanding the ESLint configuration
+No external state management, i18n, or font packages.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Scripts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Command | Description |
+|---------|-------------|
+| `dev` | Start Vite dev server |
+| `build` | Type-check + production build |
+| `lint` | Biome lint |
+| `format` | Biome format (write) |
+| `preview` | Preview production build |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Project Structure
+
+```
+src/
+├── components/     # UI components (CreateTab, PlayTab, ResultsTab, HistoryTab, …)
+├── hooks/          # Custom hooks (useHistory, useQuizState, useTheme, …)
+├── i18n/           # Custom i18n Context Provider + translations
+├── locales/        # JSON translation files (en, pt-BR)
+├── types/          # TypeScript types (Question, Option, QuizState, HistoryEntry, …)
+├── utils/          # Utilities (cn, quiz parsing, …)
+└── app.tsx         # Root component — orchestrates tabs and state
 ```

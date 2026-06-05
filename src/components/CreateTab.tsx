@@ -17,8 +17,12 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 }) => {
 	const [input, setInput] = useState("");
 	const [timerEnabled, setTimerEnabled] = useState(initialTimerEnabled);
+	const [isGenerating, setIsGenerating] = useState(false);
 
-	const handleGenerate = () => {
+	const handleGenerate = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (isGenerating) return;
+
 		const parsedData = parseQuizText(input);
 
 		if (parsedData.length === 0) {
@@ -28,6 +32,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 			return;
 		}
 
+		setIsGenerating(true);
 		const quizData = prepareQuizOptions(parsedData);
 		onGenerate(quizData, timerEnabled);
 	};
@@ -42,37 +47,39 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 				{`Q: Pergunta?\nA: Resposta\nO: Opção Incorreta (Opcional)`}
 			</pre>
 
-			<textarea
-				value={input}
-				onChange={(e) => setInput(e.target.value)}
-				className="w-full h-64 p-3 bg-base border border-overlay text-main rounded-md focus:ring-2 focus:ring-primary focus:outline-none mb-4 transition-all placeholder:text-muted/50"
-				placeholder="Cole seu texto aqui..."
-			/>
-
-			<div className="flex items-center mb-6">
-				<input
-					type="checkbox"
-					id="timer-checkbox"
-					checked={timerEnabled}
-					onChange={(e) => setTimerEnabled(e.target.checked)}
-					className="w-4 h-4 text-primary bg-base border-overlay rounded focus:ring-primary focus:ring-2 cursor-pointer transition-all"
+			<form onSubmit={handleGenerate}>
+				<textarea
+					value={input}
+					onChange={(e) => setInput(e.target.value)}
+					className="w-full h-64 p-3 bg-base border border-overlay text-main rounded-md focus:ring-2 focus:ring-primary focus:outline-none mb-4 transition-all placeholder:text-muted/50"
+					placeholder="Cole seu texto aqui..."
 				/>
-				<label
-					htmlFor="timer-checkbox"
-					className="ml-2 text-sm font-medium text-main cursor-pointer select-none"
-				>
-					Habilitar temporizador ({TIMER_DURATION / 60} minuto{TIMER_DURATION !== 60 ? "s" : ""} por questão)
-				</label>
-			</div>
 
-			<button
-				onClick={handleGenerate}
-				className="w-full flex items-center justify-center bg-primary text-white font-bold py-3 px-4 rounded hover:opacity-90 transition-all active:scale-[0.98] shadow-sm"
-				type="button"
-			>
-				<Wand2 className="w-5 h-5 mr-2" />
-				Gerar Quizz
-			</button>
+				<div className="flex items-center mb-6">
+					<input
+						type="checkbox"
+						id="timer-checkbox"
+						checked={timerEnabled}
+						onChange={(e) => setTimerEnabled(e.target.checked)}
+						className="w-4 h-4 text-primary bg-base border-overlay rounded focus:ring-primary focus:ring-2 cursor-pointer transition-all"
+					/>
+					<label
+						htmlFor="timer-checkbox"
+						className="ml-2 text-sm font-medium text-main cursor-pointer select-none"
+					>
+						Habilitar temporizador ({TIMER_DURATION / 60} minuto{TIMER_DURATION !== 60 ? "s" : ""} por questão)
+					</label>
+				</div>
+
+				<button
+					disabled={isGenerating}
+					className="w-full flex items-center justify-center bg-primary text-white font-bold py-3 px-4 rounded hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] shadow-sm"
+					type="submit"
+				>
+					<Wand2 className="w-5 h-5 mr-2" />
+					Gerar Quizz
+				</button>
+			</form>
 		</div>
 	);
 };

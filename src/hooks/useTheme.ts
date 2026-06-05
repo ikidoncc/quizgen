@@ -1,37 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { Theme } from "../types";
+import { usePersistedState } from "./usePersistedState";
+
+function applyThemeToDOM(theme: Theme) {
+	const html = document.documentElement;
+	if (theme === "dark") {
+		html.classList.add("dark");
+	} else if (theme === "light") {
+		html.classList.remove("dark");
+	} else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+		html.classList.add("dark");
+	} else {
+		html.classList.remove("dark");
+	}
+}
 
 export function useTheme() {
-	const [theme, setTheme] = useState<Theme>(() => {
-		const saved = localStorage.getItem("quizgen_theme");
-		return (saved as Theme) || "auto";
-	});
+	const [theme, setTheme] = usePersistedState<Theme>("quizgen_theme", "auto");
 
 	useEffect(() => {
-		const applyTheme = () => {
-			const html = document.documentElement;
-			if (theme === "dark") {
-				html.classList.add("dark");
-			} else if (theme === "light") {
-				html.classList.remove("dark");
-			} else {
-				if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-					html.classList.add("dark");
-				} else {
-					html.classList.remove("dark");
-				}
-			}
-		};
+		applyThemeToDOM(theme);
+	}, [theme]);
 
-		applyTheme();
-		localStorage.setItem("quizgen_theme", theme);
+	useEffect(() => {
+		if (theme !== "auto") return;
 
-		if (theme === "auto") {
-			const media = window.matchMedia("(prefers-color-scheme: dark)");
-			const listener = () => applyTheme();
-			media.addEventListener("change", listener);
-			return () => media.removeEventListener("change", listener);
-		}
+		const media = window.matchMedia("(prefers-color-scheme: dark)");
+		const listener = () => applyThemeToDOM("auto");
+		media.addEventListener("change", listener);
+		return () => media.removeEventListener("change", listener);
 	}, [theme]);
 
 	return { theme, setTheme };

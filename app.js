@@ -64,8 +64,41 @@ function showModal({ title, message, onConfirm, onCancel }) {
     }
 }
 
+/**
+ * State Management & Persistence
+ */
+function saveState() {
+    const state = {
+        currentTab,
+        quizData,
+        currentQuestionIndex,
+        score,
+        skippedCount
+    };
+    localStorage.setItem('quizgen_state', JSON.stringify(state));
+}
+
+function loadState() {
+    const saved = localStorage.getItem('quizgen_state');
+    if (saved) {
+        try {
+            const state = JSON.parse(saved);
+            currentTab = state.currentTab || 'create';
+            quizData = state.quizData || [];
+            currentQuestionIndex = state.currentQuestionIndex || 0;
+            score = state.score || 0;
+            skippedCount = state.skippedCount || 0;
+            return true;
+        } catch (e) {
+            console.error("Error loading saved state", e);
+        }
+    }
+    return false;
+}
+
 function init() {
-    renderCreateTab();
+    loadState();
+    switchTab(currentTab); // This will handle rendering and tab styling
     
     tabCreate.addEventListener('click', () => switchTab('create'));
     tabPlay.addEventListener('click', () => switchTab('play'));
@@ -73,6 +106,7 @@ function init() {
 
 function switchTab(tab) {
     currentTab = tab;
+    saveState();
     
     // Update tab buttons styling
     if (tab === 'create') {
@@ -162,6 +196,7 @@ function renderPlayTab() {
     document.getElementById('skip-btn').addEventListener('click', () => {
         skippedCount++;
         currentQuestionIndex++;
+        saveState();
         renderPlayTab();
     });
 
@@ -173,6 +208,7 @@ function renderPlayTab() {
                 currentQuestionIndex = 0;
                 score = 0;
                 skippedCount = 0;
+                saveState();
                 renderPlayTab();
             },
             onCancel: () => {}
@@ -188,6 +224,7 @@ function renderPlayTab() {
                 currentQuestionIndex = 0;
                 score = 0;
                 skippedCount = 0;
+                saveState();
                 switchTab('create');
             },
             onCancel: () => {}
@@ -236,12 +273,14 @@ function checkAnswer(selectedOption, clickedBtn) {
         feedback.classList.add('bg-red-100', 'text-red-700');
     }
 
+    saveState();
     feedback.classList.remove('hidden');
     nextBtn.classList.remove('hidden');
     document.getElementById('skip-btn').classList.add('hidden');
 
     nextBtn.addEventListener('click', () => {
         currentQuestionIndex++;
+        saveState();
         renderPlayTab();
     }, { once: true }); // Ensure listener is added only once
 }
@@ -278,6 +317,7 @@ function renderResults() {
         currentQuestionIndex = 0;
         score = 0;
         skippedCount = 0;
+        saveState();
         switchTab('create');
     });
 }
@@ -317,6 +357,7 @@ function handleGenerate() {
     currentQuestionIndex = 0;
     score = 0;
     skippedCount = 0;
+    saveState();
     switchTab('play');
 }
 

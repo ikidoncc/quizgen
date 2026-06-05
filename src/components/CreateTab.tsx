@@ -2,6 +2,7 @@ import { Wand2 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
+import { Checkbox } from "./Checkbox";
 import type { Question } from "../types";
 import { parseQuizText, prepareQuizOptions, TIMER_DURATION } from "../utils/quiz";
 
@@ -65,12 +66,10 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 				/>
 
 				<div className="flex items-center mb-6">
-					<input
-						type="checkbox"
+					<Checkbox
 						id="timer-checkbox"
 						checked={timerEnabled}
-						onChange={(e) => setTimerEnabled(e.target.checked)}
-						className="w-4 h-4 text-primary bg-base border-overlay rounded focus:ring-primary focus:ring-2 cursor-pointer transition-all"
+						onChange={setTimerEnabled}
 					/>
 					<label
 						htmlFor="timer-checkbox"

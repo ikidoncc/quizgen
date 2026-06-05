@@ -7,6 +7,7 @@ import { ThemeSelect } from "./components/ThemeSelect";
 import { useQuizState } from "./hooks/useQuizState";
 import { useTheme } from "./hooks/useTheme";
 import type { Tab } from "./types";
+import { cn } from "./utils/cn";
 
 function tabClass(currentTab: Tab, tab: Tab): string {
 	return currentTab === tab
@@ -73,14 +74,14 @@ export function App() {
 			<nav className="flex border-b border-overlay mb-8">
 				<button
 					onClick={() => setTab("create")}
-					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-0.5 ${tabClass(state.currentTab, "create")}`}
+					className={cn("px-6 py-3 font-bold transition-all border-b-2 -mb-0.5", tabClass(state.currentTab, "create"))}
 					type="button"
 				>
 					Criar Quizz
 				</button>
 				<button
 					onClick={() => setTab("play")}
-					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-0.5 ${tabClass(state.currentTab, "play")}`}
+					className={cn("px-6 py-3 font-bold transition-all border-b-2 -mb-0.5", tabClass(state.currentTab, "play"))}
 					type="button"
 				>
 					Jogar Quizz

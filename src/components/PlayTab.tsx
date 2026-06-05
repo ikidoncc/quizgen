@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useTimer } from "../hooks/useTimer";
 import type { Question } from "../types";
 import { normalizeText } from "../utils/quiz";
+import { cn } from "../utils/cn";
 
 interface PlayTabProps {
 	quizData: Question[];
@@ -114,7 +115,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 					</span>
 					{isTimerEnabled && (
 						<span
-							className={`block text-xs font-bold mt-1 transition-colors ${timeLeft <= 10 ? "text-danger animate-pulse" : "text-primary"}`}
+							className={cn("block text-xs font-bold mt-1 transition-colors", timeLeft <= 10 ? "text-danger animate-pulse" : "text-primary")}
 						>
 							Tempo: {timeLeft}s
 						</span>
@@ -152,7 +153,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 							key={option}
 							disabled={!isAnswering}
 							onClick={() => handleOptionClick(option)}
-							className={`w-full text-left p-4 border-2 rounded-xl transition-all duration-200 ${btnClass} ${isAnswering ? "active:scale-[0.99]" : ""}`}
+							className={cn("w-full text-left p-4 border-2 rounded-xl transition-all duration-200", btnClass, isAnswering && "active:scale-[0.99]")}
 							type="button"
 						>
 							{option}
@@ -163,11 +164,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 
 			{showFeedback && (
 				<div
-					className={`mt-6 p-4 rounded-xl flex items-center justify-center font-bold animate-in zoom-in duration-300 ${
-						isCorrectSelection
-							? "bg-secondary/10 text-secondary border border-secondary/20"
-							: "bg-danger/10 text-danger border border-danger/20"
-					}`}
+					className={cn("mt-6 p-4 rounded-xl flex items-center justify-center font-bold animate-in zoom-in duration-300", isCorrectSelection ? "bg-secondary/10 text-secondary border border-secondary/20" : "bg-danger/10 text-danger border border-danger/20")}
 				>
 					{isCorrectSelection ? (
 						<>

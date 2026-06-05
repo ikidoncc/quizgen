@@ -2,6 +2,7 @@ import { ChevronDown, Monitor, Moon, Sun } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import type { Theme } from "../types";
+import { cn } from "../utils/cn";
 
 interface ThemeSelectProps {
 	value: Theme;
@@ -49,7 +50,7 @@ export const ThemeSelect: React.FC<ThemeSelectProps> = ({
 					<span className="hidden sm:inline ml-2">{selectedTheme.label}</span>
 				</span>
 				<ChevronDown
-					className={`w-4 h-4 ml-1 hidden sm:block transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+					className={cn("w-4 h-4 ml-1 hidden sm:block transition-transform duration-200", isOpen && "rotate-180")}
 				/>
 			</button>
 
@@ -61,9 +62,7 @@ export const ThemeSelect: React.FC<ThemeSelectProps> = ({
 							<button
 								type="button"
 								key={theme.value}
-								className={`w-full px-4 py-3 text-xs text-main hover:bg-overlay cursor-pointer flex items-center transition-colors ${
-									value === theme.value ? "bg-overlay/50 font-bold" : ""
-								}`}
+								className={cn("w-full px-4 py-3 text-xs text-main hover:bg-overlay cursor-pointer flex items-center transition-colors", value === theme.value && "bg-overlay/50 font-bold")}
 								onClick={() => {
 									onChange(theme.value);
 									setIsOpen(false);

@@ -10,17 +10,6 @@ import {
 } from "../utils/quiz";
 import { Checkbox } from "./Checkbox";
 
-function validateQuizInput(
-	input: string,
-	t: (key: string, options?: Record<string, string | number>) => string,
-): Question[] | string {
-	const parsed = parseQuizText(input);
-	if (parsed.length === 0) {
-		return t("create.error");
-	}
-	return parsed;
-}
-
 interface CreateTabProps {
 	onGenerate: (data: Question[], timerEnabled: boolean) => void;
 	initialTimerEnabled: boolean;
@@ -41,14 +30,14 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 		e.preventDefault();
 		if (isGenerating) return;
 
-		const result = validateQuizInput(input, t);
-		if (typeof result === "string") {
-			onError(result);
+		const parsed = parseQuizText(input);
+		if (parsed.length === 0) {
+			onError(t("create.error"));
 			return;
 		}
 
 		setIsGenerating(true);
-		onGenerate(prepareQuizOptions(result), timerEnabled);
+		onGenerate(prepareQuizOptions(parsed), timerEnabled);
 	};
 
 	return (

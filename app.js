@@ -173,7 +173,10 @@ function handleTimeout() {
 function updateSelectValueDisplay(value) {
     const option = Array.from(document.querySelectorAll('#select-options .option')).find(opt => opt.dataset.value === value);
     if (option) {
-        selectValueDisplay.innerText = option.innerText;
+        const parts = option.innerText.split(' ');
+        const emoji = parts[0];
+        const label = parts[1];
+        selectValueDisplay.innerHTML = `${emoji} <span class="hidden sm:inline ml-1">${label}</span>`;
     }
 }
 

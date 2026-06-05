@@ -1,6 +1,6 @@
 import { ChevronDown, Globe } from "lucide-react";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
 import { cn } from "../utils/cn";
 
@@ -9,10 +9,14 @@ export const LangSelect: React.FC = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const langs = [
-		{ value: "pt-BR", label: t("lang.pt-BR") },
-		{ value: "en", label: t("lang.en") },
-	] as const;
+	const langs = useMemo(
+		() =>
+			[
+				{ value: "pt-BR", label: t("lang.pt-BR") },
+				{ value: "en", label: t("lang.en") },
+			] as const,
+		[t],
+	);
 
 	const selectedLang = langs.find((l) => l.value === language) || langs[0];
 

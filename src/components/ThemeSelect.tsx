@@ -1,6 +1,6 @@
 import { ChevronDown, Monitor, Moon, Sun } from "lucide-react";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
 import type { Theme } from "../types";
 import { cn } from "../utils/cn";
@@ -18,11 +18,15 @@ export const ThemeSelect: React.FC<ThemeSelectProps> = ({
 	const [isOpen, setIsOpen] = useState(false);
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const themes = [
-		{ value: "light", label: t("theme.light"), Icon: Sun },
-		{ value: "dark", label: t("theme.dark"), Icon: Moon },
-		{ value: "auto", label: t("theme.auto"), Icon: Monitor },
-	] as const;
+	const themes = useMemo(
+		() =>
+			[
+				{ value: "light", label: t("theme.light"), Icon: Sun },
+				{ value: "dark", label: t("theme.dark"), Icon: Moon },
+				{ value: "auto", label: t("theme.auto"), Icon: Monitor },
+			] as const,
+		[t],
+	);
 
 	const selectedTheme = themes.find((t) => t.value === value) || themes[2];
 	const SelectedIcon = selectedTheme.Icon;

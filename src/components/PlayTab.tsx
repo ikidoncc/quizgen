@@ -12,7 +12,6 @@ import { useTimer } from "../hooks/useTimer";
 import { useTranslation } from "../i18n/I18nProvider";
 import type { Question } from "../types";
 import { cn } from "../utils/cn";
-import { normalizeText } from "../utils/quiz";
 
 interface PlayTabProps {
 	quizData: Question[];
@@ -44,7 +43,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 	onTick,
 }) => {
 	const { t } = useTranslation();
-	const [selectedOption, setSelectedOption] = useState<string | null>(null);
+	const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
 	const [showFeedback, setShowFeedback] = useState(false);
 	const [isAnswering, setIsAnswering] = useState(true);
 
@@ -72,24 +71,22 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 		);
 	}
 
-	const handleOptionClick = (option: string) => {
+	const handleOptionClick = (optionId: string) => {
 		if (!isAnswering) return;
 
 		stopTimer();
 		setIsAnswering(false);
-		setSelectedOption(option);
+		setSelectedOptionId(optionId);
 		setShowFeedback(true);
 	};
 
 	const handleNext = () => {
-		const isCorrect =
-			normalizeText(selectedOption || "") === normalizeText(currentQ.answer);
+		const isCorrect = selectedOptionId === currentQ.correctOptionId;
 		onAnswer(isCorrect);
 	};
 
-	const normalizedCorrect = normalizeText(currentQ.answer);
 	const isCorrectSelection =
-		selectedOption && normalizeText(selectedOption) === normalizedCorrect;
+		selectedOptionId === currentQ.correctOptionId;
 
 	return (
 		<div className="fade-in slide-in-from-bottom-2 animate-in rounded-lg border border-overlay bg-surface p-6 shadow-md transition-all duration-300">
@@ -143,9 +140,8 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 
 			<div className="grid grid-cols-1 gap-3">
 				{currentQ.options.map((option) => {
-					const isSelected = selectedOption === option;
-					const normOption = normalizeText(option);
-					const isActuallyCorrect = normOption === normalizedCorrect;
+					const isSelected = selectedOptionId === option.id;
+					const isActuallyCorrect = option.id === currentQ.correctOptionId;
 
 					let btnClass =
 						"border-overlay text-main hover:border-primary hover:bg-primary/5";
@@ -162,9 +158,9 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 
 					return (
 						<button
-							key={option}
+							key={option.id}
 							disabled={!isAnswering}
-							onClick={() => handleOptionClick(option)}
+							onClick={() => handleOptionClick(option.id)}
 							className={cn(
 								"w-full rounded-xl border-2 p-4 text-left transition-all duration-200",
 								btnClass,
@@ -172,7 +168,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 							)}
 							type="button"
 						>
-							{option}
+							{option.text}
 						</button>
 					);
 				})}

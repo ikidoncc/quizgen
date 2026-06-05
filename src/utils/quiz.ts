@@ -1,19 +1,9 @@
-import type { Question } from "../types";
+import type { Option, Question } from "../types";
 
 export const TIMER_DURATION = 60;
 
-/**
- * Normalizes text for robust comparison.
- */
-export function normalizeText(text: string): string {
-	if (!text) return "";
-	return text
-		.normalize("NFD")
-		.replace(/[\u0300-\u036f]/g, "")
-		.replace(/[\u200B-\u200D\uFEFF]/g, "")
-		.replace(/\s+/g, " ")
-		.trim()
-		.toLowerCase();
+function generateId(): string {
+	return crypto.randomUUID().slice(0, 8);
 }
 
 function shuffle<T>(array: T[]): T[] {
@@ -25,25 +15,25 @@ function shuffle<T>(array: T[]): T[] {
 	return result;
 }
 
-/**
- * Parses quiz text from input string.
- */
-export function parseQuizText(input: string): Question[] {
+export function parseQuizText(
+	input: string,
+): Omit<Question, "options" | "correctOptionId">[] {
 	const lines = input.split("\n");
-	const parsedData: Question[] = [];
-	let currentQ: Partial<Question> | null = null;
+	const parsedData: Omit<Question, "options" | "correctOptionId">[] = [];
+	let currentQ: Omit<Question, "options" | "correctOptionId"> | null = null;
 
 	lines.forEach((line) => {
 		const trimmed = line.trim();
 		if (trimmed.toLowerCase().startsWith("q:")) {
 			currentQ = {
+				id: generateId(),
 				question: trimmed.substring(2).trim(),
 				answer: "",
 				manualOptions: [],
 			};
 		} else if (trimmed.toLowerCase().startsWith("a:") && currentQ) {
 			currentQ.answer = trimmed.substring(2).trim();
-			parsedData.push(currentQ as Question);
+			parsedData.push({ ...currentQ });
 		} else if (
 			trimmed.toLowerCase().startsWith("o:") &&
 			currentQ?.manualOptions
@@ -55,61 +45,57 @@ export function parseQuizText(input: string): Question[] {
 	return parsedData;
 }
 
-function collectUniqueOptions(q: {
-	answer: string;
-	manualOptions: string[];
-}): Map<string, string> {
-	const map = new Map<string, string>();
+function collectUniqueOptions(
+	q: Pick<Question, "answer" | "manualOptions">,
+): Map<string, { text: string; isCorrect: boolean }> {
+	const map = new Map<string, { text: string; isCorrect: boolean }>();
 
-	const addIfUnique = (text: string) => {
-		const normalized = normalizeText(text);
-		if (!map.has(normalized) && normalized !== "") {
-			map.set(normalized, text);
+	const addIfUnique = (text: string, isCorrect: boolean) => {
+		if (text === "") return;
+		const key = text.toLowerCase().trim();
+		if (!map.has(key)) {
+			map.set(key, { text, isCorrect });
 		}
 	};
 
-	addIfUnique(q.answer);
+	addIfUnique(q.answer, true);
 	for (const opt of q.manualOptions) {
-		addIfUnique(opt);
+		addIfUnique(opt, false);
 	}
 
 	return map;
 }
 
 function fillWithDistractors(
-	options: Map<string, string>,
+	options: Map<string, { text: string; isCorrect: boolean }>,
 	allAnswers: string[],
 	correctAnswer: string,
 	manualOptions: string[],
-): Map<string, string> {
+): Map<string, { text: string; isCorrect: boolean }> {
 	const result = new Map(options);
 
 	if (result.size >= 4) return result;
 
+	const manualNormalized = new Set(manualOptions.map((o) => o.toLowerCase().trim()));
+
 	const otherAnswers = allAnswers.filter((a) => {
-		const normA = normalizeText(a);
-		const normCorrect = normalizeText(correctAnswer);
-		return (
-			normA !== normCorrect && !manualOptions.map(normalizeText).includes(normA)
-		);
+		const key = a.toLowerCase().trim();
+		return key !== correctAnswer.toLowerCase().trim() && !manualNormalized.has(key);
 	});
 
 	for (const answer of shuffle(otherAnswers)) {
 		if (result.size >= 4) break;
-		const normalized = normalizeText(answer);
-		if (!result.has(normalized) && normalized !== "") {
-			result.set(normalized, answer);
+		const key = answer.toLowerCase().trim();
+		if (!result.has(key) && key !== "") {
+			result.set(key, { text: answer, isCorrect: false });
 		}
 	}
 
 	return result;
 }
 
-/**
- * Prepares options for each question (manual + automatic distractors).
- */
 export function prepareQuizOptions(
-	data: Omit<Question, "options">[],
+	data: Omit<Question, "options" | "correctOptionId">[],
 ): Question[] {
 	const allAnswers = data.map((q) => q.answer);
 
@@ -122,9 +108,18 @@ export function prepareQuizOptions(
 			q.manualOptions,
 		);
 
+		const entries = shuffle(Array.from(filledOptions.entries()));
+		let correctOptionId = "";
+		const options: Option[] = entries.map(([_, { text, isCorrect }], i) => {
+			const id = `${q.id}-opt-${i}`;
+			if (isCorrect) correctOptionId = id;
+			return { id, text };
+		});
+
 		return {
 			...q,
-			options: shuffle(Array.from(filledOptions.values())),
-		} as Question;
+			correctOptionId,
+			options,
+		};
 	});
 }

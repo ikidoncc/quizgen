@@ -1,14 +1,21 @@
 export type Tab = "create" | "play";
 export type Theme = "light" | "dark" | "auto";
 
-export interface Question {
-	question: string;
-	answer: string;
-	manualOptions: string[];
-	options: string[];
+export interface Option {
+	id: string;
+	text: string;
 }
 
-export const STORAGE_VERSION = 2;
+export interface Question {
+	id: string;
+	question: string;
+	answer: string;
+	correctOptionId: string;
+	manualOptions: string[];
+	options: Option[];
+}
+
+export const STORAGE_VERSION = 3;
 
 export interface QuizState {
 	version: number;

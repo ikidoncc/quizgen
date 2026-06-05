@@ -93,6 +93,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 		[language],
 	);
 
+	useEffect(() => {
+		document.title = t("seo.title");
+	}, [t]);
+
 	return (
 		<I18nContext.Provider
 			value={{

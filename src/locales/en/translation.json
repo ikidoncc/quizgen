@@ -3,6 +3,9 @@
 		"title": "QuizGen",
 		"subtitle": "Create your quiz from a text"
 	},
+	"seo": {
+		"title": "QuizGen - Quiz Generator"
+	},
 	"lang": {
 		"pt-BR": "Português",
 		"en": "English"

@@ -3,6 +3,9 @@
 		"title": "QuizGen",
 		"subtitle": "Crie seu quizz a partir de um texto"
 	},
+	"seo": {
+		"title": "QuizGen - Gerador de Quizzes"
+	},
 	"lang": {
 		"pt-BR": "Português",
 		"en": "English"

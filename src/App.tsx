@@ -1,122 +1,153 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from 'react';
+import { ThemeSelect } from './components/ThemeSelect';
+import { Modal } from './components/Modal';
+import { CreateTab } from './components/CreateTab';
+import { PlayTab } from './components/PlayTab';
+import { ResultsTab } from './components/ResultsTab';
+import { useQuizState } from './hooks/useQuizState';
+import { useTheme } from './hooks/useTheme';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { theme, setTheme } = useTheme();
+  const {
+    state,
+    setTab,
+    setQuizData,
+    resetQuiz,
+    deleteQuiz,
+    advanceQuestion,
+    setTimeLeft
+  } = useQuizState();
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    onCancel?: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+
+  const showModal = (config: Omit<typeof modalConfig, 'isOpen'>) => {
+    setModalConfig({ ...config, isOpen: true });
+  };
+
+  const closeModal = () => {
+    setModalConfig(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const isGameOver = state.quizData.length > 0 && state.currentQuestionIndex >= state.quizData.length;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="container mx-auto px-4 py-8 max-w-2xl min-h-screen flex flex-col">
+      <header className="flex flex-col items-center mb-10">
+        <div className="w-full flex justify-between items-center mb-6">
+          <div className="invisible w-10 sm:w-32"></div>
+          <div className="text-center group cursor-default">
+            <h1 className="text-4xl font-black text-iris tracking-tight transition-transform group-hover:scale-105">
+              QuizGen
+            </h1>
+            <p className="text-subtle font-medium">Crie seu quizz a partir de um texto</p>
+          </div>
+          <ThemeSelect value={theme} onChange={setTheme} />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
+      </header>
+
+      <nav className="flex border-b border-overlay mb-8">
         <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={() => setTab('create')}
+          className={`px-6 py-3 font-bold transition-all border-b-2 -mb-[2px] ${
+            state.currentTab === 'create'
+              ? 'text-iris border-iris opacity-100'
+              : 'text-muted border-transparent opacity-60 hover:text-iris hover:opacity-100'
+          }`}
         >
-          Count is {count}
+          Criar Quizz
         </button>
-      </section>
+        <button
+          onClick={() => setTab('play')}
+          className={`px-6 py-3 font-bold transition-all border-b-2 -mb-[2px] ${
+            state.currentTab === 'play'
+              ? 'text-iris border-iris opacity-100'
+              : 'text-muted border-transparent opacity-60 hover:text-iris hover:opacity-100'
+          }`}
+        >
+          Jogar Quizz
+        </button>
+      </nav>
 
-      <div className="ticks"></div>
+      <main className="flex-grow">
+        {state.currentTab === 'create' ? (
+          <CreateTab
+            onGenerate={setQuizData}
+            initialTimerEnabled={state.isTimerEnabled}
+            onError={(msg) => showModal({ title: 'Erro', message: msg, onConfirm: closeModal })}
+          />
+        ) : (
+          <>
+            {state.quizData.length === 0 ? (
+              <div className="text-center py-16 bg-surface/50 rounded-3xl border border-dashed border-overlay">
+                <p className="text-muted mb-6 font-medium">Nenhum quizz gerado ainda.</p>
+                <button
+                  onClick={() => setTab('create')}
+                  className="text-iris font-bold underline hover:opacity-80 transition-all"
+                >
+                  Ir para Criar Quizz
+                </button>
+              </div>
+            ) : isGameOver ? (
+              <ResultsTab
+                score={state.score}
+                totalQuestions={state.quizData.length}
+                skippedCount={state.skippedCount}
+                onNewQuiz={() => setTab('create')}
+              />
+            ) : (
+              <PlayTab
+                quizData={state.quizData}
+                currentQuestionIndex={state.currentQuestionIndex}
+                score={state.score}
+                skippedCount={state.skippedCount}
+                isTimerEnabled={state.isTimerEnabled}
+                timeLeft={state.timeLeft}
+                onTick={setTimeLeft}
+                onAnswer={(isCorrect) => advanceQuestion(isCorrect)}
+                onSkip={() => advanceQuestion(false, true)}
+                onReset={() => showModal({
+                  title: 'Reiniciar Quizz',
+                  message: 'Deseja reiniciar este quizz?',
+                  onConfirm: () => { resetQuiz(); closeModal(); },
+                  onCancel: closeModal
+                })}
+                onDelete={() => showModal({
+                  title: 'Excluir Quizz',
+                  message: 'Deseja excluir este quizz?',
+                  onConfirm: () => { deleteQuiz(); closeModal(); },
+                  onCancel: closeModal
+                })}
+              />
+            )}
+          </>
+        )}
+      </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      <footer className="mt-12 text-center text-muted/40 text-xs font-medium">
+        QuizGen &copy; 2026 • Made with React + Tailwind v4
+      </footer>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <Modal
+        isOpen={modalConfig.isOpen}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        onConfirm={modalConfig.onConfirm}
+        onCancel={modalConfig.onCancel}
+      />
+    </div>
+  );
 }
 
-export default App
+export default App;

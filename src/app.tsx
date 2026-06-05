@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { CreateTab } from "./components/CreateTab";
 import { Modal } from "./components/Modal";
 import { PlayTab } from "./components/PlayTab";
@@ -32,13 +32,13 @@ export function App() {
 		onConfirm: () => {},
 	});
 
-	const showModal = (config: Omit<typeof modalConfig, "isOpen">) => {
+	const showModal = useCallback((config: Omit<typeof modalConfig, "isOpen">) => {
 		setModalConfig({ ...config, isOpen: true });
-	};
+	}, []);
 
-	const closeModal = () => {
+	const closeModal = useCallback(() => {
 		setModalConfig((prev) => ({ ...prev, isOpen: false }));
-	};
+	}, []);
 
 	const isGameOver =
 		state.quizData.length > 0 &&

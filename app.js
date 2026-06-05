@@ -139,8 +139,31 @@ function renderResults() {
 
 function handleGenerate() {
     const input = document.getElementById('quiz-input').value;
-    console.log('Gerando quizz...');
-    // Lógica de parsing virá na etapa 4
+    const lines = input.split('\n');
+    const parsedData = [];
+    
+    let currentQ = null;
+
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.toLowerCase().startsWith('q:')) {
+            currentQ = { question: trimmed.substring(2).trim(), answer: '' };
+        } else if (trimmed.toLowerCase().startsWith('a:') && currentQ) {
+            currentQ.answer = trimmed.substring(2).trim();
+            parsedData.push(currentQ);
+            currentQ = null;
+        }
+    });
+
+    if (parsedData.length === 0) {
+        alert('Nenhuma pergunta encontrada. Use o formato Q: Pergunta e A: Resposta.');
+        return;
+    }
+
+    quizData = parsedData;
+    currentQuestionIndex = 0;
+    score = 0;
+    switchTab('play');
 }
 
 init();

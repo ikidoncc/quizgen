@@ -53,7 +53,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 
 	return (
 		<div className="fade-in slide-in-from-bottom-2 animate-in rounded-lg border border-overlay bg-surface p-6 shadow-md transition-all duration-300">
-			<h2 className="mb-4 font-semibold font-serif text-main text-xl">
+			<h2 className="mb-4 font-semibold text-main text-xl">
 				{t("create.heading")}
 			</h2>
 			<p className="mb-4 text-sm text-subtle">{t("create.formatLabel")}</p>

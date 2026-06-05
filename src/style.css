@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+	--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 	--color-base: var(--base);
 	--color-surface: var(--surface);
 	--color-overlay: var(--overlay);

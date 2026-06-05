@@ -23,7 +23,7 @@ export const ResultsTab: React.FC<ResultsTabProps> = ({
 			<div className="mb-4 flex justify-center">
 				<Trophy className="h-12 w-12 text-warning" />
 			</div>
-			<h2 className="mb-4 font-bold font-serif text-2xl text-main">
+			<h2 className="mb-4 font-bold text-2xl text-main">
 				{t("results.title")}
 			</h2>
 			<p className="mb-6 font-bold text-5xl text-primary tracking-tighter">

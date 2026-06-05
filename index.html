@@ -67,12 +67,16 @@
                     <h1 class="text-3xl font-bold text-iris">QuizGen</h1>
                     <p class="text-subtle">Crie seu quizz a partir de um texto</p>
                 </div>
-                <div class="relative inline-block text-left">
-                    <select id="theme-select" class="bg-surface border border-overlay text-main text-xs rounded-lg focus:ring-iris focus:border-iris block p-2 outline-none cursor-pointer">
-                        <option value="light">🌞 Light</option>
-                        <option value="dark">🌙 Dark</option>
-                        <option value="auto">💻 Auto</option>
-                    </select>
+                <div class="relative inline-block text-left" id="custom-select">
+                    <button id="select-trigger" class="flex items-center justify-between w-32 bg-surface border border-overlay text-main text-xs rounded-lg p-2 outline-none cursor-pointer hover:bg-overlay transition-colors">
+                        <span id="select-value">🌞 Light</span>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="select-options" class="absolute right-0 mt-2 w-32 bg-surface border border-overlay rounded-lg shadow-lg z-50 hidden overflow-hidden">
+                        <div class="option px-4 py-2 text-xs text-main hover:bg-overlay cursor-pointer flex items-center" data-value="light">🌞 Light</div>
+                        <div class="option px-4 py-2 text-xs text-main hover:bg-overlay cursor-pointer flex items-center" data-value="dark">🌙 Dark</div>
+                        <div class="option px-4 py-2 text-xs text-main hover:bg-overlay cursor-pointer flex items-center" data-value="auto">💻 Auto</div>
+                    </div>
                 </div>
             </div>
         </header>

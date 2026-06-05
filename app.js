@@ -1,7 +1,11 @@
 const mainContent = document.getElementById('main-content');
 const tabCreate = document.getElementById('tab-create');
 const tabPlay = document.getElementById('tab-play');
-const themeSelect = document.getElementById('theme-select');
+
+// Custom Select Elements
+const selectTrigger = document.getElementById('select-trigger');
+const selectOptions = document.getElementById('select-options');
+const selectValueDisplay = document.getElementById('select-value');
 
 let currentTab = 'create';
 let quizData = [];
@@ -99,7 +103,7 @@ function loadState() {
             currentTheme = state.currentTheme || 'auto';
             isTimerEnabled = state.isTimerEnabled || false;
             timeLeft = state.timeLeft || 60;
-            themeSelect.value = currentTheme;
+            updateSelectValueDisplay(currentTheme);
             return true;
         } catch (e) {
             console.error("Error loading saved state", e);
@@ -166,6 +170,13 @@ function handleTimeout() {
     renderPlayTab();
 }
 
+function updateSelectValueDisplay(value) {
+    const option = Array.from(document.querySelectorAll('#select-options .option')).find(opt => opt.dataset.value === value);
+    if (option) {
+        selectValueDisplay.innerText = option.innerText;
+    }
+}
+
 function init() {
     loadState();
     applyTheme();
@@ -173,10 +184,27 @@ function init() {
     
     tabCreate.addEventListener('click', () => switchTab('create'));
     tabPlay.addEventListener('click', () => switchTab('play'));
-    themeSelect.addEventListener('change', (e) => {
-        currentTheme = e.target.value;
-        saveState();
-        applyTheme();
+    
+    // Custom Select Toggle
+    selectTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectOptions.classList.toggle('hidden');
+    });
+
+    // Custom Select Options
+    document.querySelectorAll('#select-options .option').forEach(option => {
+        option.addEventListener('click', () => {
+            currentTheme = option.dataset.value;
+            updateSelectValueDisplay(currentTheme);
+            selectOptions.classList.add('hidden');
+            saveState();
+            applyTheme();
+        });
+    });
+
+    // Close select on outside click
+    document.addEventListener('click', () => {
+        selectOptions.classList.add('hidden');
     });
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {

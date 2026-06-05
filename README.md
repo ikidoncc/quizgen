@@ -1,87 +1,73 @@
-# 🧠 QuizGen - Gerador Automático de Quizzes
+# React + TypeScript + Vite
 
-QuizGen é uma aplicação web leve e intuitiva que permite transformar textos simples em quizzes interativos de múltipla escolha em segundos. Ideal para estudantes que desejam praticar flashcards ou professores que precisam de uma ferramenta rápida de avaliação.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 📝 Descrição
+Currently, two official plugins are available:
 
-O QuizGen processa textos colados pelo usuário seguindo um padrão simples de Pergunta/Resposta e gera automaticamente alternativas de múltipla escolha. O aplicativo é capaz de criar "distratores" (opções incorretas) de forma inteligente, utilizando respostas de outras perguntas do próprio conjunto ou aceitando opções personalizadas fornecidas pelo usuário.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## ✨ Funcionalidades
+## React Compiler
 
-- ⚡ **Geração Instantânea**: Transforme texto em jogo com um clique.
-- 🧩 **Múltipla Escolha Inteligente**: Gera alternativas incorretas automaticamente a partir do contexto do quizz.
-- ✍️ **Opções Manuais**: Suporte para definir alternativas específicas usando o prefixo `O:`.
-- 🔍 **Normalização Robusta**: Algoritmo que ignora espaços extras, acentos e caracteres ocultos para evitar erros de validação injustos.
-- ⏭️ **Pular Questões**: Funcionalidade para pular perguntas difíceis e revisá-las na contagem final.
-- 📊 **Relatório de Desempenho**: Feedback detalhado no final com contagem de acertos, erros e pulos.
-- 🎨 **Interface Moderna**: Design responsivo e limpo construído com Tailwind CSS.
-- 📱 **Custom Modals**: Substituição de diálogos nativos por modais elegantes e consistentes.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## 🚀 Tecnologias Utilizadas
+## Expanding the ESLint configuration
 
-- **HTML5**: Estrutura semântica.
-- **Tailwind CSS**: Estilização moderna e responsiva via CDN.
-- **JavaScript (Vanilla)**: Lógica de parsing, gerenciamento de estado e manipulação de DOM.
-- **Git**: Controle de versão com histórico semântico.
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## 💻 Como Executar Localmente
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-Como o projeto é uma aplicação *client-side* pura, não é necessário instalar dependências.
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/seu-usuario/quizgen.git
-   ```
-2. Navegue até o diretório do projeto:
-   ```bash
-   cd quizgen
-   ```
-3. Abra o arquivo `index.html` diretamente em seu navegador ou use uma extensão como o *Live Server* no VS Code.
-
-## 📂 Estrutura do Projeto
-
-```text
-├── index.html    # Estrutura principal e containers dos modais
-├── app.js        # Lógica de parsing, normalização e fluxo do jogo
-└── README.md     # Documentação do projeto
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-## 🛠️ Como Usar
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-1. Na aba **Criar Quizz**, cole seu conteúdo seguindo o formato:
-   ```text
-   Q: Pergunta Exemplo?
-   A: Resposta Correta
-   O: Opção Errada 1 (Opcional)
-   O: Opção Errada 2 (Opcional)
-   ```
-2. Clique em **Gerar Quizz**.
-3. Na aba **Jogar Quizz**, selecione as alternativas.
-4. Use o botão **Pular Pergunta** se necessário.
-5. Veja seu resultado detalhado ao final!
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-## 🔗 Demonstração
-
-O projeto pode ser visualizado online em: [Link para o Deploy] *(Ex: GitHub Pages, Netlify ou Vercel)*
-
-## 📸 Capturas de Tela
-
-| Criação de Quizz | Jogo em Andamento |
-| :--- | :--- |
-| ![Aba Criar](https://via.placeholder.com/400x250?text=Interface+de+Criação) | ![Aba Jogar](https://via.placeholder.com/400x250?text=Interface+de+Jogo) |
-
-## 🔮 Melhorias Futuras
-
-- [ ] Persistência de dados usando `localStorage`.
-- [ ] Exportação de quizzes em formato JSON.
-- [ ] Modo escuro (Dark Mode).
-- [ ] Suporte para imagens nas perguntas.
-- [ ] Temporizador por questão.
-
-## 👤 Autor
-
-Desenvolvido por **[Seu Nome]** - [Seu GitHub](https://github.com/seu-usuario)
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```

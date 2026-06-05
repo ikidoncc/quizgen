@@ -5,18 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Quizz</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        base: 'var(--base)',
+                        surface: 'var(--surface)',
+                        overlay: 'var(--overlay)',
+                        muted: 'var(--muted)',
+                        subtle: 'var(--subtle)',
+                        main: 'var(--text)',
+                        love: 'var(--love)',
+                        pine: 'var(--pine)',
+                        iris: 'var(--iris)',
+                        gold: 'var(--gold)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --base: #faf4ed;
+            --surface: #fffaf3;
+            --overlay: #f2e9e1;
+            --muted: #9893a5;
+            --subtle: #797593;
+            --text: #575279;
+            --love: #b4637a;
+            --pine: #286983;
+            --iris: #907aa9;
+            --gold: #ea9d34;
+        }
+        .dark {
+            --base: #232136;
+            --surface: #2a273f;
+            --overlay: #393552;
+            --muted: #817c9c;
+            --subtle: #908caa;
+            --text: #e0def4;
+            --love: #eb6f92;
+            --pine: #3e8fb0;
+            --iris: #c4a7e7;
+            --gold: #f6c177;
+        }
+        body {
+            background-color: var(--base);
+            color: var(--text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="min-h-screen">
     <div id="app" class="container mx-auto px-4 py-8 max-w-2xl">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-blue-600">QuizGen</h1>
-            <p class="text-gray-600">Crie seu quizz a partir de um texto</p>
+        <header class="flex flex-col items-center mb-8">
+            <div class="w-full flex justify-between items-start mb-4">
+                <div class="invisible w-24"></div> <!-- Spacer -->
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-iris">QuizGen</h1>
+                    <p class="text-subtle">Crie seu quizz a partir de um texto</p>
+                </div>
+                <div class="relative inline-block text-left">
+                    <select id="theme-select" class="bg-surface border border-overlay text-main text-xs rounded-lg focus:ring-iris focus:border-iris block p-2 outline-none cursor-pointer">
+                        <option value="light">🌞 Light</option>
+                        <option value="dark">🌙 Dark</option>
+                        <option value="auto">💻 Auto</option>
+                    </select>
+                </div>
+            </div>
         </header>
 
         <!-- Navegação de Abas -->
-        <div class="flex border-b mb-6">
-            <button id="tab-create" class="px-4 py-2 font-semibold text-blue-600 border-b-2 border-blue-600">Criar Quizz</button>
-            <button id="tab-play" class="px-4 py-2 font-semibold text-gray-500 hover:text-blue-600">Jogar Quizz</button>
+        <div class="flex border-b border-overlay mb-6">
+            <button id="tab-create" class="px-4 py-2 font-semibold transition-colors">Criar Quizz</button>
+            <button id="tab-play" class="px-4 py-2 font-semibold transition-colors text-muted hover:text-iris">Jogar Quizz</button>
         </div>
 
         <main id="main-content">
@@ -26,14 +90,14 @@
     
     <!-- Custom Modal Container -->
     <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-sm w-full overflow-hidden transform transition-all">
+        <div class="bg-surface rounded-lg shadow-xl max-w-sm w-full overflow-hidden transform transition-all border border-overlay">
             <div class="p-6">
-                <h3 id="modal-title" class="text-lg font-bold text-gray-900 mb-2"></h3>
-                <p id="modal-message" class="text-gray-600"></p>
+                <h3 id="modal-title" class="text-lg font-bold text-main mb-2"></h3>
+                <p id="modal-message" class="text-subtle"></p>
             </div>
-            <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse space-x-2 space-x-reverse">
-                <button id="modal-confirm" class="bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 transition">OK</button>
-                <button id="modal-cancel" class="bg-white border text-gray-700 px-4 py-2 rounded font-semibold hover:bg-gray-100 transition hidden">Cancelar</button>
+            <div class="bg-overlay px-6 py-4 flex flex-row-reverse space-x-2 space-x-reverse">
+                <button id="modal-confirm" class="bg-iris text-white px-4 py-2 rounded font-semibold hover:opacity-90 transition">OK</button>
+                <button id="modal-cancel" class="bg-surface border border-overlay text-main px-4 py-2 rounded font-semibold hover:bg-overlay transition hidden">Cancelar</button>
             </div>
         </div>
     </div>

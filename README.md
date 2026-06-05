@@ -2,7 +2,7 @@
 
 Create quizzes from text using a simple `Q/A/O` format. Built with React 19, TypeScript, Tailwind CSS v4, and Vite.
 
-🔗 **Live Demo:** https://your-demo-url.com
+🔗 **Live Demo:** [https://ikidon.github.io/quizgen/](https://ikidon.github.io/quizgen/)
 
 ---
 

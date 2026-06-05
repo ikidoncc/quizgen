@@ -14,6 +14,7 @@ const INITIAL_STATE: QuizState = {
 	skippedCount: 0,
 	isTimerEnabled: false,
 	timeLeft: TIMER_DURATION,
+	currentHistoryId: "",
 };
 
 function isQuizState(value: unknown): value is QuizState {
@@ -39,7 +40,7 @@ export function useQuizState() {
 	);
 
 	const setQuizData = useCallback(
-		(data: Question[], timerEnabled: boolean) => {
+		(data: Question[], timerEnabled: boolean, historyId?: string) => {
 			setState((s) => ({
 				...s,
 				quizData: data,
@@ -50,6 +51,7 @@ export function useQuizState() {
 				timeLeft: TIMER_DURATION,
 				currentTab: "play",
 				gameId: s.gameId + 1,
+				currentHistoryId: historyId ?? s.currentHistoryId,
 			}));
 		},
 		[setState],
@@ -69,6 +71,13 @@ export function useQuizState() {
 	const deleteQuiz = useCallback(() => {
 		setState(() => ({ ...INITIAL_STATE }));
 	}, [setState]);
+
+	const setHistoryId = useCallback(
+		(id: string) => {
+			setState((s) => ({ ...s, currentHistoryId: id }));
+		},
+		[setState],
+	);
 
 	const answerQuestion = useCallback(
 		(isCorrect: boolean) => {
@@ -107,5 +116,6 @@ export function useQuizState() {
 		answerQuestion,
 		skipQuestion,
 		setTimeLeft,
+		setHistoryId,
 	};
 }

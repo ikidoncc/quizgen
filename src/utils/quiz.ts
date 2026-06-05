@@ -76,11 +76,15 @@ function fillWithDistractors(
 
 	if (result.size >= 4) return result;
 
-	const manualNormalized = new Set(manualOptions.map((o) => o.toLowerCase().trim()));
+	const manualNormalized = new Set(
+		manualOptions.map((o) => o.toLowerCase().trim()),
+	);
 
 	const otherAnswers = allAnswers.filter((a) => {
 		const key = a.toLowerCase().trim();
-		return key !== correctAnswer.toLowerCase().trim() && !manualNormalized.has(key);
+		return (
+			key !== correctAnswer.toLowerCase().trim() && !manualNormalized.has(key)
+		);
 	});
 
 	for (const answer of shuffle(otherAnswers)) {

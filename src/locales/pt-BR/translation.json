@@ -12,7 +12,8 @@
 	},
 	"nav": {
 		"create": "Criar Quizz",
-		"play": "Jogar Quizz"
+		"play": "Jogar Quizz",
+		"history": "Histórico"
 	},
 	"empty": {
 		"message": "Nenhum quizz gerado ainda.",
@@ -72,5 +73,16 @@
 		"light": "Claro",
 		"dark": "Escuro",
 		"auto": "Auto"
+	},
+	"history": {
+		"empty": "Nenhum quizz encontrado.",
+		"incomplete": "Não finalizado",
+		"today": "Hoje",
+		"yesterday": "Ontem",
+		"daysAgo": "{{count}} dias atrás",
+		"playAgain": "Jogar Novamente",
+		"copy": "Copiar",
+		"download": "Download",
+		"delete": "Excluir"
 	}
 }

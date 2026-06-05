@@ -1,4 +1,4 @@
-export type Tab = "create" | "play";
+export type Tab = "create" | "play" | "history";
 export type Theme = "light" | "dark" | "auto";
 
 export interface Option {
@@ -15,7 +15,7 @@ export interface Question {
 	options: Option[];
 }
 
-export const STORAGE_VERSION = 3;
+export const STORAGE_VERSION = 4;
 
 export interface QuizState {
 	version: number;
@@ -27,4 +27,17 @@ export interface QuizState {
 	skippedCount: number;
 	isTimerEnabled: boolean;
 	timeLeft: number;
+	currentHistoryId: string;
+}
+
+export interface HistoryEntry {
+	id: string;
+	createdAt: string;
+	completedAt?: string;
+	title: string;
+	questionCount: number;
+	score?: number;
+	skippedCount?: number;
+	isTimerEnabled: boolean;
+	quizData: Question[];
 }

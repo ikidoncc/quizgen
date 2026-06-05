@@ -12,7 +12,8 @@
 	},
 	"nav": {
 		"create": "Create Quiz",
-		"play": "Play Quiz"
+		"play": "Play Quiz",
+		"history": "History"
 	},
 	"empty": {
 		"message": "No quiz generated yet.",
@@ -72,5 +73,16 @@
 		"light": "Light",
 		"dark": "Dark",
 		"auto": "Auto"
+	},
+	"history": {
+		"empty": "No quizzes found.",
+		"incomplete": "Incomplete",
+		"today": "Today",
+		"yesterday": "Yesterday",
+		"daysAgo": "{{count}} days ago",
+		"playAgain": "Play Again",
+		"copy": "Copy",
+		"download": "Download",
+		"delete": "Delete"
 	}
 }

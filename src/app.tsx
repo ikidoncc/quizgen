@@ -1,14 +1,16 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CreateTab } from "./components/CreateTab";
+import { HistoryTab } from "./components/HistoryTab";
 import { LangSelect } from "./components/LangSelect";
 import { Modal } from "./components/Modal";
 import { PlayTab } from "./components/PlayTab";
 import { ResultsTab } from "./components/ResultsTab";
 import { ThemeSelect } from "./components/ThemeSelect";
+import { useHistory } from "./hooks/useHistory";
 import { useQuizState } from "./hooks/useQuizState";
 import { useTheme } from "./hooks/useTheme";
 import { useTranslation } from "./i18n/I18nProvider";
-import type { Tab } from "./types";
+import type { HistoryEntry, Question, Tab } from "./types";
 import { cn } from "./utils/cn";
 
 function tabClass(currentTab: Tab, tab: Tab): string {
@@ -29,7 +31,36 @@ export function App() {
 		answerQuestion,
 		skipQuestion,
 		setTimeLeft,
+		setHistoryId,
 	} = useQuizState();
+	const { entries, addEntry, updateEntry, deleteEntry } = useHistory();
+
+	const handleGenerate = useCallback(
+		(data: Question[], timerEnabled: boolean) => {
+			const historyId = addEntry(data, timerEnabled);
+			setQuizData(data, timerEnabled, historyId);
+		},
+		[addEntry, setQuizData],
+	);
+
+	const handlePlayAgain = useCallback(
+		(entry: HistoryEntry) => {
+			const historyId = addEntry(entry.quizData, entry.isTimerEnabled);
+			setQuizData(entry.quizData, entry.isTimerEnabled, historyId);
+			setHistoryId(historyId);
+		},
+		[addEntry, setQuizData, setHistoryId],
+	);
+
+	const handleDeleteEntry = useCallback(
+		(id: string) => {
+			deleteEntry(id);
+			if (state.currentHistoryId === id) {
+				deleteQuiz();
+			}
+		},
+		[deleteEntry, state.currentHistoryId, deleteQuiz],
+	);
 
 	const [modalConfig, setModalConfig] = useState<{
 		isOpen: boolean;
@@ -59,6 +90,18 @@ export function App() {
 	const isGameOver =
 		state.quizData.length > 0 &&
 		state.currentQuestionIndex >= state.quizData.length;
+
+	useEffect(() => {
+		if (isGameOver && state.currentHistoryId) {
+			updateEntry(state.currentHistoryId, state.score, state.skippedCount);
+		}
+	}, [
+		isGameOver,
+		state.currentHistoryId,
+		state.score,
+		state.skippedCount,
+		updateEntry,
+	]);
 
 	return (
 		<div className="container mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-8">
@@ -98,12 +141,22 @@ export function App() {
 				>
 					{t("nav.play")}
 				</button>
+				<button
+					onClick={() => setTab("history")}
+					className={cn(
+						"-mb-0.5 border-b-2 px-6 py-3 font-bold transition-all",
+						tabClass(state.currentTab, "history"),
+					)}
+					type="button"
+				>
+					{t("nav.history")}
+				</button>
 			</nav>
 
 			<main className="grow">
 				{state.currentTab === "create" ? (
 					<CreateTab
-						onGenerate={setQuizData}
+						onGenerate={handleGenerate}
 						initialTimerEnabled={state.isTimerEnabled}
 						onError={(msg) =>
 							showModal({
@@ -113,6 +166,12 @@ export function App() {
 								onConfirm: closeModal,
 							})
 						}
+					/>
+				) : state.currentTab === "history" ? (
+					<HistoryTab
+						entries={entries}
+						onPlayAgain={handlePlayAgain}
+						onDelete={handleDeleteEntry}
 					/>
 				) : state.quizData.length === 0 ? (
 					<div className="rounded-3xl border border-overlay border-dashed bg-surface/50 py-16 text-center">

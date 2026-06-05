@@ -85,8 +85,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 		onAnswer(isCorrect);
 	};
 
-	const isCorrectSelection =
-		selectedOptionId === currentQ.correctOptionId;
+	const isCorrectSelection = selectedOptionId === currentQ.correctOptionId;
 
 	return (
 		<div className="fade-in slide-in-from-bottom-2 animate-in rounded-lg border border-overlay bg-surface p-6 shadow-md transition-all duration-300">

@@ -6,6 +6,7 @@ let currentTab = 'create';
 let quizData = [];
 let currentQuestionIndex = 0;
 let score = 0;
+let skippedCount = 0;
 
 /**
  * Normalizes text for robust comparison.
@@ -147,12 +148,21 @@ function renderPlayTab() {
             </div>
             
             <div id="feedback" class="mt-6 hidden p-3 rounded-md text-center font-medium"></div>
-            <button id="next-btn" class="w-full mt-6 bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition hidden">Próxima Pergunta</button>
+            <div class="mt-6 space-y-2">
+                <button id="next-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition hidden">Próxima Pergunta</button>
+                <button id="skip-btn" class="w-full bg-white border-2 border-gray-200 text-gray-500 font-bold py-2 px-4 rounded hover:bg-gray-50 hover:border-gray-300 transition">Pular Pergunta</button>
+            </div>
         </div>
     `;
 
     document.querySelectorAll('.option-btn').forEach(btn => {
         btn.addEventListener('click', () => checkAnswer(btn.getAttribute('data-option'), btn));
+    });
+
+    document.getElementById('skip-btn').addEventListener('click', () => {
+        skippedCount++;
+        currentQuestionIndex++;
+        renderPlayTab();
     });
 
     document.getElementById('reset-btn').addEventListener('click', () => {
@@ -162,6 +172,7 @@ function renderPlayTab() {
             onConfirm: () => {
                 currentQuestionIndex = 0;
                 score = 0;
+                skippedCount = 0;
                 renderPlayTab();
             },
             onCancel: () => {}
@@ -176,6 +187,7 @@ function renderPlayTab() {
                 quizData = [];
                 currentQuestionIndex = 0;
                 score = 0;
+                skippedCount = 0;
                 switchTab('create');
             },
             onCancel: () => {}
@@ -226,6 +238,7 @@ function checkAnswer(selectedOption, clickedBtn) {
 
     feedback.classList.remove('hidden');
     nextBtn.classList.remove('hidden');
+    document.getElementById('skip-btn').classList.add('hidden');
 
     nextBtn.addEventListener('click', () => {
         currentQuestionIndex++;
@@ -234,11 +247,29 @@ function checkAnswer(selectedOption, clickedBtn) {
 }
 
 function renderResults() {
+    const totalQuestions = quizData.length;
+    const wrongCount = totalQuestions - score - skippedCount;
+
     mainContent.innerHTML = `
         <div class="bg-white p-8 rounded-lg shadow-md text-center">
             <h2 class="text-2xl font-bold mb-4">Quizz Finalizado!</h2>
-            <p class="text-4xl font-bold text-blue-600 mb-6">${score} / ${quizData.length}</p>
-            <p class="text-gray-600 mb-8">Parabéns pelo esforço!</p>
+            <p class="text-4xl font-bold text-blue-600 mb-6">${score} / ${totalQuestions}</p>
+            
+            <div class="grid grid-cols-3 gap-4 mb-8 text-sm">
+                <div class="bg-green-50 p-3 rounded">
+                    <span class="block text-green-700 font-bold">${score}</span>
+                    <span class="text-green-600">Acertos</span>
+                </div>
+                <div class="bg-yellow-50 p-3 rounded">
+                    <span class="block text-yellow-700 font-bold">${skippedCount}</span>
+                    <span class="text-yellow-600">Puladas</span>
+                </div>
+                <div class="bg-red-50 p-3 rounded">
+                    <span class="block text-red-700 font-bold">${wrongCount}</span>
+                    <span class="text-red-600">Erros</span>
+                </div>
+            </div>
+
             <button id="restart-btn" class="bg-blue-600 text-white font-bold py-2 px-8 rounded hover:bg-blue-700 transition">Novo Quizz</button>
         </div>
     `;
@@ -246,6 +277,7 @@ function renderResults() {
     document.getElementById('restart-btn').addEventListener('click', () => {
         currentQuestionIndex = 0;
         score = 0;
+        skippedCount = 0;
         switchTab('create');
     });
 }
@@ -284,6 +316,7 @@ function handleGenerate() {
     quizData = prepareQuizOptions(parsedData);
     currentQuestionIndex = 0;
     score = 0;
+    skippedCount = 0;
     switchTab('play');
 }
 

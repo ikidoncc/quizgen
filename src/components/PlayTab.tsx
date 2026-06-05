@@ -18,6 +18,7 @@ interface PlayTabProps {
 	score: number;
 	isTimerEnabled: boolean;
 	timeLeft: number;
+	timerPaused: boolean;
 	onAnswer: (isCorrect: boolean) => void;
 	onSkip: () => void;
 	onSkipRequest: () => void;
@@ -32,6 +33,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 	score,
 	isTimerEnabled,
 	timeLeft,
+	timerPaused,
 	onAnswer,
 	onSkip,
 	onSkipRequest,
@@ -46,7 +48,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 	const currentQ = quizData[currentQuestionIndex];
 
 	const { stopTimer } = useTimer(
-		isTimerEnabled && isAnswering,
+		isTimerEnabled && isAnswering && !timerPaused,
 		timeLeft,
 		onTick,
 		() => onSkip(), // onTimeout

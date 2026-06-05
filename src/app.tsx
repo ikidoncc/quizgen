@@ -123,6 +123,7 @@ export function App() {
 						score={state.score}
 						isTimerEnabled={state.isTimerEnabled}
 						timeLeft={state.timeLeft}
+						timerPaused={modalConfig.isOpen}
 						onTick={setTimeLeft}
 						onAnswer={(isCorrect) => advanceQuestion(isCorrect)}
 						onSkip={() => advanceQuestion(false, true)}

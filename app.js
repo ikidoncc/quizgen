@@ -141,7 +141,7 @@ function renderPlayTab() {
 
             <div id="options-container" class="grid grid-cols-1 gap-3">
                 ${currentQ.options.map((option, index) => `
-                    <button class="option-btn w-full text-left p-3 border-2 rounded-md hover:border-blue-500 hover:bg-blue-50 transition" data-option="${option}">
+                    <button class="option-btn w-full text-left p-3 border-2 rounded-md hover:border-blue-500 hover:bg-blue-50 transition" data-option="${option.replace(/"/g, '&quot;')}">
                         ${option}
                     </button>
                 `).join('')}

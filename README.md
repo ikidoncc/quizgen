@@ -29,13 +29,13 @@ Create quizzes from text using a simple `Q/A/O` format. Built with React 19, Typ
 
 | Create Quiz                                  | Quiz Running                             |
 | -------------------------------------------- | ---------------------------------------- |
-| ![Desktop Create](./docs/create-desktop.png) | ![Desktop Quiz](./docs/quiz-desktop.png) |
+| ![Desktop Create](./doc/screenshots/creation-desktop.png) | ![Desktop Quiz](./doc/screenshots/quiz-desktop.png) |
 
 ### Mobile
 
 | Create Quiz                                | Quiz Running                           |
 | ------------------------------------------ | -------------------------------------- |
-| ![Mobile Create](./docs/create-mobile.png) | ![Mobile Quiz](./docs/quiz-mobile.png) |
+| ![Mobile Create](./doc/screenshots/creation-mobile.png) | ![Mobile Quiz](./doc/screenshots/quiz-mobile.png) |
 
 ---
 

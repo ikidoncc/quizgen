@@ -9,6 +9,9 @@ let currentQuestionIndex = 0;
 let score = 0;
 let skippedCount = 0;
 let currentTheme = 'auto';
+let isTimerEnabled = false;
+let timerInterval = null;
+let timeLeft = 60;
 
 /**
  * Normalizes text for robust comparison.
@@ -76,7 +79,9 @@ function saveState() {
         currentQuestionIndex,
         score,
         skippedCount,
-        currentTheme
+        currentTheme,
+        isTimerEnabled,
+        timeLeft
     };
     localStorage.setItem('quizgen_state', JSON.stringify(state));
 }
@@ -92,6 +97,8 @@ function loadState() {
             score = state.score || 0;
             skippedCount = state.skippedCount || 0;
             currentTheme = state.currentTheme || 'auto';
+            isTimerEnabled = state.isTimerEnabled || false;
+            timeLeft = state.timeLeft || 60;
             themeSelect.value = currentTheme;
             return true;
         } catch (e) {
@@ -120,6 +127,45 @@ function applyTheme() {
     }
 }
 
+/**
+ * Timer Logic
+ */
+function startTimer() {
+    if (!isTimerEnabled) return;
+    
+    stopTimer(); // Clear any existing interval
+    
+    const timerDisplay = document.getElementById('timer-display');
+    if (timerDisplay) timerDisplay.innerText = timeLeft;
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timerDisplay) timerDisplay.innerText = timeLeft;
+        
+        saveState();
+
+        if (timeLeft <= 0) {
+            stopTimer();
+            handleTimeout();
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+function handleTimeout() {
+    skippedCount++;
+    currentQuestionIndex++;
+    timeLeft = 60;
+    saveState();
+    renderPlayTab();
+}
+
 function init() {
     loadState();
     applyTheme();
@@ -133,7 +179,6 @@ function init() {
         applyTheme();
     });
 
-    // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
         if (currentTheme === 'auto') applyTheme();
     });
@@ -144,6 +189,7 @@ function switchTab(tab) {
     saveState();
     
     if (tab === 'create') {
+        stopTimer();
         tabCreate.classList.add('text-iris', 'border-b-2', 'border-iris');
         tabCreate.classList.remove('text-muted');
         tabPlay.classList.add('text-muted');
@@ -165,6 +211,12 @@ function renderCreateTab() {
             <p class="text-sm text-subtle mb-4">Formato:</p>
             <pre class="bg-overlay p-2 rounded text-xs mb-4 text-muted border border-overlay">Q: Pergunta?\nA: Resposta\nO: Opção Incorreta (Opcional)</pre>
             <textarea id="quiz-input" class="w-full h-64 p-3 bg-base border border-overlay text-main rounded-md focus:ring-2 focus:ring-iris focus:outline-none mb-4 transition-colors" placeholder="Cole seu texto aqui..."></textarea>
+            
+            <div class="flex items-center mb-6">
+                <input type="checkbox" id="timer-checkbox" class="w-4 h-4 text-iris bg-base border-overlay rounded focus:ring-iris focus:ring-2 cursor-pointer" ${isTimerEnabled ? 'checked' : ''}>
+                <label for="timer-checkbox" class="ml-2 text-sm font-medium text-main cursor-pointer select-none">Habilitar temporizador (1 minuto por questão)</label>
+            </div>
+
             <button id="generate-btn" class="w-full bg-iris text-surface font-bold py-2 px-4 rounded hover:opacity-90 transition">Gerar Quizz</button>
         </div>
     `;
@@ -174,6 +226,7 @@ function renderCreateTab() {
 
 function renderPlayTab() {
     if (quizData.length === 0) {
+        stopTimer();
         mainContent.innerHTML = `
             <div class="text-center py-12">
                 <p class="text-muted mb-4">Nenhum quizz gerado ainda.</p>
@@ -185,6 +238,7 @@ function renderPlayTab() {
     }
 
     if (currentQuestionIndex >= quizData.length) {
+        stopTimer();
         renderResults();
         return;
     }
@@ -200,6 +254,7 @@ function renderPlayTab() {
                 <div class="text-right">
                     <span class="block text-xs font-medium text-muted">Pergunta ${currentQuestionIndex + 1} de ${quizData.length}</span>
                     <span class="block text-xs font-medium text-iris font-bold">Pontos: ${score}</span>
+                    ${isTimerEnabled ? `<span class="block text-xs font-bold text-love mt-1">Tempo: <span id="timer-display">${timeLeft}</span>s</span>` : ''}
                 </div>
             </div>
             
@@ -228,13 +283,16 @@ function renderPlayTab() {
     });
 
     document.getElementById('skip-btn').addEventListener('click', () => {
+        stopTimer();
         skippedCount++;
         currentQuestionIndex++;
+        timeLeft = 60;
         saveState();
         renderPlayTab();
     });
 
     document.getElementById('reset-btn').addEventListener('click', () => {
+        stopTimer();
         showModal({
             title: 'Reiniciar Quizz',
             message: 'Deseja reiniciar este quizz?',
@@ -242,14 +300,18 @@ function renderPlayTab() {
                 currentQuestionIndex = 0;
                 score = 0;
                 skippedCount = 0;
+                timeLeft = 60;
                 saveState();
                 renderPlayTab();
             },
-            onCancel: () => {}
+            onCancel: () => {
+                startTimer();
+            }
         });
     });
 
     document.getElementById('delete-btn').addEventListener('click', () => {
+        stopTimer();
         showModal({
             title: 'Excluir Quizz',
             message: 'Deseja excluir este quizz?',
@@ -258,15 +320,21 @@ function renderPlayTab() {
                 currentQuestionIndex = 0;
                 score = 0;
                 skippedCount = 0;
+                timeLeft = 60;
                 saveState();
                 switchTab('create');
             },
-            onCancel: () => {}
+            onCancel: () => {
+                startTimer();
+            }
         });
     });
+
+    startTimer();
 }
 
 function checkAnswer(selectedOption, clickedBtn) {
+    stopTimer();
     const correctAnswer = quizData[currentQuestionIndex].answer;
     const feedback = document.getElementById('feedback');
     const nextBtn = document.getElementById('next-btn');
@@ -304,12 +372,14 @@ function checkAnswer(selectedOption, clickedBtn) {
 
     nextBtn.addEventListener('click', () => {
         currentQuestionIndex++;
+        timeLeft = 60;
         saveState();
         renderPlayTab();
     }, { once: true });
 }
 
 function renderResults() {
+    stopTimer();
     const totalQuestions = quizData.length;
     const wrongCount = totalQuestions - score - skippedCount;
 
@@ -341,6 +411,7 @@ function renderResults() {
         currentQuestionIndex = 0;
         score = 0;
         skippedCount = 0;
+        timeLeft = 60;
         saveState();
         switchTab('create');
     });
@@ -350,6 +421,7 @@ function handleGenerate() {
     const input = document.getElementById('quiz-input').value;
     const lines = input.split('\n');
     const parsedData = [];
+    isTimerEnabled = document.getElementById('timer-checkbox').checked;
     
     let currentQ = null;
 
@@ -381,6 +453,7 @@ function handleGenerate() {
     currentQuestionIndex = 0;
     score = 0;
     skippedCount = 0;
+    timeLeft = 60;
     saveState();
     switchTab('play');
 }

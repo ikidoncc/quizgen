@@ -83,6 +83,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 					<button
 						onClick={onReset}
 						className="flex items-center text-xs bg-overlay hover:opacity-80 text-main py-1 px-2 rounded transition-all active:scale-95"
+						type="button"
 					>
 						<RotateCcw className="w-3 h-3 mr-1" />
 						Reiniciar
@@ -90,6 +91,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 					<button
 						onClick={onDelete}
 						className="flex items-center text-xs bg-danger/10 hover:bg-danger/20 text-danger py-1 px-2 rounded transition-all active:scale-95"
+						type="button"
 					>
 						<Trash2 className="w-3 h-3 mr-1" />
 						Excluir
@@ -99,7 +101,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 					<span className="block text-xs font-medium text-muted">
 						Pergunta {currentQuestionIndex + 1} de {quizData.length}
 					</span>
-					<span className="block text-xs font-medium text-primary font-bold">
+					<span className="block text-xs text-primary font-bold">
 						Pontos: {score}
 					</span>
 					{isTimerEnabled && (
@@ -119,7 +121,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 			</div>
 
 			<div className="grid grid-cols-1 gap-3">
-				{currentQ.options.map((option, index) => {
+				{currentQ.options.map((option) => {
 					const isSelected = selectedOption === option;
 					const normOption = normalizeText(option);
 					const isActuallyCorrect = normOption === normalizedCorrect;
@@ -139,10 +141,11 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 
 					return (
 						<button
-							key={index}
+							key={option}
 							disabled={!isAnswering}
 							onClick={() => handleOptionClick(option)}
 							className={`w-full text-left p-4 border-2 rounded-xl transition-all duration-200 ${btnClass} ${isAnswering ? "active:scale-[0.99]" : ""}`}
+							type="button"
 						>
 							{option}
 						</button>
@@ -176,6 +179,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 					<button
 						onClick={handleNext}
 						className="w-full flex items-center justify-center bg-primary text-white font-bold py-3 px-4 rounded-xl hover:opacity-90 transition-all active:scale-[0.98] shadow-sm animate-in slide-in-from-bottom-1"
+						type="button"
 					>
 						{currentQuestionIndex + 1 === quizData.length
 							? "Ver Resultado"
@@ -186,6 +190,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 					<button
 						onClick={onSkip}
 						className="w-full flex items-center justify-center bg-surface border-2 border-overlay text-subtle font-bold py-3 px-4 rounded-xl hover:border-muted hover:bg-overlay/20 transition-all active:scale-[0.98]"
+						type="button"
 					>
 						<SkipForward className="w-5 h-5 mr-2" />
 						Pular Pergunta

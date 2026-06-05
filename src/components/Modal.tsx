@@ -33,6 +33,7 @@ export const Modal: React.FC<ModalProps> = ({
 					<button
 						onClick={onConfirm}
 						className="flex items-center bg-primary text-white px-4 py-2 rounded font-semibold hover:opacity-90 transition-all active:scale-95"
+						type="button"
 					>
 						<Check className="w-4 h-4 mr-1" />
 						{confirmText}
@@ -41,6 +42,7 @@ export const Modal: React.FC<ModalProps> = ({
 						<button
 							onClick={onCancel}
 							className="flex items-center bg-surface border border-overlay text-main px-4 py-2 rounded font-semibold hover:bg-overlay transition-all active:scale-95"
+							type="button"
 						>
 							<X className="w-4 h-4 mr-1" />
 							{cancelText}

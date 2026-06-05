@@ -42,6 +42,7 @@ export const ThemeSelect: React.FC<ThemeSelectProps> = ({
 			<button
 				onClick={() => setIsOpen(!isOpen)}
 				className="flex items-center justify-center sm:justify-between w-10 sm:w-32 bg-surface border border-overlay text-main text-xs rounded-lg p-2 outline-none cursor-pointer hover:bg-overlay transition-all active:scale-95"
+				type="button"
 			>
 				<span className="flex items-center">
 					<SelectedIcon className="w-4 h-4" />
@@ -57,9 +58,10 @@ export const ThemeSelect: React.FC<ThemeSelectProps> = ({
 					{THEMES.map((theme) => {
 						const Icon = theme.Icon;
 						return (
-							<div
+							<button
+								type="button"
 								key={theme.value}
-								className={`px-4 py-3 text-xs text-main hover:bg-overlay cursor-pointer flex items-center transition-colors ${
+								className={`w-full px-4 py-3 text-xs text-main hover:bg-overlay cursor-pointer flex items-center transition-colors ${
 									value === theme.value ? "bg-overlay/50 font-bold" : ""
 								}`}
 								onClick={() => {
@@ -69,7 +71,7 @@ export const ThemeSelect: React.FC<ThemeSelectProps> = ({
 							>
 								<Icon className="w-4 h-4" />
 								<span className="ml-2">{theme.label}</span>
-							</div>
+							</button>
 						);
 					})}
 				</div>

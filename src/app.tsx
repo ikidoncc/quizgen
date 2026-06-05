@@ -7,7 +7,7 @@ import { ThemeSelect } from "./components/ThemeSelect";
 import { useQuizState } from "./hooks/useQuizState";
 import { useTheme } from "./hooks/useTheme";
 
-function App() {
+export function App() {
 	const { theme, setTheme } = useTheme();
 	const {
 		state,
@@ -64,27 +64,29 @@ function App() {
 			<nav className="flex border-b border-overlay mb-8">
 				<button
 					onClick={() => setTab("create")}
-					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-[2px] ${
+					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-0.5 ${
 						state.currentTab === "create"
 							? "text-primary border-primary opacity-100"
 							: "text-muted border-transparent opacity-60 hover:text-primary hover:opacity-100"
 					}`}
+					type="button"
 				>
 					Criar Quizz
 				</button>
 				<button
 					onClick={() => setTab("play")}
-					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-[2px] ${
+					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-0.5 ${
 						state.currentTab === "play"
 							? "text-primary border-primary opacity-100"
 							: "text-muted border-transparent opacity-60 hover:text-primary hover:opacity-100"
 					}`}
+					type="button"
 				>
 					Jogar Quizz
 				</button>
 			</nav>
 
-			<main className="flex-grow">
+			<main className="grow">
 				{state.currentTab === "create" ? (
 					<CreateTab
 						onGenerate={setQuizData}
@@ -101,6 +103,7 @@ function App() {
 						<button
 							onClick={() => setTab("create")}
 							className="text-primary font-bold underline hover:opacity-80 transition-all"
+							type="button"
 						>
 							Ir para Criar Quizz
 						</button>
@@ -163,5 +166,3 @@ function App() {
 		</div>
 	);
 }
-
-export default App;

@@ -19,8 +19,8 @@ export function normalizeText(text: string): string {
  */
 export function parseQuizText(input: string): Question[] {
 	const lines = input.split("\n");
-	const parsedData: any[] = [];
-	let currentQ: any = null;
+	const parsedData: Question[] = [];
+	let currentQ: Partial<Question> | null = null;
 
 	lines.forEach((line) => {
 		const trimmed = line.trim();
@@ -32,8 +32,11 @@ export function parseQuizText(input: string): Question[] {
 			};
 		} else if (trimmed.toLowerCase().startsWith("a:") && currentQ) {
 			currentQ.answer = trimmed.substring(2).trim();
-			parsedData.push(currentQ);
-		} else if (trimmed.toLowerCase().startsWith("o:") && currentQ) {
+			parsedData.push(currentQ as Question);
+		} else if (
+			trimmed.toLowerCase().startsWith("o:") &&
+			currentQ?.manualOptions
+		) {
 			currentQ.manualOptions.push(trimmed.substring(2).trim());
 		}
 	});
@@ -60,7 +63,9 @@ export function prepareQuizOptions(
 		};
 
 		addIfUnique(q.answer);
-		q.manualOptions.forEach((opt) => addIfUnique(opt));
+		for (const opt of q.manualOptions) {
+			addIfUnique(opt);
+		}
 
 		let options = Array.from(uniqueOptionsMap.values());
 
@@ -77,8 +82,11 @@ export function prepareQuizOptions(
 			const shuffledOthers = otherAnswers.sort(() => 0.5 - Math.random());
 
 			while (options.length < 4 && shuffledOthers.length > 0) {
-				addIfUnique(shuffledOthers.pop()!);
-				options = Array.from(uniqueOptionsMap.values());
+				const popped = shuffledOthers.pop();
+				if (popped !== undefined) {
+					addIfUnique(popped);
+					options = Array.from(uniqueOptionsMap.values());
+				}
 			}
 		}
 

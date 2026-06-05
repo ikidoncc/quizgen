@@ -61,6 +61,7 @@ export const ResultsTab: React.FC<ResultsTabProps> = ({
 			<button
 				onClick={onNewQuiz}
 				className="w-full flex items-center justify-center bg-primary text-white font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all active:scale-[0.98] shadow-sm"
+				type="button"
 			>
 				<RefreshCw className="w-5 h-5 mr-2" />
 				Novo Quizz

@@ -6,6 +6,13 @@ import { ResultsTab } from "./components/ResultsTab";
 import { ThemeSelect } from "./components/ThemeSelect";
 import { useQuizState } from "./hooks/useQuizState";
 import { useTheme } from "./hooks/useTheme";
+import type { Tab } from "./types";
+
+function tabClass(currentTab: Tab, tab: Tab): string {
+	return currentTab === tab
+		? "text-primary border-primary opacity-100"
+		: "text-muted border-transparent opacity-60 hover:text-primary hover:opacity-100";
+}
 
 export function App() {
 	const { theme, setTheme } = useTheme();
@@ -66,22 +73,14 @@ export function App() {
 			<nav className="flex border-b border-overlay mb-8">
 				<button
 					onClick={() => setTab("create")}
-					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-0.5 ${
-						state.currentTab === "create"
-							? "text-primary border-primary opacity-100"
-							: "text-muted border-transparent opacity-60 hover:text-primary hover:opacity-100"
-					}`}
+					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-0.5 ${tabClass(state.currentTab, "create")}`}
 					type="button"
 				>
 					Criar Quizz
 				</button>
 				<button
 					onClick={() => setTab("play")}
-					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-0.5 ${
-						state.currentTab === "play"
-							? "text-primary border-primary opacity-100"
-							: "text-muted border-transparent opacity-60 hover:text-primary hover:opacity-100"
-					}`}
+					className={`px-6 py-3 font-bold transition-all border-b-2 -mb-0.5 ${tabClass(state.currentTab, "play")}`}
 					type="button"
 				>
 					Jogar Quizz

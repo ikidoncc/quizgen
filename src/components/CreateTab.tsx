@@ -4,6 +4,14 @@ import { useState } from "react";
 import type { Question } from "../types";
 import { parseQuizText, prepareQuizOptions, TIMER_DURATION } from "../utils/quiz";
 
+function validateQuizInput(input: string): Question[] | string {
+	const parsed = parseQuizText(input);
+	if (parsed.length === 0) {
+		return "Nenhuma pergunta encontrada. Use o formato Q: Pergunta e A: Resposta.";
+	}
+	return parsed;
+}
+
 interface CreateTabProps {
 	onGenerate: (data: Question[], timerEnabled: boolean) => void;
 	initialTimerEnabled: boolean;
@@ -23,18 +31,14 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 		e.preventDefault();
 		if (isGenerating) return;
 
-		const parsedData = parseQuizText(input);
-
-		if (parsedData.length === 0) {
-			onError(
-				"Nenhuma pergunta encontrada. Use o formato Q: Pergunta e A: Resposta.",
-			);
+		const result = validateQuizInput(input);
+		if (typeof result === "string") {
+			onError(result);
 			return;
 		}
 
 		setIsGenerating(true);
-		const quizData = prepareQuizOptions(parsedData);
-		onGenerate(quizData, timerEnabled);
+		onGenerate(prepareQuizOptions(result), timerEnabled);
 	};
 
 	return (

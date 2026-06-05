@@ -55,6 +55,54 @@ export function parseQuizText(input: string): Question[] {
 	return parsedData;
 }
 
+function collectUniqueOptions(q: { answer: string; manualOptions: string[] }): Map<string, string> {
+	const map = new Map<string, string>();
+
+	const addIfUnique = (text: string) => {
+		const normalized = normalizeText(text);
+		if (!map.has(normalized) && normalized !== "") {
+			map.set(normalized, text);
+		}
+	};
+
+	addIfUnique(q.answer);
+	for (const opt of q.manualOptions) {
+		addIfUnique(opt);
+	}
+
+	return map;
+}
+
+function fillWithDistractors(
+	options: Map<string, string>,
+	allAnswers: string[],
+	correctAnswer: string,
+	manualOptions: string[],
+): Map<string, string> {
+	const result = new Map(options);
+
+	if (result.size >= 4) return result;
+
+	const otherAnswers = allAnswers.filter((a) => {
+		const normA = normalizeText(a);
+		const normCorrect = normalizeText(correctAnswer);
+		return (
+			normA !== normCorrect &&
+			!manualOptions.map(normalizeText).includes(normA)
+		);
+	});
+
+	for (const answer of shuffle(otherAnswers)) {
+		if (result.size >= 4) break;
+		const normalized = normalizeText(answer);
+		if (!result.has(normalized) && normalized !== "") {
+			result.set(normalized, answer);
+		}
+	}
+
+	return result;
+}
+
 /**
  * Prepares options for each question (manual + automatic distractors).
  */
@@ -64,46 +112,12 @@ export function prepareQuizOptions(
 	const allAnswers = data.map((q) => q.answer);
 
 	return data.map((q) => {
-		const uniqueOptionsMap = new Map<string, string>();
-
-		const addIfUnique = (text: string) => {
-			const normalized = normalizeText(text);
-			if (!uniqueOptionsMap.has(normalized) && normalized !== "") {
-				uniqueOptionsMap.set(normalized, text);
-			}
-		};
-
-		addIfUnique(q.answer);
-		for (const opt of q.manualOptions) {
-			addIfUnique(opt);
-		}
-
-		let options = Array.from(uniqueOptionsMap.values());
-
-		if (options.length < 4) {
-			const otherAnswers = allAnswers.filter((a) => {
-				const normA = normalizeText(a);
-				const normCorrect = normalizeText(q.answer);
-				return (
-					normA !== normCorrect &&
-					!q.manualOptions.map(normalizeText).includes(normA)
-				);
-			});
-
-			const shuffledOthers = shuffle(otherAnswers);
-
-			while (options.length < 4 && shuffledOthers.length > 0) {
-				const popped = shuffledOthers.pop();
-				if (popped !== undefined) {
-					addIfUnique(popped);
-					options = Array.from(uniqueOptionsMap.values());
-				}
-			}
-		}
+		const uniqueOptions = collectUniqueOptions(q);
+		const filledOptions = fillWithDistractors(uniqueOptions, allAnswers, q.answer, q.manualOptions);
 
 		return {
 			...q,
-			options: shuffle(options),
+			options: shuffle(Array.from(filledOptions.values())),
 		} as Question;
 	});
 }

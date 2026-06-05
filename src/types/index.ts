@@ -8,10 +8,11 @@ export interface Question {
 	options: string[];
 }
 
-export const STORAGE_VERSION = 1;
+export const STORAGE_VERSION = 2;
 
 export interface QuizState {
 	version: number;
+	gameId: number;
 	currentTab: Tab;
 	quizData: Question[];
 	currentQuestionIndex: number;

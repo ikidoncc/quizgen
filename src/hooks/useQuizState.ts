@@ -5,6 +5,7 @@ import { TIMER_DURATION } from "../utils/quiz";
 
 const INITIAL_STATE: QuizState = {
 	version: STORAGE_VERSION,
+	gameId: 0,
 	currentTab: "create",
 	quizData: [],
 	currentQuestionIndex: 0,
@@ -47,6 +48,7 @@ export function useQuizState() {
 			skippedCount: 0,
 			timeLeft: TIMER_DURATION,
 			currentTab: "play",
+			gameId: s.gameId + 1,
 		}));
 	}, []);
 
@@ -57,6 +59,7 @@ export function useQuizState() {
 			score: 0,
 			skippedCount: 0,
 			timeLeft: TIMER_DURATION,
+			gameId: s.gameId + 1,
 		}));
 	}, []);
 

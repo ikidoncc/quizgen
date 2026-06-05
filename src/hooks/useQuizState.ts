@@ -10,7 +10,6 @@ const INITIAL_STATE: QuizState = {
 	currentQuestionIndex: 0,
 	score: 0,
 	skippedCount: 0,
-	currentTheme: "auto",
 	isTimerEnabled: false,
 	timeLeft: TIMER_DURATION,
 };
@@ -62,10 +61,7 @@ export function useQuizState() {
 	}, []);
 
 	const deleteQuiz = useCallback(() => {
-		setState((s) => ({
-			...INITIAL_STATE,
-			currentTheme: s.currentTheme, // Preserve theme
-		}));
+		setState(() => ({ ...INITIAL_STATE }));
 	}, []);
 
 	const advanceQuestion = useCallback((isCorrect: boolean, isSkip: boolean = false) => {

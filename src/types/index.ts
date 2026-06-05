@@ -17,7 +17,6 @@ export interface QuizState {
 	currentQuestionIndex: number;
 	score: number;
 	skippedCount: number;
-	currentTheme: Theme;
 	isTimerEnabled: boolean;
 	timeLeft: number;
 }

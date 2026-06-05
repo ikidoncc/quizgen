@@ -1,4 +1,4 @@
-import { Question } from '../types';
+import type { Question } from '../types';
 
 /**
  * Normalizes text for robust comparison.

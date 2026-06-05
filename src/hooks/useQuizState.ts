@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Question, Tab, QuizState } from '../types';
+import type { Question, Tab, QuizState } from '../types';
 
 const INITIAL_STATE: QuizState = {
   currentTab: 'create',

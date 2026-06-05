@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Question } from '../types';
+import type { Question } from '../types';
 import { normalizeText } from '../utils/quiz';
 import { useTimer } from '../hooks/useTimer';
 
@@ -7,7 +7,7 @@ interface PlayTabProps {
   quizData: Question[];
   currentQuestionIndex: number;
   score: number;
-  skippedCount: number;
+  skippedCount?: number;
   isTimerEnabled: boolean;
   timeLeft: number;
   onAnswer: (isCorrect: boolean) => void;
@@ -21,7 +21,6 @@ export const PlayTab: React.FC<PlayTabProps> = ({
   quizData,
   currentQuestionIndex,
   score,
-  skippedCount,
   isTimerEnabled,
   timeLeft,
   onAnswer,

@@ -19,7 +19,7 @@ export const ResultsTab: React.FC<ResultsTabProps> = ({
     <div className="bg-surface p-8 rounded-lg shadow-md text-center border border-overlay transition-all animate-in zoom-in duration-300">
       <h2 className="text-2xl font-bold mb-4 text-main font-serif">Quizz Finalizado!</h2>
       <p className="text-5xl font-bold text-iris mb-6 tracking-tighter">
-        {score} <span class="text-2xl text-muted font-normal">/ {totalQuestions}</span>
+        {score} <span className="text-2xl text-muted font-normal">/ {totalQuestions}</span>
       </p>
       
       <div className="grid grid-cols-3 gap-4 mb-8 text-sm">

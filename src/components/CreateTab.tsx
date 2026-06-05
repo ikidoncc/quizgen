@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Question } from '../types';
+import type { Question } from '../types';
 import { parseQuizText, prepareQuizOptions } from '../utils/quiz';
 
 interface CreateTabProps {
@@ -27,7 +27,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({ onGenerate, initialTimerEn
   return (
     <div className="bg-surface p-6 rounded-lg shadow-md border border-overlay transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
       <h2 className="text-xl font-semibold mb-4 text-main font-serif">Colar Conteúdo</h2>
-      <p class="text-sm text-subtle mb-4">Formato:</p>
+      <p className="text-sm text-subtle mb-4">Formato:</p>
       <pre className="bg-overlay p-2 rounded text-xs mb-4 text-muted border border-overlay overflow-x-auto">
         {`Q: Pergunta?\nA: Resposta\nO: Opção Incorreta (Opcional)`}
       </pre>

@@ -23,6 +23,7 @@ export function App() {
 		isOpen: boolean;
 		title: string;
 		message: string;
+		confirmText?: string;
 		onConfirm: () => void;
 		onCancel?: () => void;
 	}>({
@@ -92,7 +93,7 @@ export function App() {
 						onGenerate={setQuizData}
 						initialTimerEnabled={state.isTimerEnabled}
 						onError={(msg) =>
-							showModal({ title: "Erro", message: msg, onConfirm: closeModal })
+							showModal({ title: "Erro", message: msg, confirmText: "OK", onConfirm: closeModal })
 						}
 					/>
 				) : state.quizData.length === 0 ? (
@@ -172,6 +173,7 @@ export function App() {
 				isOpen={modalConfig.isOpen}
 				title={modalConfig.title}
 				message={modalConfig.message}
+				confirmText={modalConfig.confirmText}
 				onConfirm={modalConfig.onConfirm}
 				onCancel={modalConfig.onCancel}
 			/>

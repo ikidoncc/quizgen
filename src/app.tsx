@@ -126,6 +126,17 @@ export function App() {
 						onTick={setTimeLeft}
 						onAnswer={(isCorrect) => advanceQuestion(isCorrect)}
 						onSkip={() => advanceQuestion(false, true)}
+						onSkipRequest={() =>
+							showModal({
+								title: "Pular Pergunta",
+								message: "Deseja pular esta pergunta?",
+								onConfirm: () => {
+									advanceQuestion(false, true);
+									closeModal();
+								},
+								onCancel: closeModal,
+							})
+						}
 						onReset={() =>
 							showModal({
 								title: "Reiniciar Quizz",

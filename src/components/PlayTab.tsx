@@ -20,6 +20,7 @@ interface PlayTabProps {
 	timeLeft: number;
 	onAnswer: (isCorrect: boolean) => void;
 	onSkip: () => void;
+	onSkipRequest: () => void;
 	onReset: () => void;
 	onDelete: () => void;
 	onTick: (time: number) => void;
@@ -33,6 +34,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 	timeLeft,
 	onAnswer,
 	onSkip,
+	onSkipRequest,
 	onReset,
 	onDelete,
 	onTick,
@@ -40,7 +42,6 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 	const [selectedOption, setSelectedOption] = useState<string | null>(null);
 	const [showFeedback, setShowFeedback] = useState(false);
 	const [isAnswering, setIsAnswering] = useState(true);
-	const [confirmSkip, setConfirmSkip] = useState(false);
 
 	const currentQ = quizData[currentQuestionIndex];
 
@@ -193,24 +194,12 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 					</button>
 				) : (
 					<button
-						onClick={() => {
-							if (confirmSkip) {
-								setConfirmSkip(false);
-								onSkip();
-							} else {
-								setConfirmSkip(true);
-							}
-						}}
-						onBlur={() => setConfirmSkip(false)}
-						className={`w-full flex items-center justify-center border-2 font-bold py-3 px-4 rounded-xl transition-all active:scale-[0.98] ${
-							confirmSkip
-								? "bg-danger/10 border-danger text-danger hover:bg-danger/20"
-								: "bg-surface border-overlay text-subtle hover:border-muted hover:bg-overlay/20"
-						}`}
+						onClick={onSkipRequest}
+						className="w-full flex items-center justify-center bg-surface border-2 border-overlay text-subtle font-bold py-3 px-4 rounded-xl hover:border-muted hover:bg-overlay/20 transition-all active:scale-[0.98]"
 						type="button"
 					>
 						<SkipForward className="w-5 h-5 mr-2" />
-						{confirmSkip ? "Tem certeza?" : "Pular Pergunta"}
+						Pular Pergunta
 					</button>
 				)}
 			</div>

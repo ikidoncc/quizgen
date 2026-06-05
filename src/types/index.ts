@@ -8,7 +8,10 @@ export interface Question {
 	options: string[];
 }
 
+export const STORAGE_VERSION = 1;
+
 export interface QuizState {
+	version: number;
 	currentTab: Tab;
 	quizData: Question[];
 	currentQuestionIndex: number;

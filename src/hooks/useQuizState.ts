@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { STORAGE_VERSION } from "../types";
 import type { Question, QuizState, Tab } from "../types";
 import { TIMER_DURATION } from "../utils/quiz";
 
 const INITIAL_STATE: QuizState = {
+	version: STORAGE_VERSION,
 	currentTab: "create",
 	quizData: [],
 	currentQuestionIndex: 0,
@@ -18,7 +20,9 @@ export function useQuizState() {
 		const saved = localStorage.getItem("quizgen_state");
 		if (saved) {
 			try {
-				return JSON.parse(saved);
+				const parsed = JSON.parse(saved);
+				if (parsed.version === STORAGE_VERSION) return parsed;
+				console.warn("Storage version mismatch, resetting state");
 			} catch (e) {
 				console.error("Error loading saved state", e);
 			}

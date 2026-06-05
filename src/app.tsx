@@ -121,7 +121,6 @@ export function App() {
 						quizData={state.quizData}
 						currentQuestionIndex={state.currentQuestionIndex}
 						score={state.score}
-						skippedCount={state.skippedCount}
 						isTimerEnabled={state.isTimerEnabled}
 						timeLeft={state.timeLeft}
 						onTick={setTimeLeft}

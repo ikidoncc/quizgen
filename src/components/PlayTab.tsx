@@ -16,7 +16,6 @@ interface PlayTabProps {
 	quizData: Question[];
 	currentQuestionIndex: number;
 	score: number;
-	skippedCount?: number;
 	isTimerEnabled: boolean;
 	timeLeft: number;
 	onAnswer: (isCorrect: boolean) => void;

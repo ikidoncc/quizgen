@@ -7,6 +7,22 @@ let quizData = [];
 let currentQuestionIndex = 0;
 let score = 0;
 
+/**
+ * Normalizes text for robust comparison.
+ * Handles Unicode (NFD), hidden characters, invisible spaces, 
+ * multiple spaces, and case sensitivity.
+ */
+function normalizeText(text) {
+    if (!text) return "";
+    return text
+        .normalize("NFD") // Decompose combined characters (accents)
+        .replace(/[\u0300-\u036f]/g, "") // Remove accents
+        .replace(/[\u200B-\u200D\uFEFF]/g, "") // Remove invisible characters (zero-width spaces, etc.)
+        .replace(/\s+/g, " ") // Collapse multiple spaces into one
+        .trim() // Remove start/end spaces
+        .toLowerCase();
+}
+
 function init() {
     renderCreateTab();
     
@@ -123,18 +139,33 @@ function checkAnswer(selectedOption, clickedBtn) {
     const nextBtn = document.getElementById('next-btn');
     const optionBtns = document.querySelectorAll('.option-btn');
 
+    // Robust comparison using normalization
+    const normalizedSelected = normalizeText(selectedOption);
+    const normalizedCorrect = normalizeText(correctAnswer);
+
+    // Debug logs to identify hidden character issues
+    console.log("Checking answer:");
+    console.log("- Selected raw: ", JSON.stringify(selectedOption));
+    console.log("- Selected normalized: ", JSON.stringify(normalizedSelected));
+    console.log("- Correct raw: ", JSON.stringify(correctAnswer));
+    console.log("- Correct normalized: ", JSON.stringify(normalizedCorrect));
+
+    const isCorrect = normalizedSelected === normalizedCorrect;
+
     // Disable all buttons after selection
     optionBtns.forEach(btn => {
         btn.disabled = true;
         const btnOption = btn.getAttribute('data-option');
-        if (btnOption === correctAnswer) {
+        const normalizedBtnOption = normalizeText(btnOption);
+        
+        if (normalizedBtnOption === normalizedCorrect) {
             btn.classList.add('border-green-500', 'bg-green-50', 'text-green-700');
-        } else if (btnOption === selectedOption) {
+        } else if (normalizedBtnOption === normalizedSelected && !isCorrect) {
             btn.classList.add('border-red-500', 'bg-red-50', 'text-red-700');
         }
     });
     
-    if (selectedOption === correctAnswer) {
+    if (isCorrect) {
         score++;
         feedback.innerText = 'Correto!';
         feedback.classList.add('bg-green-100', 'text-green-700');
@@ -149,7 +180,7 @@ function checkAnswer(selectedOption, clickedBtn) {
     nextBtn.addEventListener('click', () => {
         currentQuestionIndex++;
         renderPlayTab();
-    });
+    }, { once: true }); // Ensure listener is added only once
 }
 
 function renderResults() {
@@ -207,15 +238,35 @@ function prepareQuizOptions(data) {
     const allAnswers = data.map(q => q.answer);
     
     return data.map(q => {
-        let options = [...q.manualOptions, q.answer];
+        // Collect all potential options (manual + correct answer)
+        let uniqueOptionsMap = new Map();
         
-        // Fill with automatic distractors if less than 4 options
+        // Helper to add if normalized version isn't already there
+        const addIfUnique = (text) => {
+            const normalized = normalizeText(text);
+            if (!uniqueOptionsMap.has(normalized) && normalized !== "") {
+                uniqueOptionsMap.set(normalized, text);
+            }
+        };
+
+        addIfUnique(q.answer);
+        q.manualOptions.forEach(opt => addIfUnique(opt));
+        
+        let options = Array.from(uniqueOptionsMap.values());
+        
+        // Fill with automatic distractors if less than 4 unique options
         if (options.length < 4) {
-            const otherAnswers = allAnswers.filter(a => a !== q.answer && !q.manualOptions.includes(a));
+            const otherAnswers = allAnswers.filter(a => {
+                const normA = normalizeText(a);
+                const normCorrect = normalizeText(q.answer);
+                return normA !== normCorrect && !q.manualOptions.map(normalizeText).includes(normA);
+            });
+            
             const shuffledOthers = otherAnswers.sort(() => 0.5 - Math.random());
             
             while (options.length < 4 && shuffledOthers.length > 0) {
-                options.push(shuffledOthers.pop());
+                addIfUnique(shuffledOthers.pop());
+                options = Array.from(uniqueOptionsMap.values());
             }
         }
         

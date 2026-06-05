@@ -51,6 +51,17 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 		() => onSkip(), // onTimeout
 	);
 
+	if (!currentQ) {
+		return (
+			<div className="bg-surface p-6 rounded-lg shadow-md border border-overlay text-center">
+				<p className="text-muted font-medium">Erro ao carregar pergunta.</p>
+				<button onClick={onReset} className="text-primary font-bold underline hover:opacity-80 mt-4" type="button">
+					Reiniciar Quizz
+				</button>
+			</div>
+		);
+	}
+
 	const handleOptionClick = (option: string) => {
 		if (!isAnswering) return;
 

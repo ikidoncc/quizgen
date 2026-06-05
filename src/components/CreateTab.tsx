@@ -2,7 +2,7 @@ import { Wand2 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import type { Question } from "../types";
-import { parseQuizText, prepareQuizOptions } from "../utils/quiz";
+import { parseQuizText, prepareQuizOptions, TIMER_DURATION } from "../utils/quiz";
 
 interface CreateTabProps {
 	onGenerate: (data: Question[], timerEnabled: boolean) => void;
@@ -61,7 +61,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					htmlFor="timer-checkbox"
 					className="ml-2 text-sm font-medium text-main cursor-pointer select-none"
 				>
-					Habilitar temporizador (1 minuto por questão)
+					Habilitar temporizador ({TIMER_DURATION / 60} minuto{TIMER_DURATION !== 60 ? "s" : ""} por questão)
 				</label>
 			</div>
 

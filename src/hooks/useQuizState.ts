@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Question, QuizState, Tab } from "../types";
+import { TIMER_DURATION } from "../utils/quiz";
 
 const INITIAL_STATE: QuizState = {
 	currentTab: "create",
@@ -9,7 +10,7 @@ const INITIAL_STATE: QuizState = {
 	skippedCount: 0,
 	currentTheme: "auto",
 	isTimerEnabled: false,
-	timeLeft: 60,
+	timeLeft: TIMER_DURATION,
 };
 
 export function useQuizState() {
@@ -41,7 +42,7 @@ export function useQuizState() {
 			currentQuestionIndex: 0,
 			score: 0,
 			skippedCount: 0,
-			timeLeft: 60,
+			timeLeft: TIMER_DURATION,
 			currentTab: "play",
 		}));
 	}, []);
@@ -52,7 +53,7 @@ export function useQuizState() {
 			currentQuestionIndex: 0,
 			score: 0,
 			skippedCount: 0,
-			timeLeft: 60,
+			timeLeft: TIMER_DURATION,
 		}));
 	}, []);
 
@@ -69,7 +70,7 @@ export function useQuizState() {
 			score: isCorrect ? s.score + 1 : s.score,
 			skippedCount: isSkip ? s.skippedCount + 1 : s.skippedCount,
 			currentQuestionIndex: s.currentQuestionIndex + 1,
-			timeLeft: 60,
+			timeLeft: TIMER_DURATION,
 		}));
 	}, []);
 

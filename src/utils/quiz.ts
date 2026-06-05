@@ -1,5 +1,7 @@
 import type { Question } from "../types";
 
+export const TIMER_DURATION = 60;
+
 /**
  * Normalizes text for robust comparison.
  */

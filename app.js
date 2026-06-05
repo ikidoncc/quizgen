@@ -67,51 +67,83 @@ function renderPlayTab() {
     const currentQ = quizData[currentQuestionIndex];
     mainContent.innerHTML = `
         <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="flex justify-between items-center mb-6">
-                <span class="text-sm font-medium text-gray-400">Pergunta ${currentQuestionIndex + 1} de ${quizData.length}</span>
-                <span class="text-sm font-medium text-blue-600">Pontos: ${score}</span>
+            <div class="flex justify-between items-center mb-4 pb-4 border-b">
+                <div class="flex space-x-2">
+                    <button id="reset-btn" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 py-1 px-2 rounded transition">Reiniciar</button>
+                    <button id="delete-btn" class="text-xs bg-red-100 hover:bg-red-200 text-red-600 py-1 px-2 rounded transition">Excluir</button>
+                </div>
+                <div class="text-right">
+                    <span class="block text-xs font-medium text-gray-400">Pergunta ${currentQuestionIndex + 1} de ${quizData.length}</span>
+                    <span class="block text-xs font-medium text-blue-600">Pontos: ${score}</span>
+                </div>
             </div>
             
             <div class="mb-8">
                 <h3 class="text-lg font-medium text-gray-800">${currentQ.question}</h3>
             </div>
 
-            <div class="space-y-4">
-                <input type="text" id="answer-input" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Sua resposta...">
-                <button id="submit-answer" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition">Verificar</button>
+            <div id="options-container" class="grid grid-cols-1 gap-3">
+                ${currentQ.options.map((option, index) => `
+                    <button class="option-btn w-full text-left p-3 border-2 rounded-md hover:border-blue-500 hover:bg-blue-50 transition" data-option="${option}">
+                        ${option}
+                    </button>
+                `).join('')}
             </div>
             
-            <div id="feedback" class="mt-4 hidden p-3 rounded-md text-center font-medium"></div>
-            <button id="next-btn" class="w-full mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition hidden">Próxima Pergunta</button>
+            <div id="feedback" class="mt-6 hidden p-3 rounded-md text-center font-medium"></div>
+            <button id="next-btn" class="w-full mt-6 bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition hidden">Próxima Pergunta</button>
         </div>
     `;
 
-    document.getElementById('submit-answer').addEventListener('click', checkAnswer);
-    document.getElementById('answer-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') checkAnswer();
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', () => checkAnswer(btn.getAttribute('data-option'), btn));
+    });
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+        if (confirm('Deseja reiniciar este quizz?')) {
+            currentQuestionIndex = 0;
+            score = 0;
+            renderPlayTab();
+        }
+    });
+
+    document.getElementById('delete-btn').addEventListener('click', () => {
+        if (confirm('Deseja excluir este quizz?')) {
+            quizData = [];
+            currentQuestionIndex = 0;
+            score = 0;
+            switchTab('create');
+        }
     });
 }
 
-function checkAnswer() {
-    const userInput = document.getElementById('answer-input').value.trim().toLowerCase();
-    const correctAnswer = quizData[currentQuestionIndex].answer.trim().toLowerCase();
+function checkAnswer(selectedOption, clickedBtn) {
+    const correctAnswer = quizData[currentQuestionIndex].answer;
     const feedback = document.getElementById('feedback');
-    const submitBtn = document.getElementById('submit-answer');
     const nextBtn = document.getElementById('next-btn');
+    const optionBtns = document.querySelectorAll('.option-btn');
 
-    feedback.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+    // Disable all buttons after selection
+    optionBtns.forEach(btn => {
+        btn.disabled = true;
+        const btnOption = btn.getAttribute('data-option');
+        if (btnOption === correctAnswer) {
+            btn.classList.add('border-green-500', 'bg-green-50', 'text-green-700');
+        } else if (btnOption === selectedOption) {
+            btn.classList.add('border-red-500', 'bg-red-50', 'text-red-700');
+        }
+    });
     
-    if (userInput === correctAnswer) {
+    if (selectedOption === correctAnswer) {
         score++;
         feedback.innerText = 'Correto!';
         feedback.classList.add('bg-green-100', 'text-green-700');
     } else {
-        feedback.innerText = `Incorreto. A resposta era: ${quizData[currentQuestionIndex].answer}`;
+        feedback.innerText = `Incorreto. A resposta era: ${correctAnswer}`;
         feedback.classList.add('bg-red-100', 'text-red-700');
     }
 
     feedback.classList.remove('hidden');
-    submitBtn.classList.add('hidden');
     nextBtn.classList.remove('hidden');
 
     nextBtn.addEventListener('click', () => {

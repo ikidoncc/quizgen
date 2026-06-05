@@ -37,8 +37,8 @@ function renderCreateTab() {
     mainContent.innerHTML = `
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-xl font-semibold mb-4">Colar Conteúdo</h2>
-            <p class="text-sm text-gray-500 mb-4">Insira o texto no formato:</p>
-            <pre class="bg-gray-50 p-2 rounded text-xs mb-4">Q: Pergunta?\nA: Resposta</pre>
+            <p class="text-sm text-gray-500 mb-4">Formato:</p>
+            <pre class="bg-gray-50 p-2 rounded text-xs mb-4 text-gray-700">Q: Pergunta?\nA: Resposta\nO: Opção Incorreta (Opcional)</pre>
             <textarea id="quiz-input" class="w-full h-64 p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none mb-4" placeholder="Cole seu texto aqui..."></textarea>
             <button id="generate-btn" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">Gerar Quizz</button>
         </div>
@@ -147,11 +147,16 @@ function handleGenerate() {
     lines.forEach(line => {
         const trimmed = line.trim();
         if (trimmed.toLowerCase().startsWith('q:')) {
-            currentQ = { question: trimmed.substring(2).trim(), answer: '' };
+            currentQ = { 
+                question: trimmed.substring(2).trim(), 
+                answer: '', 
+                manualOptions: [] 
+            };
         } else if (trimmed.toLowerCase().startsWith('a:') && currentQ) {
             currentQ.answer = trimmed.substring(2).trim();
             parsedData.push(currentQ);
-            currentQ = null;
+        } else if (trimmed.toLowerCase().startsWith('o:') && currentQ) {
+            currentQ.manualOptions.push(trimmed.substring(2).trim());
         }
     });
 
@@ -160,10 +165,33 @@ function handleGenerate() {
         return;
     }
 
-    quizData = parsedData;
+    quizData = prepareQuizOptions(parsedData);
     currentQuestionIndex = 0;
     score = 0;
     switchTab('play');
+}
+
+function prepareQuizOptions(data) {
+    const allAnswers = data.map(q => q.answer);
+    
+    return data.map(q => {
+        let options = [...q.manualOptions, q.answer];
+        
+        // Fill with automatic distractors if less than 4 options
+        if (options.length < 4) {
+            const otherAnswers = allAnswers.filter(a => a !== q.answer && !q.manualOptions.includes(a));
+            const shuffledOthers = otherAnswers.sort(() => 0.5 - Math.random());
+            
+            while (options.length < 4 && shuffledOthers.length > 0) {
+                options.push(shuffledOthers.pop());
+            }
+        }
+        
+        return {
+            ...q,
+            options: options.sort(() => 0.5 - Math.random())
+        };
+    });
 }
 
 init();

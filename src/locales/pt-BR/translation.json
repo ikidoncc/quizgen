@@ -28,7 +28,19 @@
 		"timerLabel": "Habilitar temporizador ({{count}} minuto por questão)",
 		"timerLabel_plural": "Habilitar temporizador ({{count}} minutos por questão)",
 		"submit": "Gerar Quizz",
-		"error": "Nenhuma pergunta encontrada. Use o formato Q: Pergunta e A: Resposta."
+		"error": "Nenhuma pergunta encontrada. Use o formato Q: Pergunta e A: Resposta.",
+		"modeLabel": "Modo de Geração de Alternativas",
+		"mode.easy.title": "Fácil",
+		"mode.easy.desc": "Offline, preenche com outras respostas",
+		"mode.normal.title": "Normal",
+		"mode.normal.desc": "IA gera opções plausíveis",
+		"mode.hard.title": "Difícil",
+		"mode.hard.desc": "IA modifica a resposta levemente",
+		"apiKeyLabel": "Chave de API do Gemini",
+		"getApiKey": "Obter Chave Grátis",
+		"apiKeyPlaceholder": "Insira sua chave de API do Gemini...",
+		"apiKeyWarning": "A chave de API é necessária para os modos com IA.",
+		"generatingWithAI": "Gerando alternativas com IA..."
 	},
 	"play": {
 		"error": "Erro ao carregar pergunta.",

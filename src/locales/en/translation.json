@@ -28,7 +28,19 @@
 		"timerLabel": "Enable timer ({{count}} minute per question)",
 		"timerLabel_plural": "Enable timer ({{count}} minutes per question)",
 		"submit": "Generate Quiz",
-		"error": "No questions found. Use the format Q: Question and A: Answer."
+		"error": "No questions found. Use the format Q: Question and A: Answer.",
+		"modeLabel": "Alternative Generation Mode",
+		"mode.easy.title": "Easy",
+		"mode.easy.desc": "Offline, fills using other answers",
+		"mode.normal.title": "Normal",
+		"mode.normal.desc": "AI generates plausible options",
+		"mode.hard.title": "Hard",
+		"mode.hard.desc": "AI modifies the answer slightly",
+		"apiKeyLabel": "Gemini API Key",
+		"getApiKey": "Get Free Key",
+		"apiKeyPlaceholder": "Enter your Gemini API key...",
+		"apiKeyWarning": "API key is required for AI modes.",
+		"generatingWithAI": "Generating options with AI..."
 	},
 	"play": {
 		"error": "Error loading question.",

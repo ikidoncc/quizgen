@@ -27,7 +27,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 	const [timerEnabled, setTimerEnabled] = useState(initialTimerEnabled);
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>("easy");
-	const [apiKey, setApiKey] = useState(() => localStorage.getItem("gemini_api_key") || "");
+	const [apiKey, setApiKey] = useState(
+		() => localStorage.getItem("gemini_api_key") || "",
+	);
 	const [showApiKey, setShowApiKey] = useState(false);
 
 	const handleApiKeyChange = (val: string) => {
@@ -52,7 +54,11 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 
 		setIsGenerating(true);
 		try {
-			const questions = await prepareQuizOptionsWithAI(parsed, difficultyMode, apiKey);
+			const questions = await prepareQuizOptionsWithAI(
+				parsed,
+				difficultyMode,
+				apiKey,
+			);
 			onGenerate(questions, timerEnabled);
 		} catch (err) {
 			console.error(err);
@@ -103,9 +109,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 
 				{/* Selection mode cards */}
 				<div className="mb-6">
-					<label className="mb-2 block font-semibold text-main text-sm">
+					<span className="mb-2 block font-semibold text-main text-sm">
 						{t("create.modeLabel")}
-					</label>
+					</span>
 					<div className="grid grid-cols-3 gap-3">
 						{modes.map(({ id, icon: Icon, title, desc }) => (
 							<button
@@ -116,12 +122,14 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 									"flex flex-col items-center rounded-xl border p-3 text-center transition-all duration-200 cursor-pointer",
 									difficultyMode === id
 										? "border-primary bg-primary/5 text-primary scale-[1.02] shadow-sm"
-										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main"
+										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
 								)}
 							>
 								<Icon className="mb-1.5 h-5 w-5" />
 								<span className="font-bold text-xs">{title}</span>
-								<span className="mt-1 font-medium text-[9px] opacity-80 leading-tight">{desc}</span>
+								<span className="mt-1 font-medium text-[9px] opacity-80 leading-tight">
+									{desc}
+								</span>
 							</button>
 						))}
 					</div>
@@ -131,7 +139,10 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 				{difficultyMode !== "easy" && (
 					<div className="fade-in animate-in slide-in-from-top-1 mb-6 duration-200">
 						<div className="mb-2 flex items-center justify-between">
-							<label htmlFor="api-key" className="font-semibold text-main text-sm">
+							<label
+								htmlFor="api-key"
+								className="font-semibold text-main text-sm"
+							>
 								{t("create.apiKeyLabel")}
 							</label>
 							<a
@@ -158,7 +169,11 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 								onClick={() => setShowApiKey(!showApiKey)}
 								className="absolute right-3 text-muted hover:text-main cursor-pointer"
 							>
-								{showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+								{showApiKey ? (
+									<EyeOff className="h-4 w-4" />
+								) : (
+									<Eye className="h-4 w-4" />
+								)}
 							</button>
 						</div>
 						{apiKey.trim() === "" && (
@@ -188,10 +203,10 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					className="flex w-full items-center justify-center rounded bg-primary px-4 py-3 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
 					type="submit"
 				>
-					<Wand2 className={cn("mr-2 h-5 w-5", isGenerating && "animate-spin")} />
-					{isGenerating
-						? t("create.generatingWithAI")
-						: t("create.submit")}
+					<Wand2
+						className={cn("mr-2 h-5 w-5", isGenerating && "animate-spin")}
+					/>
+					{isGenerating ? t("create.generatingWithAI") : t("create.submit")}
 				</button>
 			</form>
 		</div>

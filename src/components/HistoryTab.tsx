@@ -1,10 +1,10 @@
 import { ClipboardCopy, Download, FileText, Play, Trash2 } from "lucide-react";
 import type React from "react";
 import { useCallback } from "react";
+import { getExportFilename, getExportText } from "../hooks/useHistory";
 import { useTranslation } from "../i18n/I18nProvider";
 import type { HistoryEntry } from "../types";
 import { cn } from "../utils/cn";
-import { getExportFilename, getExportText } from "../hooks/useHistory";
 
 interface HistoryTabProps {
 	entries: HistoryEntry[];
@@ -56,7 +56,7 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({
 
 	if (entries.length === 0) {
 		return (
-			<div className="rounded-3xl border border-dashed border-overlay bg-surface/50 py-16 text-center">
+			<div className="rounded-3xl border border-overlay border-dashed bg-surface/50 py-16 text-center">
 				<FileText className="mx-auto mb-4 h-12 w-12 text-muted" />
 				<p className="font-medium text-muted">{t("history.empty")}</p>
 			</div>
@@ -84,7 +84,7 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({
 							</div>
 							<span
 								className={cn(
-									"ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold",
+									"ml-3 shrink-0 rounded-full px-2.5 py-0.5 font-bold text-xs",
 									isCompleted
 										? "bg-secondary/10 text-secondary"
 										: "bg-overlay text-muted",
@@ -99,7 +99,7 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({
 						<div className="flex flex-wrap gap-1.5">
 							<button
 								onClick={() => onPlayAgain(entry)}
-								className="flex items-center rounded bg-primary/10 px-3 py-1.5 text-primary text-xs font-semibold transition-all hover:bg-primary/20 active:scale-95"
+								className="flex items-center rounded bg-primary/10 px-3 py-1.5 font-semibold text-primary text-xs transition-all hover:bg-primary/20 active:scale-95"
 								type="button"
 							>
 								<Play className="mr-1 h-3.5 w-3.5" />
@@ -107,7 +107,7 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({
 							</button>
 							<button
 								onClick={() => handleCopy(entry)}
-								className="flex items-center rounded bg-overlay px-3 py-1.5 text-main text-xs font-medium transition-all hover:bg-overlay/80 active:scale-95"
+								className="flex items-center rounded bg-overlay px-3 py-1.5 font-medium text-main text-xs transition-all hover:bg-overlay/80 active:scale-95"
 								type="button"
 							>
 								<ClipboardCopy className="mr-1 h-3.5 w-3.5" />
@@ -115,7 +115,7 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({
 							</button>
 							<button
 								onClick={() => handleDownload(entry)}
-								className="flex items-center rounded bg-overlay px-3 py-1.5 text-main text-xs font-medium transition-all hover:bg-overlay/80 active:scale-95"
+								className="flex items-center rounded bg-overlay px-3 py-1.5 font-medium text-main text-xs transition-all hover:bg-overlay/80 active:scale-95"
 								type="button"
 							>
 								<Download className="mr-1 h-3.5 w-3.5" />
@@ -123,7 +123,7 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({
 							</button>
 							<button
 								onClick={() => onDelete(entry.id)}
-								className="flex items-center rounded bg-danger/10 px-3 py-1.5 text-danger text-xs font-medium transition-all hover:bg-danger/20 active:scale-95"
+								className="flex items-center rounded bg-danger/10 px-3 py-1.5 font-medium text-danger text-xs transition-all hover:bg-danger/20 active:scale-95"
 								type="button"
 							>
 								<Trash2 className="mr-1 h-3.5 w-3.5" />

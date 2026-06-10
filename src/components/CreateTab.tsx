@@ -1,21 +1,21 @@
 import {
-	Wand2,
-	Zap,
+	Bot,
 	Brain,
-	Sparkles,
-	Key,
+	ChevronDown,
 	Eye,
 	EyeOff,
-	Bot,
-	ChevronDown,
+	Key,
+	Sparkles,
+	Wand2,
+	Zap,
 } from "lucide-react";
 import type React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
-import type { Question, DifficultyMode, AIProvider } from "../types";
+import type { AIProvider, DifficultyMode, Question } from "../types";
+import { cn } from "../utils/cn";
 import { parseQuizText, prepareQuizOptionsWithAI } from "../utils/quiz";
 import { Checkbox } from "./Checkbox";
-import { cn } from "../utils/cn";
 
 interface CreateTabProps {
 	onGenerate: (
@@ -184,15 +184,15 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 								type="button"
 								onClick={() => setDifficultyMode(id)}
 								className={cn(
-									"flex flex-col items-center rounded-xl border p-3 text-center transition-all duration-200 cursor-pointer",
+									"flex cursor-pointer flex-col items-center rounded-xl border p-3 text-center transition-all duration-200",
 									difficultyMode === id
-										? "border-primary bg-primary/5 text-primary scale-[1.02] shadow-sm"
+										? "scale-[1.02] border-primary bg-primary/5 text-primary shadow-sm"
 										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
 								)}
 							>
 								<Icon className="mb-1.5 h-5 w-5" />
 								<span className="font-bold text-xs">{title}</span>
-								<span className="mt-1 font-medium text-[9px] opacity-80 leading-tight">
+								<span className="mt-1 font-medium text-[9px] leading-tight opacity-80">
 									{desc}
 								</span>
 							</button>
@@ -202,7 +202,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 
 				{/* AI Configuration Section */}
 				{difficultyMode !== "easy" && (
-					<div className="fade-in animate-in slide-in-from-top-1 mb-6 duration-200">
+					<div className="fade-in slide-in-from-top-1 mb-6 animate-in duration-200">
 						{/* Custom AI Provider selector */}
 						<div className="mb-4">
 							<span className="mb-2 block font-semibold text-main text-sm">
@@ -289,7 +289,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 								type={showApiKey ? "text" : "password"}
 								value={apiKey}
 								onChange={(e) => handleApiKeyChange(e.target.value)}
-								className="w-full rounded-md border border-overlay bg-base py-2 pl-9 pr-10 text-main transition-all placeholder:text-muted/40 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+								className="w-full rounded-md border border-overlay bg-base py-2 pr-10 pl-9 text-main text-sm transition-all placeholder:text-muted/40 focus:outline-none focus:ring-2 focus:ring-primary"
 								placeholder={t("create.apiKeyPlaceholder", {
 									provider: getProviderName(),
 								})}
@@ -297,7 +297,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 							<button
 								type="button"
 								onClick={() => setShowApiKey(!showApiKey)}
-								className="absolute right-3 text-muted hover:text-main cursor-pointer"
+								className="absolute right-3 cursor-pointer text-muted hover:text-main"
 							>
 								{showApiKey ? (
 									<EyeOff className="h-4 w-4" />
@@ -307,7 +307,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 							</button>
 						</div>
 						{apiKey.trim() === "" && (
-							<p className="mt-1.5 text-danger text-[11px] font-medium leading-tight">
+							<p className="mt-1.5 font-medium text-[11px] text-danger leading-tight">
 								{t("create.apiKeyWarning")}
 							</p>
 						)}
@@ -331,9 +331,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					</div>
 
 					{timerEnabled && (
-						<div className="fade-in animate-in slide-in-from-top-1 mt-3 flex items-center gap-4 duration-200">
+						<div className="fade-in slide-in-from-top-1 mt-3 flex animate-in items-center gap-4 duration-200">
 							<div className="flex flex-col">
-								<span className="mb-1 text-muted text-xs font-semibold">
+								<span className="mb-1 font-semibold text-muted text-xs">
 									{t("create.timerMinutes")}
 								</span>
 								<div className="relative flex items-center">
@@ -347,15 +347,15 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 												Math.max(0, Math.min(59, Number(e.target.value))),
 											)
 										}
-										className="w-20 rounded-md border border-overlay bg-base py-1.5 pl-3 pr-8 text-main transition-all focus:outline-none focus:ring-2 focus:ring-primary text-sm font-semibold text-center no-spinner"
+										className="no-spinner w-20 rounded-md border border-overlay bg-base py-1.5 pr-8 pl-3 text-center font-semibold text-main text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary"
 									/>
-									<span className="absolute right-2 text-muted text-xs font-medium pointer-events-none">
+									<span className="pointer-events-none absolute right-2 font-medium text-muted text-xs">
 										m
 									</span>
 								</div>
 							</div>
 							<div className="flex flex-col">
-								<span className="mb-1 text-muted text-xs font-semibold">
+								<span className="mb-1 font-semibold text-muted text-xs">
 									{t("create.timerSeconds")}
 								</span>
 								<div className="relative flex items-center">
@@ -369,9 +369,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 												Math.max(0, Math.min(59, Number(e.target.value))),
 											)
 										}
-										className="w-20 rounded-md border border-overlay bg-base py-1.5 pl-3 pr-8 text-main transition-all focus:outline-none focus:ring-2 focus:ring-primary text-sm font-semibold text-center no-spinner"
+										className="no-spinner w-20 rounded-md border border-overlay bg-base py-1.5 pr-8 pl-3 text-center font-semibold text-main text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary"
 									/>
-									<span className="absolute right-2 text-muted text-xs font-medium pointer-events-none">
+									<span className="pointer-events-none absolute right-2 font-medium text-muted text-xs">
 										s
 									</span>
 								</div>

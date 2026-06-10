@@ -1,7 +1,7 @@
-import type { Option, Question, DifficultyMode, AIProvider } from "../types";
 import { generateDistractorsWithGemini } from "../ai/gemini";
 import { generateDistractorsWithGroq } from "../ai/groq";
 import { generateDistractorsWithOpenAI } from "../ai/openai";
+import type { AIProvider, DifficultyMode, Option, Question } from "../types";
 
 export const TIMER_DURATION = 60;
 

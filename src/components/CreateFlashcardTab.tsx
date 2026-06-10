@@ -1,18 +1,18 @@
 import {
-	Wand2,
 	Bot,
 	ChevronDown,
-	Key,
 	Eye,
 	EyeOff,
+	Key,
 	Layers,
+	Wand2,
 } from "lucide-react";
 import type React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
 import type { AIProvider, FlashcardSet } from "../types";
-import { generateFlashcardSet } from "../utils/flashcard";
 import { cn } from "../utils/cn";
+import { generateFlashcardSet } from "../utils/flashcard";
 
 interface CreateFlashcardTabProps {
 	onGenerate: (deck: FlashcardSet) => void;
@@ -71,7 +71,10 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 		if (isGenerating) return;
 
 		if (!input.trim()) {
-			onError(t("flashcard.create.emptyInputError") || "Por favor, insira o texto para gerar os flashcards.");
+			onError(
+				t("flashcard.create.emptyInputError") ||
+					"Por favor, insira o texto para gerar os flashcards.",
+			);
 			return;
 		}
 
@@ -87,7 +90,10 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 			setInput("");
 		} catch (err) {
 			console.error(err);
-			onError((err as Error).message || "Erro ao gerar os flashcards. Verifique sua chave de API ou conexão.");
+			onError(
+				(err as Error).message ||
+					"Erro ao gerar os flashcards. Verifique sua chave de API ou conexão.",
+			);
 		} finally {
 			setIsGenerating(false);
 		}
@@ -113,17 +119,21 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 					{t("flashcard.create.heading") || "Gerar Flashcards com IA"}
 				</h2>
 			</div>
-			
+
 			<p className="mb-4 text-sm text-subtle">
-				{t("flashcard.create.description") || "Cole um texto corrido (artigo, resumo, anotação) abaixo. A inteligência artificial irá ler e sintetizar de 5 a 12 cartões de memorização contendo termos e definições fundamentais."}
+				{t("flashcard.create.description") ||
+					"Cole um texto corrido (artigo, resumo, anotação) abaixo. A inteligência artificial irá ler e sintetizar de 5 a 12 cartões de memorização contendo termos e definições fundamentais."}
 			</p>
 
 			<form onSubmit={handleGenerate}>
 				<textarea
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
-					className="mb-4 h-64 w-full rounded-md border border-overlay bg-base p-3 text-main transition-all placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-					placeholder={t("flashcard.create.placeholder") || "Cole o texto do qual deseja estudar conceitos e definições..."}
+					className="mb-4 h-64 w-full rounded-md border border-overlay bg-base p-3 text-main text-sm transition-all placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary"
+					placeholder={
+						t("flashcard.create.placeholder") ||
+						"Cole o texto do qual deseja estudar conceitos e definições..."
+					}
 				/>
 
 				{/* AI Configuration Section */}
@@ -172,7 +182,8 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 											key={prov.value}
 											className={cn(
 												"flex w-full cursor-pointer items-center px-4 py-3 text-left text-main text-sm transition-colors hover:bg-overlay",
-												aiProvider === prov.value && "bg-primary/5 font-semibold text-primary",
+												aiProvider === prov.value &&
+													"bg-primary/5 font-semibold text-primary",
 											)}
 											onClick={() => {
 												handleProviderChange(prov.value);
@@ -219,7 +230,7 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 							<button
 								type="button"
 								onClick={() => setShowApiKey(!showApiKey)}
-								className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer p-1 text-muted transition-colors hover:text-main"
+								className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer p-1 text-muted transition-colors hover:text-main"
 							>
 								{showApiKey ? (
 									<EyeOff className="h-4 w-4" />
@@ -242,7 +253,8 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 					{isGenerating ? (
 						<>
 							<div className="h-4 w-4 animate-spin rounded-full border-2 border-surface border-t-transparent" />
-							{t("flashcard.create.generating") || "Analisando texto e gerando cartões..."}
+							{t("flashcard.create.generating") ||
+								"Analisando texto e gerando cartões..."}
 						</>
 					) : (
 						<>

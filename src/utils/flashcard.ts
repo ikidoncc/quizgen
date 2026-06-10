@@ -1,7 +1,7 @@
 import { generateFlashcardsWithGemini } from "../ai/gemini";
 import { generateFlashcardsWithGroq } from "../ai/groq";
 import { generateFlashcardsWithOpenAI } from "../ai/openai";
-import type { FlashcardSet, AIProvider } from "../types";
+import type { AIProvider, FlashcardSet } from "../types";
 
 export async function generateFlashcardSet(
 	text: string,
@@ -12,7 +12,7 @@ export async function generateFlashcardSet(
 		throw new Error("Chave de API inválida ou ausente.");
 	}
 
-	let result;
+	let result: { title: string; cards: { front: string; back: string }[] };
 	if (provider === "gemini") {
 		result = await generateFlashcardsWithGemini(text, apiKey);
 	} else if (provider === "groq") {

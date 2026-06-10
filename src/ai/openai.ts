@@ -1,4 +1,4 @@
-import type { Question, DifficultyMode } from "../types";
+import type { DifficultyMode, Question } from "../types";
 
 interface QuestionInput {
 	id: string;
@@ -232,4 +232,3 @@ ${text}`;
 
 	return result;
 }
-

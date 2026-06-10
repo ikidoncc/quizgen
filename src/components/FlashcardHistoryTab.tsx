@@ -10,17 +10,21 @@ interface FlashcardHistoryTabProps {
 	onDelete: (id: string) => void;
 }
 
+const getExportText = (deck: FlashcardSet): string => {
+	return (
+		`Deck: ${deck.title}\nCriado em: ${new Date(deck.createdAt).toLocaleString()}\n\n` +
+		deck.cards
+			.map((c, i) => `[Card ${i + 1}]\nFrente: ${c.front}\nVerso: ${c.back}`)
+			.join("\n\n")
+	);
+};
+
 export const FlashcardHistoryTab: React.FC<FlashcardHistoryTabProps> = ({
 	entries,
 	onSelectDeck,
 	onDelete,
 }) => {
 	const { t } = useTranslation();
-
-	const getExportText = (deck: FlashcardSet): string => {
-		return `Deck: ${deck.title}\nCriado em: ${new Date(deck.createdAt).toLocaleString()}\n\n` + 
-			deck.cards.map((c, i) => `[Card ${i + 1}]\nFrente: ${c.front}\nVerso: ${c.back}`).join("\n\n");
-	};
 
 	const handleCopy = useCallback(async (deck: FlashcardSet) => {
 		try {
@@ -54,10 +58,11 @@ export const FlashcardHistoryTab: React.FC<FlashcardHistoryTabProps> = ({
 
 	if (entries.length === 0) {
 		return (
-			<div className="rounded-3xl border border-dashed border-overlay bg-surface/50 py-16 text-center">
+			<div className="rounded-3xl border border-overlay border-dashed bg-surface/50 py-16 text-center">
 				<FileText className="mx-auto mb-4 h-12 w-12 text-muted" />
 				<p className="font-medium text-muted">
-					{t("flashcard.history.empty") || "Nenhum deck de flashcards encontrado."}
+					{t("flashcard.history.empty") ||
+						"Nenhum deck de flashcards encontrado."}
 				</p>
 			</div>
 		);
@@ -80,15 +85,17 @@ export const FlashcardHistoryTab: React.FC<FlashcardHistoryTabProps> = ({
 									{rd(deck.createdAt)}
 								</p>
 							</div>
-							<span className="ml-3 shrink-0 rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-bold text-secondary">
-								{t("flashcard.history.cardsCount", { count: deck.cards.length }) || `${deck.cards.length} cards`}
+							<span className="ml-3 shrink-0 rounded-full bg-secondary/10 px-2.5 py-0.5 font-bold text-secondary text-xs">
+								{t("flashcard.history.cardsCount", {
+									count: deck.cards.length,
+								}) || `${deck.cards.length} cards`}
 							</span>
 						</div>
 
 						<div className="flex flex-wrap gap-1.5">
 							<button
 								onClick={() => onSelectDeck(deck)}
-								className="flex items-center rounded bg-primary/10 px-3 py-1.5 text-primary text-xs font-semibold transition-all hover:bg-primary/20 active:scale-95 cursor-pointer"
+								className="flex cursor-pointer items-center rounded bg-primary/10 px-3 py-1.5 font-semibold text-primary text-xs transition-all hover:bg-primary/20 active:scale-95"
 								type="button"
 							>
 								<Play className="mr-1 h-3.5 w-3.5" />
@@ -96,7 +103,7 @@ export const FlashcardHistoryTab: React.FC<FlashcardHistoryTabProps> = ({
 							</button>
 							<button
 								onClick={() => handleCopy(deck)}
-								className="flex items-center rounded bg-overlay px-3 py-1.5 text-main text-xs font-medium transition-all hover:bg-overlay/80 active:scale-95 cursor-pointer"
+								className="flex cursor-pointer items-center rounded bg-overlay px-3 py-1.5 font-medium text-main text-xs transition-all hover:bg-overlay/80 active:scale-95"
 								type="button"
 							>
 								<ClipboardCopy className="mr-1 h-3.5 w-3.5" />
@@ -104,7 +111,7 @@ export const FlashcardHistoryTab: React.FC<FlashcardHistoryTabProps> = ({
 							</button>
 							<button
 								onClick={() => handleDownload(deck)}
-								className="flex items-center rounded bg-overlay px-3 py-1.5 text-main text-xs font-medium transition-all hover:bg-overlay/80 active:scale-95 cursor-pointer"
+								className="flex cursor-pointer items-center rounded bg-overlay px-3 py-1.5 font-medium text-main text-xs transition-all hover:bg-overlay/80 active:scale-95"
 								type="button"
 							>
 								<Download className="mr-1 h-3.5 w-3.5" />
@@ -112,7 +119,7 @@ export const FlashcardHistoryTab: React.FC<FlashcardHistoryTabProps> = ({
 							</button>
 							<button
 								onClick={() => onDelete(deck.id)}
-								className="flex items-center rounded bg-danger/10 px-3 py-1.5 text-danger text-xs font-medium transition-all hover:bg-danger/20 active:scale-95 cursor-pointer"
+								className="flex cursor-pointer items-center rounded bg-danger/10 px-3 py-1.5 font-medium text-danger text-xs transition-all hover:bg-danger/20 active:scale-95"
 								type="button"
 							>
 								<Trash2 className="mr-1 h-3.5 w-3.5" />

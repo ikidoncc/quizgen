@@ -177,20 +177,25 @@ export function useQuizState() {
 	const selectCardFeedback = useCallback(
 		(cardId: string, type: "master" | "review") => {
 			setState((s) => {
-				const mastered = type === "master"
-					? [...s.cardsMastered.filter((id) => id !== cardId), cardId]
-					: s.cardsMastered.filter((id) => id !== cardId);
-				const review = type === "review"
-					? [...s.cardsToReview.filter((id) => id !== cardId), cardId]
-					: s.cardsToReview.filter((id) => id !== cardId);
+				const mastered =
+					type === "master"
+						? [...s.cardsMastered.filter((id) => id !== cardId), cardId]
+						: s.cardsMastered.filter((id) => id !== cardId);
+				const review =
+					type === "review"
+						? [...s.cardsToReview.filter((id) => id !== cardId), cardId]
+						: s.cardsToReview.filter((id) => id !== cardId);
 
 				// Encontra o próximo card que ainda não está dominado
 				const cards = s.currentFlashcardSet?.cards || [];
 				let nextIndex = s.currentCardIndex + 1;
-				
+
 				// Procuramos o próximo index que não esteja no novo set de dominados
 				const masteredSet = new Set(mastered);
-				while (nextIndex < cards.length && masteredSet.has(cards[nextIndex].id)) {
+				while (
+					nextIndex < cards.length &&
+					masteredSet.has(cards[nextIndex].id)
+				) {
 					nextIndex++;
 				}
 
@@ -220,10 +225,13 @@ export function useQuizState() {
 					nextMastered = cards
 						.filter((c) => !reviewSet.has(c.id))
 						.map((c) => c.id);
-					
+
 					// Achar a primeira que precisa de revisão para começar dali
 					const masteredSet = new Set(nextMastered);
-					while (nextIndex < cards.length && masteredSet.has(cards[nextIndex].id)) {
+					while (
+						nextIndex < cards.length &&
+						masteredSet.has(cards[nextIndex].id)
+					) {
 						nextIndex++;
 					}
 				}

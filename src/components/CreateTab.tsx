@@ -347,7 +347,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 												Math.max(0, Math.min(59, Number(e.target.value))),
 											)
 										}
-										className="w-20 rounded-md border border-overlay bg-base py-1.5 pl-3 pr-8 text-main transition-all focus:outline-none focus:ring-2 focus:ring-primary text-sm font-semibold text-center"
+										className="w-20 rounded-md border border-overlay bg-base py-1.5 pl-3 pr-8 text-main transition-all focus:outline-none focus:ring-2 focus:ring-primary text-sm font-semibold text-center no-spinner"
 									/>
 									<span className="absolute right-2 text-muted text-xs font-medium pointer-events-none">
 										m
@@ -369,7 +369,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 												Math.max(0, Math.min(59, Number(e.target.value))),
 											)
 										}
-										className="w-20 rounded-md border border-overlay bg-base py-1.5 pl-3 pr-8 text-main transition-all focus:outline-none focus:ring-2 focus:ring-primary text-sm font-semibold text-center"
+										className="w-20 rounded-md border border-overlay bg-base py-1.5 pl-3 pr-8 text-main transition-all focus:outline-none focus:ring-2 focus:ring-primary text-sm font-semibold text-center no-spinner"
 									/>
 									<span className="absolute right-2 text-muted text-xs font-medium pointer-events-none">
 										s

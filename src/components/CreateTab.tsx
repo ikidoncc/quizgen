@@ -76,6 +76,13 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
+	// Auto-fallback from easy to normal mode when switching to raw text input
+	useEffect(() => {
+		if (inputType === "raw" && difficultyMode === "easy") {
+			setDifficultyMode("normal");
+		}
+	}, [inputType, difficultyMode]);
+
 	const handleApiKeyChange = (val: string) => {
 		setApiKey(val);
 		localStorage.setItem(`${aiProvider}_api_key`, val);
@@ -196,6 +203,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 		},
 	];
 
+	const visibleModes =
+		inputType === "raw" ? modes.filter((m) => m.id !== "easy") : modes;
+
 	const showAiConfig = inputType === "raw" || difficultyMode !== "easy";
 
 	return (
@@ -272,7 +282,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 						{t("create.modeLabel")}
 					</span>
 					<div className="grid grid-cols-3 gap-3">
-						{modes.map(({ id, icon: Icon, title, desc }) => (
+						{visibleModes.map(({ id, icon: Icon, title, desc }) => (
 							<button
 								key={id}
 								type="button"

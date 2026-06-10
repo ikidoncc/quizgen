@@ -1,4 +1,10 @@
-export type Tab = "create" | "play" | "history";
+export type Tab =
+	| "quiz-create"
+	| "quiz-play"
+	| "quiz-history"
+	| "flashcard-create"
+	| "flashcard-study"
+	| "flashcard-history";
 export type Theme = "light" | "dark" | "auto";
 export type DifficultyMode = "easy" | "normal" | "hard";
 export type AIProvider = "gemini" | "groq" | "openai";
@@ -17,7 +23,20 @@ export interface Question {
 	options: Option[];
 }
 
-export const STORAGE_VERSION = 5;
+export interface Flashcard {
+	id: string;
+	front: string;
+	back: string;
+}
+
+export interface FlashcardSet {
+	id: string;
+	title: string;
+	createdAt: string;
+	cards: Flashcard[];
+}
+
+export const STORAGE_VERSION = 6;
 
 export interface QuizState {
 	version: number;
@@ -31,6 +50,12 @@ export interface QuizState {
 	timerDuration: number;
 	timeLeft: number;
 	currentHistoryId: string;
+	// Flashcard states
+	flashcardHistory: FlashcardSet[];
+	currentFlashcardSet: FlashcardSet | null;
+	currentCardIndex: number;
+	cardsMastered: string[];
+	cardsToReview: string[];
 }
 
 export interface HistoryEntry {

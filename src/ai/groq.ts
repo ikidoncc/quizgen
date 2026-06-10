@@ -173,12 +173,13 @@ export interface FlashcardGenerationResult {
 export async function generateFlashcardsWithGroq(
 	text: string,
 	apiKey: string,
+	cardCount: number,
 ): Promise<FlashcardGenerationResult> {
 	const prompt = `Você é um gerador especialista em material didático e flashcards de estudo.
 Sua tarefa é analisar o texto enviado pelo usuário e gerar um conjunto de flashcards contendo conceitos importantes, perguntas e respostas diretas presentes no texto.
 
 Regras de Geração:
-1. Extraia de 5 a 12 flashcards, focando em termos-chave, definições, fórmulas ou conceitos cruciais presentes no texto.
+1. Extraia exatamente ${cardCount} flashcards (ou o máximo possível próximo de ${cardCount} caso o texto seja curto), focando em termos-chave, definições, fórmulas ou conceitos cruciais presentes no texto.
 2. Cada flashcard deve conter:
    - "front": Uma pergunta clara ou o nome de um conceito (máximo de 120 caracteres).
    - "back": A resposta exata, definição ou explicação resumida (máximo de 300 caracteres).
@@ -240,3 +241,88 @@ ${text}`;
 
 	return result;
 }
+
+export interface AIQuizQuestion {
+	question: string;
+	answer: string;
+	distractors: string[];
+}
+
+export interface AIQuizGenerationResult {
+	questions: AIQuizQuestion[];
+}
+
+export async function generateQuizFromTextWithGroq(
+	text: string,
+	apiKey: string,
+	quantity: number,
+): Promise<AIQuizGenerationResult> {
+	const prompt = `Você é um gerador especialista em quizzes e avaliações didáticas.
+Sua tarefa é analisar o texto enviado pelo usuário e gerar um conjunto de perguntas de múltipla escolha com alto rigor pedagógico.
+
+Regras de Geração:
+1. Extraia exatamente ${quantity} perguntas de múltipla escolha baseadas nas partes mais importantes do texto (ou o máximo possível próximo de ${quantity} caso o texto seja curto).
+2. Cada pergunta deve ser um enunciado claro e objetivo.
+3. Para cada pergunta, você deve fornecer:
+   - "question": O enunciado da pergunta.
+   - "answer": A alternativa correta e factual.
+   - "distractors": Uma lista contendo exatamente 3 alternativas incorretas (distratores) plausíveis mas falsas.
+4. Garanta que NÃO haja erros ortográficos ou gramaticais em nenhuma das alternativas.
+5. Use o mesmo idioma do texto fornecido.
+6. Retorne a resposta estritamente como um objeto JSON válido contendo a chave "questions" com a lista de perguntas geradas.
+
+Esquema de Saída JSON esperado:
+{
+  "questions": [
+    {
+      "question": "Enunciado da pergunta?",
+      "answer": "Opção correta",
+      "distractors": ["Distrator 1", "Distrator 2", "Distrator 3"]
+    }
+  ]
+}
+
+Texto fornecido:
+${text}`;
+
+	const response = await fetch(
+		"https://api.groq.com/openai/v1/chat/completions",
+		{
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${apiKey}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				model: "llama-3.1-8b-instant",
+				messages: [
+					{
+						role: "user",
+						content: prompt,
+					},
+				],
+				response_format: { type: "json_object" },
+				temperature: 0.2,
+			}),
+		},
+	);
+
+	if (!response.ok) {
+		const errorText = await response.text();
+		throw new Error(`Groq API error (${response.status}): ${errorText}`);
+	}
+
+	const data = await response.json();
+	const responseText = data.choices?.[0]?.message?.content;
+	if (!responseText) {
+		throw new Error("No response text returned from Groq API");
+	}
+
+	const result: AIQuizGenerationResult = JSON.parse(responseText.trim());
+	if (!Array.isArray(result.questions)) {
+		throw new Error("Invalid response format from Groq API");
+	}
+
+	return result;
+}
+

@@ -1,6 +1,15 @@
-import { generateDistractorsWithGemini } from "../ai/gemini";
-import { generateDistractorsWithGroq } from "../ai/groq";
-import { generateDistractorsWithOpenAI } from "../ai/openai";
+import {
+	generateDistractorsWithGemini,
+	generateQuizFromTextWithGemini,
+} from "../ai/gemini";
+import {
+	generateDistractorsWithGroq,
+	generateQuizFromTextWithGroq,
+} from "../ai/groq";
+import {
+	generateDistractorsWithOpenAI,
+	generateQuizFromTextWithOpenAI,
+} from "../ai/openai";
 import type { AIProvider, DifficultyMode, Option, Question } from "../types";
 
 export const TIMER_DURATION = 60;
@@ -319,4 +328,50 @@ export async function prepareQuizOptionsWithAI(
 		);
 		return prepareQuizOptions(data);
 	}
+}
+
+export async function generateQuizFromText(
+	text: string,
+	provider: AIProvider,
+	apiKey: string,
+	quantity = 5,
+): Promise<Question[]> {
+	if (!apiKey.trim()) {
+		throw new Error("Chave de API inválida ou ausente.");
+	}
+
+	let result;
+	if (provider === "gemini") {
+		result = await generateQuizFromTextWithGemini(text, apiKey, quantity);
+	} else if (provider === "groq") {
+		result = await generateQuizFromTextWithGroq(text, apiKey, quantity);
+	} else if (provider === "openai") {
+		result = await generateQuizFromTextWithOpenAI(text, apiKey, quantity);
+	} else {
+		throw new Error("Provedor de IA desconhecido");
+	}
+
+	const questions: Question[] = result.questions.map((q, i) => {
+		const qId = `q-ai-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 11)}`;
+		const optionsList = [
+			{ id: `${qId}-opt-0`, text: q.answer, isCorrect: true },
+			{ id: `${qId}-opt-1`, text: q.distractors[0], isCorrect: false },
+			{ id: `${qId}-opt-2`, text: q.distractors[1], isCorrect: false },
+			{ id: `${qId}-opt-3`, text: q.distractors[2], isCorrect: false },
+		];
+		// Embaralha as opções
+		const shuffledOptions = shuffle(optionsList);
+		const correctOpt = shuffledOptions.find((o) => o.isCorrect);
+
+		return {
+			id: qId,
+			question: q.question,
+			answer: q.answer,
+			correctOptionId: correctOpt?.id || "",
+			manualOptions: q.distractors,
+			options: shuffledOptions.map((o) => ({ id: o.id, text: o.text })),
+		};
+	});
+
+	return questions;
 }

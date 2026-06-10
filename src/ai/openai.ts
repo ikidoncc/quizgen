@@ -10,13 +10,15 @@ interface QuestionInput {
 
 interface DistractorResult {
 	id: string;
-	distractors: string[];
+	distractors: (string | { text: string; explanation: string })[];
 	correctOption?: string;
+	answerExplanation?: string;
 }
 
 export interface OpenAIGenerationResult {
-	distractors: string[];
+	distractors: (string | { text: string; explanation: string })[];
 	correctOption?: string;
+	answerExplanation?: string;
 }
 
 function isBooleanAnswer(answer: string): boolean {
@@ -96,6 +98,14 @@ Você DEVE:
 1. Gerar uma versão expandida da resposta correta no campo "correctOption", incluindo uma justificativa curta (ex: "Sim, porque a fotossíntese necessita de luz solar." ou "Falso, porque o Sol é uma estrela.").
 2. Gerar exatamente 3 distratores no campo "distractors", cada um contendo uma justificativa plausível porém incorreta (ex: "Não, porque a fotossíntese ocorre apenas à noite." ou "Sim, porque as plantas realizam apenas respiração.").
 As alternativas devem começar de forma apropriada com "Sim, porque...", "Não, porque...", "Verdadeiro, porque...", "Falso, porque...", etc.
+Para perguntas booleanas, o campo "distractors" deve ser um array simples de strings (pois a justificativa já faz parte do texto da alternativa).
+
+Regras para Perguntas Não-Booleanas (quando "isBoolean" for false):
+Você DEVE:
+1. Gerar uma pequena explicação de por que a resposta correta ("answer") é a certa, no campo "answerExplanation".
+2. Gerar exatamente 3 distratores no campo "distractors", contendo:
+   - "text": O texto do distrator.
+   - "explanation": Uma pequena explicação de por que esse distrator está incorreto.
 
 Esquema de Saída JSON esperado (retorne obrigatoriamente um objeto contendo a chave "questions"):
 {
@@ -103,7 +113,13 @@ Esquema de Saída JSON esperado (retorne obrigatoriamente um objeto contendo a c
     {
       "id": "id_da_pergunta",
       "correctOption": "Resposta correta expandida (apenas se isBoolean for true)",
-      "distractors": ["distrator 1", "distrator 2", "distrator 3"]
+      "answerExplanation": "Explicação de por que a resposta correta é a certa (apenas se isBoolean for false)",
+      "distractors": [
+        // Se isBoolean for true:
+        "distrator 1", "distrator 2", "distrator 3"
+        // Se isBoolean for false:
+        // { "text": "distrator 1", "explanation": "Explicação de por que está incorreta" }, ...
+      ]
     }
   ]
 }
@@ -150,6 +166,7 @@ ${JSON.stringify(inputs, null, 2)}`;
 			dict[item.id] = {
 				distractors: item.distractors,
 				correctOption: item.correctOption,
+				answerExplanation: item.answerExplanation,
 			};
 		}
 	}
@@ -237,7 +254,8 @@ ${text}`;
 export interface AIQuizQuestion {
 	question: string;
 	answer: string;
-	distractors: string[];
+	answerExplanation?: string;
+	distractors: (string | { text: string; explanation: string })[];
 }
 
 export interface AIQuizGenerationResult {
@@ -269,7 +287,10 @@ Regras de Geração:
 3. Para cada pergunta, você deve fornecer:
    - "question": O enunciado da pergunta.
    - "answer": A alternativa correta e factual baseada no texto.
-   - "distractors": Uma lista contendo exatamente 3 alternativas incorretas (distratores).
+   - "answerExplanation": Uma pequena explicação de por que essa resposta correta é a certa.
+   - "distractors": Uma lista contendo exatamente 3 objetos, onde cada objeto possui:
+     - "text": O texto do distrator (alternativa incorreta).
+     - "explanation": Uma pequena explicação de por que esse distrator está incorreto.
 4. O nível de dificuldade deve seguir a seguinte especificação:
 ${promptModeDescription}
 5. Use o mesmo idioma do texto fornecido.
@@ -281,7 +302,21 @@ Esquema de Saída JSON esperado:
     {
       "question": "Enunciado da pergunta?",
       "answer": "Opção correta",
-      "distractors": ["Distrator 1", "Distrator 2", "Distrator 3"]
+      "answerExplanation": "Explicação de por que a resposta correta é a certa.",
+      "distractors": [
+        {
+          "text": "Distrator 1",
+          "explanation": "Explicação de por que esta opção está incorreta."
+        },
+        {
+          "text": "Distrator 2",
+          "explanation": "Explicação de por que esta opção está incorreta."
+        },
+        {
+          "text": "Distrator 3",
+          "explanation": "Explicação de por que esta opção está incorreta."
+        }
+      ]
     }
   ]
 }

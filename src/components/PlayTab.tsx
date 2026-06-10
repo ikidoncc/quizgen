@@ -20,7 +20,7 @@ interface PlayTabProps {
 	isTimerEnabled: boolean;
 	timeLeft: number;
 	timerPaused: boolean;
-	onAnswer: (isCorrect: boolean) => void;
+	onAnswer: (isCorrect: boolean, selectedOptionId?: string) => void;
 	onSkip: () => void;
 	onSkipRequest: () => void;
 	onReset: () => void;
@@ -82,7 +82,7 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 
 	const handleNext = () => {
 		const isCorrect = selectedOptionId === currentQ.correctOptionId;
-		onAnswer(isCorrect);
+		onAnswer(isCorrect, selectedOptionId || undefined);
 	};
 
 	const isCorrectSelection = selectedOptionId === currentQ.correctOptionId;
@@ -176,21 +176,60 @@ export const PlayTab: React.FC<PlayTabProps> = ({
 			{showFeedback && (
 				<div
 					className={cn(
-						"zoom-in mt-6 flex animate-in items-center justify-center rounded-xl p-4 font-bold duration-300",
+						"zoom-in mt-6 flex flex-col animate-in rounded-xl p-4 duration-300",
 						isCorrectSelection
 							? "border border-secondary/20 bg-secondary/10 text-secondary"
 							: "border border-danger/20 bg-danger/10 text-danger",
 					)}
 				>
-					{isCorrectSelection ? (
-						<>
-							<CheckCircle className="mr-2 h-5 w-5" /> {t("play.correct")}
-						</>
-					) : (
-						<>
-							<AlertTriangle className="mr-2 h-5 w-5" />{" "}
-							{t("play.incorrect", { answer: currentQ.answer })}
-						</>
+					<div className="flex items-center justify-center font-bold">
+						{isCorrectSelection ? (
+							<>
+								<CheckCircle className="mr-2 h-5 w-5" /> {t("play.correct")}
+							</>
+						) : (
+							<>
+								<AlertTriangle className="mr-2 h-5 w-5" />{" "}
+								{t("play.incorrect", { answer: currentQ.answer })}
+							</>
+						)}
+					</div>
+
+					{/* Explanation of selected wrong option */}
+					{!isCorrectSelection &&
+						selectedOptionId &&
+						currentQ.options.find((o) => o.id === selectedOptionId)
+							?.explanation && (
+							<div className="mt-3 text-xs font-normal border-t border-danger/20 pt-3">
+								<strong className="block mb-0.5 font-bold">
+									{t("play.explanationSelected") ||
+										"Explicação da sua resposta:"}
+								</strong>
+								{
+									currentQ.options.find((o) => o.id === selectedOptionId)
+										?.explanation
+								}
+							</div>
+						)}
+
+					{/* Explanation of correct answer */}
+					{currentQ.options.find((o) => o.id === currentQ.correctOptionId)
+						?.explanation && (
+						<div
+							className={cn(
+								"mt-3 text-xs font-normal border-t pt-3",
+								isCorrectSelection ? "border-secondary/20" : "border-danger/20",
+							)}
+						>
+							<strong className="block mb-0.5 font-bold">
+								{t("play.explanationCorrect") ||
+									"Explicação da resposta correta:"}
+							</strong>
+							{
+								currentQ.options.find((o) => o.id === currentQ.correctOptionId)
+									?.explanation
+							}
+						</div>
 					)}
 				</div>
 			)}

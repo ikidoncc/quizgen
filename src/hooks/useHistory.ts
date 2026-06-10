@@ -64,7 +64,12 @@ export function useHistory() {
 	);
 
 	const updateEntry = useCallback(
-		(id: string, score: number, skippedCount: number) => {
+		(
+			id: string,
+			score: number,
+			skippedCount: number,
+			quizData?: Question[],
+		) => {
 			setEntries((prev) =>
 				prev.map((e) =>
 					e.id === id
@@ -73,6 +78,7 @@ export function useHistory() {
 								completedAt: new Date().toISOString(),
 								score,
 								skippedCount,
+								quizData: quizData ?? e.quizData,
 							}
 						: e,
 				),

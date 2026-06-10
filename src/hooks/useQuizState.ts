@@ -125,24 +125,38 @@ export function useQuizState() {
 	);
 
 	const answerQuestion = useCallback(
-		(isCorrect: boolean) => {
-			setState((s) => ({
-				...s,
-				score: isCorrect ? s.score + 1 : s.score,
-				currentQuestionIndex: s.currentQuestionIndex + 1,
-				timeLeft: s.timerDuration || 60,
-			}));
+		(isCorrect: boolean, selectedOptionId?: string) => {
+			setState((s) => {
+				const updatedQuizData = s.quizData.map((q, idx) =>
+					idx === s.currentQuestionIndex ? { ...q, selectedOptionId } : q,
+				);
+				return {
+					...s,
+					quizData: updatedQuizData,
+					score: isCorrect ? s.score + 1 : s.score,
+					currentQuestionIndex: s.currentQuestionIndex + 1,
+					timeLeft: s.timerDuration || 60,
+				};
+			});
 		},
 		[setState],
 	);
 
 	const skipQuestion = useCallback(() => {
-		setState((s) => ({
-			...s,
-			skippedCount: s.skippedCount + 1,
-			currentQuestionIndex: s.currentQuestionIndex + 1,
-			timeLeft: s.timerDuration || 60,
-		}));
+		setState((s) => {
+			const updatedQuizData = s.quizData.map((q, idx) =>
+				idx === s.currentQuestionIndex
+					? { ...q, selectedOptionId: "skipped" }
+					: q,
+			);
+			return {
+				...s,
+				quizData: updatedQuizData,
+				skippedCount: s.skippedCount + 1,
+				currentQuestionIndex: s.currentQuestionIndex + 1,
+				timeLeft: s.timerDuration || 60,
+			};
+		});
 	}, [setState]);
 
 	const setTimeLeft = useCallback(

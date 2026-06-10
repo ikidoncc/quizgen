@@ -1,6 +1,7 @@
 import {
 	generateDistractorsWithGemini,
 	generateQuizFromTextWithGemini,
+	type AIQuizGenerationResult,
 } from "../ai/gemini";
 import {
 	generateDistractorsWithGroq,
@@ -59,14 +60,21 @@ export function parseQuizText(
 
 function collectUniqueOptions(
 	q: Pick<Question, "answer" | "manualOptions">,
-): Map<string, { text: string; isCorrect: boolean }> {
-	const map = new Map<string, { text: string; isCorrect: boolean }>();
+): Map<string, { text: string; isCorrect: boolean; explanation?: string }> {
+	const map = new Map<
+		string,
+		{ text: string; isCorrect: boolean; explanation?: string }
+	>();
 
-	const addIfUnique = (text: string, isCorrect: boolean) => {
+	const addIfUnique = (
+		text: string,
+		isCorrect: boolean,
+		explanation?: string,
+	) => {
 		if (text === "") return;
 		const key = text.toLowerCase().trim();
 		if (!map.has(key)) {
-			map.set(key, { text, isCorrect });
+			map.set(key, { text, isCorrect, explanation });
 		}
 	};
 
@@ -79,11 +87,14 @@ function collectUniqueOptions(
 }
 
 function fillWithDistractors(
-	options: Map<string, { text: string; isCorrect: boolean }>,
+	options: Map<
+		string,
+		{ text: string; isCorrect: boolean; explanation?: string }
+	>,
 	allAnswers: string[],
 	correctAnswer: string,
 	manualOptions: string[],
-): Map<string, { text: string; isCorrect: boolean }> {
+): Map<string, { text: string; isCorrect: boolean; explanation?: string }> {
 	const result = new Map(options);
 
 	if (result.size >= 4) return result;
@@ -194,11 +205,13 @@ export function prepareQuizOptions(
 
 		const entries = shuffle(Array.from(filledOptions.entries()));
 		let correctOptionId = "";
-		const options: Option[] = entries.map(([_, { text, isCorrect }], i) => {
-			const id = `${q.id}-opt-${i}`;
-			if (isCorrect) correctOptionId = id;
-			return { id, text };
-		});
+		const options: Option[] = entries.map(
+			([_, { text, isCorrect, explanation }], i) => {
+				const id = `${q.id}-opt-${i}`;
+				if (isCorrect) correctOptionId = id;
+				return { id, text, explanation };
+			},
+		);
 		return {
 			...q,
 			correctOptionId,
@@ -220,7 +233,11 @@ export async function prepareQuizOptionsWithAI(
 	try {
 		let distractorMap: Record<
 			string,
-			{ distractors: string[]; correctOption?: string }
+			{
+				distractors: (string | { text: string; explanation: string })[];
+				correctOption?: string;
+				answerExplanation?: string;
+			}
 		> = {};
 		if (provider === "gemini") {
 			distractorMap = await generateDistractorsWithGemini(data, mode, apiKey);
@@ -247,26 +264,30 @@ export async function prepareQuizOptionsWithAI(
 
 					const uniqueOptions = new Map<
 						string,
-						{ text: string; isCorrect: boolean }
+						{ text: string; isCorrect: boolean; explanation?: string }
 					>();
 					uniqueOptions.set(correctText.toLowerCase().trim(), {
 						text: correctText,
 						isCorrect: true,
 					});
 					for (const d of distractorsText) {
-						uniqueOptions.set(d.toLowerCase().trim(), {
-							text: d,
+						const dText = typeof d === "string" ? d : d.text;
+						const dExplanation =
+							typeof d === "string" ? undefined : d.explanation;
+						uniqueOptions.set(dText.toLowerCase().trim(), {
+							text: dText,
 							isCorrect: false,
+							explanation: dExplanation,
 						});
 					}
 
 					const entries = shuffle(Array.from(uniqueOptions.entries()));
 					let correctOptionId = "";
 					const options: Option[] = entries.map(
-						([_, { text, isCorrect }], i) => {
+						([_, { text, isCorrect, explanation }], i) => {
 							const id = `${q.id}-opt-${i}`;
 							if (isCorrect) correctOptionId = id;
-							return { id, text };
+							return { id, text, explanation };
 						},
 					);
 
@@ -287,15 +308,31 @@ export async function prepareQuizOptionsWithAI(
 			}
 
 			const uniqueOptions = collectUniqueOptions(q);
+			const aiResult = distractorMap[q.id];
+
+			// Override the correct answer in the map to include its explanation
+			if (aiResult?.answerExplanation) {
+				const correctKey = q.answer.toLowerCase().trim();
+				const existingCorrect = uniqueOptions.get(correctKey);
+				if (existingCorrect) {
+					uniqueOptions.set(correctKey, {
+						...existingCorrect,
+						explanation: aiResult.answerExplanation,
+					});
+				}
+			}
 
 			// Add AI generated distractors if they exist for this question
-			const aiResult = distractorMap[q.id];
 			const aiDistractors = aiResult?.distractors || [];
 			for (const distractor of aiDistractors) {
 				if (uniqueOptions.size >= 4) break;
-				const key = distractor.toLowerCase().trim();
+				const text =
+					typeof distractor === "string" ? distractor : distractor.text;
+				const explanation =
+					typeof distractor === "string" ? undefined : distractor.explanation;
+				const key = text.toLowerCase().trim();
 				if (!uniqueOptions.has(key) && key !== "") {
-					uniqueOptions.set(key, { text: distractor, isCorrect: false });
+					uniqueOptions.set(key, { text, isCorrect: false, explanation });
 				}
 			}
 
@@ -309,11 +346,13 @@ export async function prepareQuizOptionsWithAI(
 
 			const entries = shuffle(Array.from(filledOptions.entries()));
 			let correctOptionId = "";
-			const options: Option[] = entries.map(([_, { text, isCorrect }], i) => {
-				const id = `${q.id}-opt-${i}`;
-				if (isCorrect) correctOptionId = id;
-				return { id, text };
-			});
+			const options: Option[] = entries.map(
+				([_, { text, isCorrect, explanation }], i) => {
+					const id = `${q.id}-opt-${i}`;
+					if (isCorrect) correctOptionId = id;
+					return { id, text, explanation };
+				},
+			);
 
 			return {
 				...q,
@@ -341,13 +380,7 @@ export async function generateQuizFromText(
 		throw new Error("Chave de API inválida ou ausente.");
 	}
 
-	let result: {
-		questions: {
-			question: string;
-			answer: string;
-			distractors: string[];
-		}[];
-	};
+	let result: AIQuizGenerationResult;
 	if (provider === "gemini") {
 		result = await generateQuizFromTextWithGemini(text, apiKey, quantity, mode);
 	} else if (provider === "groq") {
@@ -360,23 +393,57 @@ export async function generateQuizFromText(
 
 	const questions: Question[] = result.questions.map((q, i) => {
 		const qId = `q-ai-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 11)}`;
+
+		const distractorsList = q.distractors.map((d) => {
+			if (typeof d === "string") {
+				return { text: d, explanation: undefined };
+			}
+			return { text: d.text, explanation: d.explanation };
+		});
+
 		const optionsList = [
-			{ id: `${qId}-opt-0`, text: q.answer, isCorrect: true },
-			{ id: `${qId}-opt-1`, text: q.distractors[0], isCorrect: false },
-			{ id: `${qId}-opt-2`, text: q.distractors[1], isCorrect: false },
-			{ id: `${qId}-opt-3`, text: q.distractors[2], isCorrect: false },
+			{
+				id: `${qId}-opt-0`,
+				text: q.answer,
+				isCorrect: true,
+				explanation: q.answerExplanation,
+			},
+			{
+				id: `${qId}-opt-1`,
+				text: distractorsList[0]?.text || "",
+				isCorrect: false,
+				explanation: distractorsList[0]?.explanation,
+			},
+			{
+				id: `${qId}-opt-2`,
+				text: distractorsList[1]?.text || "",
+				isCorrect: false,
+				explanation: distractorsList[1]?.explanation,
+			},
+			{
+				id: `${qId}-opt-3`,
+				text: distractorsList[2]?.text || "",
+				isCorrect: false,
+				explanation: distractorsList[2]?.explanation,
+			},
 		];
 		// Embaralha as opções
 		const shuffledOptions = shuffle(optionsList);
 		const correctOpt = shuffledOptions.find((o) => o.isCorrect);
+
+		const manualOptionsText = distractorsList.map((d) => d.text);
 
 		return {
 			id: qId,
 			question: q.question,
 			answer: q.answer,
 			correctOptionId: correctOpt?.id || "",
-			manualOptions: q.distractors,
-			options: shuffledOptions.map((o) => ({ id: o.id, text: o.text })),
+			manualOptions: manualOptionsText,
+			options: shuffledOptions.map((o) => ({
+				id: o.id,
+				text: o.text,
+				explanation: o.explanation,
+			})),
 		};
 	});
 

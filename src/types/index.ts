@@ -12,6 +12,7 @@ export type AIProvider = "gemini" | "groq" | "openai";
 export interface Option {
 	id: string;
 	text: string;
+	explanation?: string;
 }
 
 export interface Question {
@@ -21,6 +22,7 @@ export interface Question {
 	correctOptionId: string;
 	manualOptions: string[];
 	options: Option[];
+	selectedOptionId?: string;
 }
 
 export interface Flashcard {

@@ -77,7 +77,9 @@
 		"incorrect": "Incorreto. A resposta era: {{answer}}",
 		"showResults": "Ver Resultado",
 		"nextQuestion": "Próxima Pergunta",
-		"skip": "Pular Pergunta"
+		"skip": "Pular Pergunta",
+		"explanationSelected": "Explicação da sua resposta:",
+		"explanationCorrect": "Explicação da resposta correta:"
 	},
 	"results": {
 		"title": "Quizz Finalizado!",
@@ -116,6 +118,11 @@
 		"yesterday": "Ontem",
 		"daysAgo": "{{count}} dias atrás",
 		"playAgain": "Jogar Novamente",
+		"viewDetails": "Ver Detalhes",
+		"hideDetails": "Ocultar Detalhes",
+		"questionCorrect": "Correto",
+		"questionIncorrect": "Incorreto",
+		"questionSkipped": "Pulado",
 		"copy": "Copiar",
 		"download": "Download",
 		"delete": "Excluir"

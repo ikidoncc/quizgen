@@ -77,7 +77,9 @@
 		"incorrect": "Incorrect. The answer was: {{answer}}",
 		"showResults": "View Results",
 		"nextQuestion": "Next Question",
-		"skip": "Skip Question"
+		"skip": "Skip Question",
+		"explanationSelected": "Explanation for your answer:",
+		"explanationCorrect": "Explanation for correct answer:"
 	},
 	"results": {
 		"title": "Quiz Finished!",
@@ -116,6 +118,11 @@
 		"yesterday": "Yesterday",
 		"daysAgo": "{{count}} days ago",
 		"playAgain": "Play Again",
+		"viewDetails": "View Details",
+		"hideDetails": "Hide Details",
+		"questionCorrect": "Correct",
+		"questionIncorrect": "Incorrect",
+		"questionSkipped": "Skipped",
 		"copy": "Copy",
 		"download": "Download",
 		"delete": "Delete"

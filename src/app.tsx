@@ -125,13 +125,19 @@ export function App() {
 
 	useEffect(() => {
 		if (isGameOver && state.currentHistoryId) {
-			updateEntry(state.currentHistoryId, state.score, state.skippedCount);
+			updateEntry(
+				state.currentHistoryId,
+				state.score,
+				state.skippedCount,
+				state.quizData,
+			);
 		}
 	}, [
 		isGameOver,
 		state.currentHistoryId,
 		state.score,
 		state.skippedCount,
+		state.quizData,
 		updateEntry,
 	]);
 
@@ -221,7 +227,7 @@ export function App() {
 						timeLeft={state.timeLeft}
 						timerPaused={modalConfig.isOpen}
 						onTick={setTimeLeft}
-						onAnswer={(isCorrect) => answerQuestion(isCorrect)}
+						onAnswer={(isCorrect, optId) => answerQuestion(isCorrect, optId)}
 						onSkip={() => skipQuestion()}
 						onSkipRequest={() =>
 							showModal({

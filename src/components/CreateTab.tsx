@@ -1,6 +1,6 @@
-import { Wand2, Zap, Brain, Sparkles, Key, Eye, EyeOff } from "lucide-react";
+import { Wand2, Zap, Brain, Sparkles, Key, Eye, EyeOff, Bot, ChevronDown } from "lucide-react";
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
 import type { Question, DifficultyMode, AIProvider } from "../types";
 import {
@@ -32,6 +32,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 	);
 	const [apiKey, setApiKey] = useState("");
 	const [showApiKey, setShowApiKey] = useState(false);
+	const [isProviderOpen, setIsProviderOpen] = useState(false);
+	
+	const providerRef = useRef<HTMLDivElement>(null);
 
 	// Load the API Key for the selected provider when it changes
 	useEffect(() => {
@@ -39,6 +42,20 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 		setApiKey(savedKey);
 		setShowApiKey(false); // Reset key visibility for safety
 	}, [aiProvider]);
+
+	// Handle click outside to close the custom provider select dropdown
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				providerRef.current &&
+				!providerRef.current.contains(event.target as Node)
+			) {
+				setIsProviderOpen(false);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
 
 	const handleApiKeyChange = (val: string) => {
 		setApiKey(val);
@@ -164,24 +181,59 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 				{/* AI Configuration Section */}
 				{difficultyMode !== "easy" && (
 					<div className="fade-in animate-in slide-in-from-top-1 mb-6 duration-200">
-						{/* AI Provider selector */}
+						{/* Custom AI Provider selector */}
 						<div className="mb-4">
-							<label
-								htmlFor="provider-select"
-								className="mb-2 block font-semibold text-main text-sm"
-							>
+							<span className="mb-2 block font-semibold text-main text-sm">
 								{t("create.providerLabel")}
-							</label>
-							<select
-								id="provider-select"
-								value={aiProvider}
-								onChange={(e) => handleProviderChange(e.target.value as AIProvider)}
-								className="w-full rounded-md border border-overlay bg-base p-2.5 text-main text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
-							>
-								<option value="gemini">Gemini (Google AI Studio)</option>
-								<option value="groq">Groq (Llama 3.1)</option>
-								<option value="openai">OpenAI (ChatGPT)</option>
-							</select>
+							</span>
+							<div className="relative inline-block w-full text-left" ref={providerRef}>
+								<button
+									onClick={() => setIsProviderOpen(!isProviderOpen)}
+									className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-overlay bg-base p-2.5 text-main text-sm outline-none transition-all hover:bg-overlay/50 active:scale-[0.99]"
+									type="button"
+								>
+									<span className="flex items-center">
+										<Bot className="h-4 w-4 text-primary" />
+										<span className="ml-2 font-medium">
+											{aiProvider === "gemini" && "Gemini (Google AI Studio)"}
+											{aiProvider === "groq" && "Groq (Llama 3.1)"}
+											{aiProvider === "openai" && "OpenAI (ChatGPT)"}
+										</span>
+									</span>
+									<ChevronDown
+										className={cn(
+											"ml-1 h-4 w-4 transition-transform duration-200",
+											isProviderOpen && "rotate-180",
+										)}
+									/>
+								</button>
+
+								{isProviderOpen && (
+									<div className="fade-in slide-in-from-top-1 absolute left-0 z-50 mt-1 w-full animate-in overflow-hidden rounded-lg border border-overlay bg-surface shadow-lg duration-200">
+										{[
+											{ value: "gemini" as const, label: "Gemini (Google AI Studio)" },
+											{ value: "groq" as const, label: "Groq (Llama 3.1)" },
+											{ value: "openai" as const, label: "OpenAI (ChatGPT)" },
+										].map((prov) => (
+											<button
+												type="button"
+												key={prov.value}
+												className={cn(
+													"flex w-full cursor-pointer items-center px-4 py-3 text-left text-main text-sm transition-colors hover:bg-overlay",
+													aiProvider === prov.value && "bg-overlay/50 font-bold",
+												)}
+												onClick={() => {
+													handleProviderChange(prov.value);
+													setIsProviderOpen(false);
+												}}
+											>
+												<Bot className="h-4 w-4 text-primary/70" />
+												<span className="ml-2.5">{prov.label}</span>
+											</button>
+										))}
+									</div>
+								)}
+							</div>
 						</div>
 
 						{/* API Key Input */}

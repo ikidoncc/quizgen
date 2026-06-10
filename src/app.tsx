@@ -1,27 +1,30 @@
-import {
-	BookOpen,
-	Brain,
-	Compass,
-	History,
-	Layers,
-	PlusCircle,
-} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { CreateFlashcardTab } from "./components/CreateFlashcardTab";
 import { CreateTab } from "./components/CreateTab";
-import { FlashcardHistoryTab } from "./components/FlashcardHistoryTab";
 import { HistoryTab } from "./components/HistoryTab";
+import { CreateFlashcardTab } from "./components/CreateFlashcardTab";
+import { StudyFlashcardTab } from "./components/StudyFlashcardTab";
+import { FlashcardHistoryTab } from "./components/FlashcardHistoryTab";
 import { LangSelect } from "./components/LangSelect";
 import { Modal } from "./components/Modal";
 import { PlayTab } from "./components/PlayTab";
 import { ResultsTab } from "./components/ResultsTab";
-import { StudyFlashcardTab } from "./components/StudyFlashcardTab";
 import { ThemeSelect } from "./components/ThemeSelect";
 import { useHistory } from "./hooks/useHistory";
 import { useQuizState } from "./hooks/useQuizState";
 import { useTheme } from "./hooks/useTheme";
 import { useTranslation } from "./i18n/I18nProvider";
 import type { HistoryEntry, Question } from "./types";
+import { cn } from "./utils/cn";
+import {
+	Brain,
+	History,
+	Layers,
+	PlusCircle,
+	BookOpen,
+	Compass,
+	Menu,
+	X,
+} from "lucide-react";
 
 function sidebarButtonClass(isActive: boolean): string {
 	return isActive
@@ -32,6 +35,7 @@ function sidebarButtonClass(isActive: boolean): string {
 export function App() {
 	const { t } = useTranslation();
 	const { theme, setTheme } = useTheme();
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const {
 		state,
 		setTab,
@@ -150,6 +154,11 @@ export function App() {
 		}
 	};
 
+	const handleTabSelect = (tabName: any) => {
+		setTab(tabName);
+		setIsSidebarOpen(false);
+	};
+
 	const renderContent = () => {
 		switch (state.currentTab) {
 			case "quiz-create":
@@ -179,12 +188,10 @@ export function App() {
 				if (state.quizData.length === 0) {
 					return (
 						<div className="rounded-3xl border border-overlay border-dashed bg-surface/50 py-16 text-center">
-							<p className="mb-6 font-medium text-muted">
-								{t("empty.message")}
-							</p>
+							<p className="mb-6 font-medium text-muted">{t("empty.message")}</p>
 							<button
-								onClick={() => setTab("quiz-create")}
-								className="cursor-pointer font-bold text-primary underline transition-all hover:opacity-80"
+								onClick={() => handleTabSelect("quiz-create")}
+								className="font-bold text-primary underline transition-all hover:opacity-80 cursor-pointer"
 								type="button"
 							>
 								{t("empty.action")}
@@ -198,7 +205,7 @@ export function App() {
 							score={state.score}
 							totalQuestions={state.quizData.length}
 							skippedCount={state.skippedCount}
-							onNewQuiz={() => setTab("quiz-create")}
+							onNewQuiz={() => handleTabSelect("quiz-create")}
 						/>
 					);
 				}
@@ -272,7 +279,7 @@ export function App() {
 						cardsToReview={state.cardsToReview}
 						onFeedback={selectCardFeedback}
 						onReset={resetFlashcardStudy}
-						onNavigateToCreate={() => setTab("flashcard-create")}
+						onNavigateToCreate={() => handleTabSelect("flashcard-create")}
 					/>
 				);
 			case "flashcard-history":
@@ -290,44 +297,89 @@ export function App() {
 
 	return (
 		<div className="flex min-h-screen w-full flex-col bg-base text-main md:flex-row">
-			{/* Persistent Sidebar */}
-			<aside className="flex w-full shrink-0 flex-col border-overlay bg-surface p-6 md:w-64 md:border-r">
-				{/* Logo / Header */}
-				<div className="mb-8 flex items-center gap-3">
-					<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-md">
-						<Compass className="h-5 w-5 animate-spin-slow text-surface" />
+			{/* Mobile Header Bar */}
+			<header className="sticky top-0 z-35 flex w-full items-center justify-between border-b border-overlay bg-surface px-6 py-4 md:hidden shadow-sm">
+				<div className="flex items-center gap-2">
+					<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-sm">
+						<Compass className="h-4.5 w-4.5 text-surface animate-spin-slow" />
 					</div>
-					<div>
-						<h1 className="font-black text-primary text-xl tracking-tight">
-							{t("app.title")}
-						</h1>
-						<p className="font-medium text-[10px] text-subtle leading-none">
-							{t("app.subtitle")}
-						</p>
+					<span className="font-extrabold text-main text-base tracking-tight">
+						{t("app.title")}
+					</span>
+				</div>
+				<button
+					onClick={() => setIsSidebarOpen(true)}
+					className="cursor-pointer p-1.5 rounded-lg text-muted hover:text-main hover:bg-overlay/50 transition-colors"
+					type="button"
+					aria-label="Abrir menu"
+				>
+					<Menu className="h-6 w-6" />
+				</button>
+			</header>
+
+			{/* Mobile Drawer Overlay */}
+			{isSidebarOpen && (
+				<div
+					className="fixed inset-0 z-40 bg-black/40 md:hidden transition-opacity duration-300"
+					onClick={() => setIsSidebarOpen(false)}
+					onKeyDown={(e) => {
+						if (e.key === "Escape") setIsSidebarOpen(false);
+					}}
+					role="presentation"
+				/>
+			)}
+
+			{/* Persistent & Responsive Sidebar */}
+			<aside
+				className={cn(
+					"fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-overlay bg-surface p-6 shrink-0 transition-transform duration-300 md:static md:translate-x-0 shadow-xl md:shadow-none",
+					isSidebarOpen ? "translate-x-0" : "-translate-x-full",
+				)}
+			>
+				{/* Sidebar Header with logo & mobile close button */}
+				<div className="mb-8 flex items-center justify-between">
+					<div className="flex items-center gap-3">
+						<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-md">
+							<Compass className="h-5 w-5 text-surface animate-spin-slow" />
+						</div>
+						<div>
+							<h1 className="font-black text-xl text-primary tracking-tight">
+								{t("app.title")}
+							</h1>
+							<p className="text-[10px] font-medium text-subtle leading-none">
+								{t("app.subtitle")}
+							</p>
+						</div>
 					</div>
+					<button
+						onClick={() => setIsSidebarOpen(false)}
+						className="cursor-pointer p-1.5 rounded-lg text-muted hover:text-main hover:bg-overlay/50 md:hidden"
+						type="button"
+						aria-label="Fechar menu"
+					>
+						<X className="h-5 w-5" />
+					</button>
 				</div>
 
 				{/* Nav Tree */}
-				<nav className="flex grow flex-col gap-6">
+				<nav className="flex flex-col gap-6 grow">
 					{/* Quiz Section */}
 					<div className="flex flex-col gap-1.5">
-						<span className="flex select-none items-center gap-1.5 px-4 font-extrabold text-[10px] text-muted uppercase tracking-widest">
+						<span className="px-4 text-[10px] font-extrabold text-muted uppercase tracking-widest flex items-center gap-1.5 select-none">
 							<Brain className="h-3.5 w-3.5 text-primary" />
 							{t("nav.quiz") || "Quiz"}
 						</span>
 						<div className="flex flex-col gap-1">
 							<button
-								onClick={() => setTab("quiz-create")}
-								className={sidebarButtonClass(
-									state.currentTab === "quiz-create",
-								)}
+								onClick={() => handleTabSelect("quiz-create")}
+								className={sidebarButtonClass(state.currentTab === "quiz-create")}
 								type="button"
 							>
 								<PlusCircle className="h-4 w-4" />
 								{t("nav.quizCreate") || "Criar"}
 							</button>
 							<button
-								onClick={() => setTab("quiz-play")}
+								onClick={() => handleTabSelect("quiz-play")}
 								className={sidebarButtonClass(state.currentTab === "quiz-play")}
 								type="button"
 							>
@@ -335,10 +387,8 @@ export function App() {
 								{t("nav.quizPlay") || "Jogar"}
 							</button>
 							<button
-								onClick={() => setTab("quiz-history")}
-								className={sidebarButtonClass(
-									state.currentTab === "quiz-history",
-								)}
+								onClick={() => handleTabSelect("quiz-history")}
+								className={sidebarButtonClass(state.currentTab === "quiz-history")}
 								type="button"
 							>
 								<History className="h-4 w-4" />
@@ -349,13 +399,13 @@ export function App() {
 
 					{/* Flashcards Section */}
 					<div className="flex flex-col gap-1.5">
-						<span className="flex select-none items-center gap-1.5 px-4 font-extrabold text-[10px] text-muted uppercase tracking-widest">
+						<span className="px-4 text-[10px] font-extrabold text-muted uppercase tracking-widest flex items-center gap-1.5 select-none">
 							<Layers className="h-3.5 w-3.5 text-primary" />
 							{t("nav.flashcard") || "Flashcard"}
 						</span>
 						<div className="flex flex-col gap-1">
 							<button
-								onClick={() => setTab("flashcard-create")}
+								onClick={() => handleTabSelect("flashcard-create")}
 								className={sidebarButtonClass(
 									state.currentTab === "flashcard-create",
 								)}
@@ -365,7 +415,7 @@ export function App() {
 								{t("nav.flashcardCreate") || "Criar"}
 							</button>
 							<button
-								onClick={() => setTab("flashcard-study")}
+								onClick={() => handleTabSelect("flashcard-study")}
 								className={sidebarButtonClass(
 									state.currentTab === "flashcard-study",
 								)}
@@ -375,7 +425,7 @@ export function App() {
 								{t("nav.flashcardStudy") || "Estudar"}
 							</button>
 							<button
-								onClick={() => setTab("flashcard-history")}
+								onClick={() => handleTabSelect("flashcard-history")}
 								className={sidebarButtonClass(
 									state.currentTab === "flashcard-history",
 								)}
@@ -389,22 +439,22 @@ export function App() {
 				</nav>
 
 				{/* Footer Settings & Copy */}
-				<div className="mt-8 flex flex-col gap-4 border-overlay border-t pt-6">
+				<div className="mt-8 flex flex-col gap-4 border-t border-overlay pt-6">
 					<div className="flex items-center justify-between gap-2">
 						<LangSelect />
 						<ThemeSelect value={theme} onChange={setTheme} />
 					</div>
-					<footer className="select-none text-center font-semibold text-[9px] text-muted/30">
+					<footer className="text-center font-semibold text-muted/30 text-[9px] select-none">
 						{t("footer")}
 					</footer>
 				</div>
 			</aside>
 
 			{/* Main Content Area */}
-			<main className="mx-auto flex w-full max-w-4xl flex-1 flex-col overflow-y-auto p-6">
+			<main className="flex-1 flex flex-col p-4 md:p-8 overflow-y-auto max-w-4xl mx-auto w-full">
 				{/* Top bar with active page name */}
-				<header className="mb-6 flex items-center justify-between border-overlay border-b pb-4">
-					<h2 className="font-extrabold text-main text-xl tracking-tight">
+				<header className="mb-6 flex items-center justify-between border-b border-overlay pb-4">
+					<h2 className="font-extrabold text-xl text-main tracking-tight">
 						{getActiveTabTitle()}
 					</h2>
 				</header>

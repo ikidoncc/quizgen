@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import type { Question, QuizState, Tab } from "../types";
 import { STORAGE_VERSION } from "../types";
-import { TIMER_DURATION } from "../utils/quiz";
 import { usePersistedState } from "./usePersistedState";
 
 const INITIAL_STATE: QuizState = {
@@ -13,7 +12,8 @@ const INITIAL_STATE: QuizState = {
 	score: 0,
 	skippedCount: 0,
 	isTimerEnabled: false,
-	timeLeft: TIMER_DURATION,
+	timerDuration: 60,
+	timeLeft: 60,
 	currentHistoryId: "",
 };
 
@@ -40,15 +40,21 @@ export function useQuizState() {
 	);
 
 	const setQuizData = useCallback(
-		(data: Question[], timerEnabled: boolean, historyId?: string) => {
+		(
+			data: Question[],
+			timerEnabled: boolean,
+			timerDuration: number,
+			historyId?: string,
+		) => {
 			setState((s) => ({
 				...s,
 				quizData: data,
 				isTimerEnabled: timerEnabled,
+				timerDuration: timerDuration,
 				currentQuestionIndex: 0,
 				score: 0,
 				skippedCount: 0,
-				timeLeft: TIMER_DURATION,
+				timeLeft: timerDuration,
 				currentTab: "play",
 				gameId: s.gameId + 1,
 				currentHistoryId: historyId ?? s.currentHistoryId,
@@ -63,7 +69,7 @@ export function useQuizState() {
 			currentQuestionIndex: 0,
 			score: 0,
 			skippedCount: 0,
-			timeLeft: TIMER_DURATION,
+			timeLeft: s.timerDuration || 60,
 			gameId: s.gameId + 1,
 		}));
 	}, [setState]);
@@ -85,7 +91,7 @@ export function useQuizState() {
 				...s,
 				score: isCorrect ? s.score + 1 : s.score,
 				currentQuestionIndex: s.currentQuestionIndex + 1,
-				timeLeft: TIMER_DURATION,
+				timeLeft: s.timerDuration || 60,
 			}));
 		},
 		[setState],
@@ -96,7 +102,7 @@ export function useQuizState() {
 			...s,
 			skippedCount: s.skippedCount + 1,
 			currentQuestionIndex: s.currentQuestionIndex + 1,
-			timeLeft: TIMER_DURATION,
+			timeLeft: s.timerDuration || 60,
 		}));
 	}, [setState]);
 

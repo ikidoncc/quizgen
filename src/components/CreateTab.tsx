@@ -1,8 +1,8 @@
 import { Wand2, Zap, Brain, Sparkles, Key, Eye, EyeOff } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
-import type { Question, DifficultyMode } from "../types";
+import type { Question, DifficultyMode, AIProvider } from "../types";
 import {
 	parseQuizText,
 	prepareQuizOptionsWithAI,
@@ -27,14 +27,27 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 	const [timerEnabled, setTimerEnabled] = useState(initialTimerEnabled);
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>("easy");
-	const [apiKey, setApiKey] = useState(
-		() => localStorage.getItem("groq_api_key") || "",
+	const [aiProvider, setAiProvider] = useState<AIProvider>(
+		() => (localStorage.getItem("ai_provider") as AIProvider) || "gemini",
 	);
+	const [apiKey, setApiKey] = useState("");
 	const [showApiKey, setShowApiKey] = useState(false);
+
+	// Load the API Key for the selected provider when it changes
+	useEffect(() => {
+		const savedKey = localStorage.getItem(`${aiProvider}_api_key`) || "";
+		setApiKey(savedKey);
+		setShowApiKey(false); // Reset key visibility for safety
+	}, [aiProvider]);
 
 	const handleApiKeyChange = (val: string) => {
 		setApiKey(val);
-		localStorage.setItem("groq_api_key", val);
+		localStorage.setItem(`${aiProvider}_api_key`, val);
+	};
+
+	const handleProviderChange = (val: AIProvider) => {
+		setAiProvider(val);
+		localStorage.setItem("ai_provider", val);
 	};
 
 	const handleGenerate = async (e: React.FormEvent) => {
@@ -57,6 +70,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 			const questions = await prepareQuizOptionsWithAI(
 				parsed,
 				difficultyMode,
+				aiProvider,
 				apiKey,
 			);
 			onGenerate(questions, timerEnabled);
@@ -66,6 +80,18 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 		} finally {
 			setIsGenerating(false);
 		}
+	};
+
+	const getProviderLink = () => {
+		if (aiProvider === "gemini") return "https://aistudio.google.com/";
+		if (aiProvider === "groq") return "https://console.groq.com/keys";
+		return "https://platform.openai.com/api-keys";
+	};
+
+	const getProviderName = () => {
+		if (aiProvider === "gemini") return "Gemini";
+		if (aiProvider === "groq") return "Groq";
+		return "OpenAI";
 	};
 
 	const modes = [
@@ -122,7 +148,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 									"flex flex-col items-center rounded-xl border p-3 text-center transition-all duration-200 cursor-pointer",
 									difficultyMode === id
 										? "border-primary bg-primary/5 text-primary scale-[1.02] shadow-sm"
-										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
+										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main"
 								)}
 							>
 								<Icon className="mb-1.5 h-5 w-5" />
@@ -135,18 +161,39 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					</div>
 				</div>
 
-				{/* API Key Input */}
+				{/* AI Configuration Section */}
 				{difficultyMode !== "easy" && (
 					<div className="fade-in animate-in slide-in-from-top-1 mb-6 duration-200">
+						{/* AI Provider selector */}
+						<div className="mb-4">
+							<label
+								htmlFor="provider-select"
+								className="mb-2 block font-semibold text-main text-sm"
+							>
+								{t("create.providerLabel")}
+							</label>
+							<select
+								id="provider-select"
+								value={aiProvider}
+								onChange={(e) => handleProviderChange(e.target.value as AIProvider)}
+								className="w-full rounded-md border border-overlay bg-base p-2.5 text-main text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+							>
+								<option value="gemini">Gemini (Google AI Studio)</option>
+								<option value="groq">Groq (Llama 3.1)</option>
+								<option value="openai">OpenAI (ChatGPT)</option>
+							</select>
+						</div>
+
+						{/* API Key Input */}
 						<div className="mb-2 flex items-center justify-between">
 							<label
 								htmlFor="api-key"
 								className="font-semibold text-main text-sm"
 							>
-								{t("create.apiKeyLabel")}
+								{t("create.apiKeyLabel", { provider: getProviderName() })}
 							</label>
 							<a
-								href="https://console.groq.com/keys"
+								href={getProviderLink()}
 								target="_blank"
 								rel="noreferrer"
 								className="text-primary text-xs hover:underline"
@@ -162,7 +209,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 								value={apiKey}
 								onChange={(e) => handleApiKeyChange(e.target.value)}
 								className="w-full rounded-md border border-overlay bg-base py-2 pl-9 pr-10 text-main transition-all placeholder:text-muted/40 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-								placeholder={t("create.apiKeyPlaceholder")}
+								placeholder={t("create.apiKeyPlaceholder", {
+									provider: getProviderName(),
+								})}
 							/>
 							<button
 								type="button"
@@ -203,10 +252,10 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					className="flex w-full items-center justify-center rounded bg-primary px-4 py-3 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
 					type="submit"
 				>
-					<Wand2
-						className={cn("mr-2 h-5 w-5", isGenerating && "animate-spin")}
-					/>
-					{isGenerating ? t("create.generatingWithAI") : t("create.submit")}
+					<Wand2 className={cn("mr-2 h-5 w-5", isGenerating && "animate-spin")} />
+					{isGenerating
+						? t("create.generatingWithAI")
+						: t("create.submit")}
 				</button>
 			</form>
 		</div>

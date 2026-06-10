@@ -30,12 +30,20 @@
 		"submit": "Generate Quiz",
 		"error": "No questions found. Use the format Q: Question and A: Answer.",
 		"modeLabel": "Alternative Generation Mode",
-		"mode.easy.title": "Easy (Current)",
-		"mode.easy.desc": "Offline, uses other quiz answers.",
-		"mode.normal.title": "Normal (AI)",
-		"mode.normal.desc": "AI generates plausible options for the question.",
-		"mode.hard.title": "Hard (AI)",
-		"mode.hard.desc": "AI generates distractors by modifying the answer slightly.",
+		"mode": {
+			"easy": {
+				"title": "Easy (Current)",
+				"desc": "Offline, uses other quiz answers."
+			},
+			"normal": {
+				"title": "Normal (AI)",
+				"desc": "AI generates plausible options for the question."
+			},
+			"hard": {
+				"title": "Hard (AI)",
+				"desc": "AI generates distractors by modifying the answer slightly."
+			}
+		},
 		"providerLabel": "AI Provider",
 		"apiKeyLabel": "{{provider}} API Key",
 		"getApiKey": "Get Free Key",

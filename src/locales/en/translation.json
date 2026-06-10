@@ -36,9 +36,9 @@
 		"mode.normal.desc": "AI generates plausible options",
 		"mode.hard.title": "Hard",
 		"mode.hard.desc": "AI modifies the answer slightly",
-		"apiKeyLabel": "Gemini API Key",
+		"apiKeyLabel": "Groq API Key",
 		"getApiKey": "Get Free Key",
-		"apiKeyPlaceholder": "Enter your Gemini API key...",
+		"apiKeyPlaceholder": "Enter your Groq API key...",
 		"apiKeyWarning": "API key is required for AI modes.",
 		"generatingWithAI": "Generating options with AI..."
 	},

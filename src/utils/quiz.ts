@@ -1,5 +1,5 @@
 import type { Option, Question, DifficultyMode } from "../types";
-import { generateDistractorsWithGemini } from "../ai/gemini";
+import { generateDistractorsWithGroq } from "../ai/groq";
 
 export const TIMER_DURATION = 60;
 
@@ -206,11 +206,7 @@ export async function prepareQuizOptionsWithAI(
 	}
 
 	try {
-		const distractorMap = await generateDistractorsWithGemini(
-			data,
-			mode,
-			apiKey,
-		);
+		const distractorMap = await generateDistractorsWithGroq(data, mode, apiKey);
 		const allAnswers = data.map((q) => q.answer);
 
 		return data.map((q) => {

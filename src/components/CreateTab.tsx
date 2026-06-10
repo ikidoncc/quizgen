@@ -28,13 +28,13 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>("easy");
 	const [apiKey, setApiKey] = useState(
-		() => localStorage.getItem("gemini_api_key") || "",
+		() => localStorage.getItem("groq_api_key") || "",
 	);
 	const [showApiKey, setShowApiKey] = useState(false);
 
 	const handleApiKeyChange = (val: string) => {
 		setApiKey(val);
-		localStorage.setItem("gemini_api_key", val);
+		localStorage.setItem("groq_api_key", val);
 	};
 
 	const handleGenerate = async (e: React.FormEvent) => {
@@ -146,7 +146,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 								{t("create.apiKeyLabel")}
 							</label>
 							<a
-								href="https://aistudio.google.com/"
+								href="https://console.groq.com/keys"
 								target="_blank"
 								rel="noreferrer"
 								className="text-primary text-xs hover:underline"

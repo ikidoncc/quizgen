@@ -36,9 +36,9 @@
 		"mode.normal.desc": "IA gera opções plausíveis",
 		"mode.hard.title": "Difícil",
 		"mode.hard.desc": "IA modifica a resposta levemente",
-		"apiKeyLabel": "Chave de API do Gemini",
+		"apiKeyLabel": "Chave de API do Groq",
 		"getApiKey": "Obter Chave Grátis",
-		"apiKeyPlaceholder": "Insira sua chave de API do Gemini...",
+		"apiKeyPlaceholder": "Insira sua chave de API do Groq...",
 		"apiKeyWarning": "A chave de API é necessária para os modos com IA.",
 		"generatingWithAI": "Gerando alternativas com IA..."
 	},

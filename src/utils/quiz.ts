@@ -1,5 +1,7 @@
-import type { Option, Question, DifficultyMode } from "../types";
+import type { Option, Question, DifficultyMode, AIProvider } from "../types";
+import { generateDistractorsWithGemini } from "../ai/gemini";
 import { generateDistractorsWithGroq } from "../ai/groq";
+import { generateDistractorsWithOpenAI } from "../ai/openai";
 
 export const TIMER_DURATION = 60;
 
@@ -199,6 +201,7 @@ export function prepareQuizOptions(
 export async function prepareQuizOptionsWithAI(
 	data: Omit<Question, "options" | "correctOptionId">[],
 	mode: DifficultyMode,
+	provider: AIProvider,
 	apiKey?: string,
 ): Promise<Question[]> {
 	if (mode === "easy" || !apiKey) {
@@ -206,7 +209,14 @@ export async function prepareQuizOptionsWithAI(
 	}
 
 	try {
-		const distractorMap = await generateDistractorsWithGroq(data, mode, apiKey);
+		let distractorMap: Record<string, { distractors: string[]; correctOption?: string }> = {};
+		if (provider === "gemini") {
+			distractorMap = await generateDistractorsWithGemini(data, mode, apiKey);
+		} else if (provider === "groq") {
+			distractorMap = await generateDistractorsWithGroq(data, mode, apiKey);
+		} else if (provider === "openai") {
+			distractorMap = await generateDistractorsWithOpenAI(data, mode, apiKey);
+		}
 		const allAnswers = data.map((q) => q.answer);
 
 		return data.map((q) => {

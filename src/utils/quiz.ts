@@ -1,4 +1,5 @@
-import type { Option, Question } from "../types";
+import type { Option, Question, DifficultyMode } from "../types";
+import { generateDistractorsWithGemini } from "../ai/gemini";
 
 export const TIMER_DURATION = 60;
 
@@ -119,11 +120,71 @@ export function prepareQuizOptions(
 			if (isCorrect) correctOptionId = id;
 			return { id, text };
 		});
-
 		return {
 			...q,
 			correctOptionId,
 			options,
 		};
 	});
+}
+
+export async function prepareQuizOptionsWithAI(
+	data: Omit<Question, "options" | "correctOptionId">[],
+	mode: DifficultyMode,
+	apiKey?: string,
+): Promise<Question[]> {
+	if (mode === "easy" || !apiKey) {
+		return prepareQuizOptions(data);
+	}
+
+	try {
+		const distractorMap = await generateDistractorsWithGemini(
+			data,
+			mode,
+			apiKey,
+		);
+		const allAnswers = data.map((q) => q.answer);
+
+		return data.map((q) => {
+			const uniqueOptions = collectUniqueOptions(q);
+
+			// Add AI generated distractors if they exist for this question
+			const aiDistractors = distractorMap[q.id] || [];
+			for (const distractor of aiDistractors) {
+				if (uniqueOptions.size >= 4) break;
+				const key = distractor.toLowerCase().trim();
+				if (!uniqueOptions.has(key) && key !== "") {
+					uniqueOptions.set(key, { text: distractor, isCorrect: false });
+				}
+			}
+
+			// If we still don't have 4 options, fall back to offline distractors
+			const filledOptions = fillWithDistractors(
+				uniqueOptions,
+				allAnswers,
+				q.answer,
+				q.manualOptions,
+			);
+
+			const entries = shuffle(Array.from(filledOptions.entries()));
+			let correctOptionId = "";
+			const options: Option[] = entries.map(([_, { text, isCorrect }], i) => {
+				const id = `${q.id}-opt-${i}`;
+				if (isCorrect) correctOptionId = id;
+				return { id, text };
+			});
+
+			return {
+				...q,
+				correctOptionId,
+				options,
+			};
+		});
+	} catch (error) {
+		console.error(
+			"Failed to generate distractors with AI, falling back to offline generator:",
+			error,
+		);
+		return prepareQuizOptions(data);
+	}
 }

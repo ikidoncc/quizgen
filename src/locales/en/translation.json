@@ -1,7 +1,7 @@
 {
 	"app": {
 		"title": "Boron",
-		"subtitle": "Create your quiz from a text"
+		"subtitle": "Create your quiz or flashcards from a text"
 	},
 	"seo": {
 		"title": "Boron"
@@ -11,9 +11,14 @@
 		"en": "English"
 	},
 	"nav": {
-		"create": "Create Quiz",
-		"play": "Play Quiz",
-		"history": "History"
+		"quiz": "Quiz",
+		"quizCreate": "Create Quiz",
+		"quizPlay": "Play Quiz",
+		"quizHistory": "Quiz History",
+		"flashcard": "Flashcards",
+		"flashcardCreate": "Create Flashcards",
+		"flashcardStudy": "Study",
+		"flashcardHistory": "History"
 	},
 	"empty": {
 		"message": "No quiz generated yet.",
@@ -107,5 +112,47 @@
 		"copy": "Copy",
 		"download": "Download",
 		"delete": "Delete"
+	},
+	"flashcard": {
+		"create": {
+			"heading": "Generate Flashcards with AI",
+			"description": "Paste a running text (article, summary, notes) below. The artificial intelligence will read and synthesize 5 to 12 flashcards containing key terms and definitions.",
+			"placeholder": "Paste the text you want to study concepts and definitions from...",
+			"generating": "Analyzing text and generating cards...",
+			"submit": "Generate Flashcards",
+			"emptyInputError": "Please enter the text to generate flashcards."
+		},
+		"study": {
+			"empty": {
+				"message": "No deck selected to study at the moment.",
+				"action": "Create a new Flashcard deck"
+			},
+			"finished": {
+				"title": "Deck Finished!",
+				"subtitle": "You finished reviewing the deck: {{deck}}",
+				"mastered": "Mastered",
+				"toReview": "To Review",
+				"restartAll": "Study All Cards",
+				"restartReviewOnly": "Review Incorrect Only",
+				"newDeck": "Create another Flashcard deck"
+			},
+			"studying": "Studying deck",
+			"progress": "{{current}} / {{total}}",
+			"reveal": "Reveal Answer",
+			"card": {
+				"front": "Concept / Question",
+				"back": "Explanation / Answer",
+				"tapToFlip": "Click to flip the card"
+			},
+			"feedback": {
+				"review": "Review (Wrong)",
+				"master": "Mastered (Correct)"
+			}
+		},
+		"history": {
+			"empty": "No flashcard decks found.",
+			"cardsCount": "{{count}} cards",
+			"study": "Study"
+		}
 	}
 }

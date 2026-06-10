@@ -1,7 +1,7 @@
 {
 	"app": {
 		"title": "Boron",
-		"subtitle": "Crie seu quizz a partir de um texto"
+		"subtitle": "Crie seu quizz ou flashcards a partir de um texto"
 	},
 	"seo": {
 		"title": "Boron"
@@ -11,9 +11,14 @@
 		"en": "English"
 	},
 	"nav": {
-		"create": "Criar Quizz",
-		"play": "Jogar Quizz",
-		"history": "Histórico"
+		"quiz": "Quiz",
+		"quizCreate": "Criar Quiz",
+		"quizPlay": "Jogar Quiz",
+		"quizHistory": "Histórico de Quizzes",
+		"flashcard": "Flashcards",
+		"flashcardCreate": "Criar Flashcards",
+		"flashcardStudy": "Estudar",
+		"flashcardHistory": "Histórico"
 	},
 	"empty": {
 		"message": "Nenhum quizz gerado ainda.",
@@ -107,5 +112,47 @@
 		"copy": "Copiar",
 		"download": "Download",
 		"delete": "Excluir"
+	},
+	"flashcard": {
+		"create": {
+			"heading": "Gerar Flashcards com IA",
+			"description": "Cole um texto corrido (artigo, resumo, anotação) abaixo. A inteligência artificial irá ler e sintetizar de 5 a 12 cartões de memorização contendo termos e definições fundamentais.",
+			"placeholder": "Cole o texto do qual deseja estudar conceitos e definições...",
+			"generating": "Analisando texto e gerando cartões...",
+			"submit": "Gerar Flashcards",
+			"emptyInputError": "Por favor, insira o texto para gerar os flashcards."
+		},
+		"study": {
+			"empty": {
+				"message": "Nenhum deck selecionado para estudar no momento.",
+				"action": "Criar um novo deck de Flashcards"
+			},
+			"finished": {
+				"title": "Deck Concluído!",
+				"subtitle": "Você terminou de revisar o deck: {{deck}}",
+				"mastered": "Dominados",
+				"toReview": "Revisar",
+				"restartAll": "Estudar Todo o Deck",
+				"restartReviewOnly": "Revisar Apenas os que Errei",
+				"newDeck": "Criar outro deck de Flashcards"
+			},
+			"studying": "Estudando deck",
+			"progress": "{{current}} / {{total}}",
+			"reveal": "Revelar Resposta",
+			"card": {
+				"front": "Conceito / Pergunta",
+				"back": "Explicação / Resposta",
+				"tapToFlip": "Clique para ver a resposta"
+			},
+			"feedback": {
+				"review": "Revisar (Errei)",
+				"master": "Dominado (Acertei)"
+			}
+		},
+		"history": {
+			"empty": "Nenhum deck de flashcards encontrado.",
+			"cardsCount": "{{count}} cards",
+			"study": "Estudar"
+		}
 	}
 }

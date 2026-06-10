@@ -22,8 +22,15 @@ export interface GroqGenerationResult {
 function isBooleanAnswer(answer: string): boolean {
 	const normalized = answer.trim().toLowerCase();
 	return [
-		"sim", "não", "nao", "yes", "no",
-		"verdadeiro", "falso", "true", "false"
+		"sim",
+		"não",
+		"nao",
+		"yes",
+		"no",
+		"verdadeiro",
+		"falso",
+		"true",
+		"false",
 	].includes(normalized);
 }
 
@@ -48,7 +55,9 @@ export async function generateDistractorsWithGroq(
 				id: q.id,
 				question: q.question,
 				answer: q.answer,
-				neededCount: isBool ? 3 : Math.max(0, 3 - (q.manualOptions?.length || 0)),
+				neededCount: isBool
+					? 3
+					: Math.max(0, 3 - (q.manualOptions?.length || 0)),
 				isBoolean: isBool,
 			};
 		})
@@ -66,7 +75,8 @@ Exemplos de modificações sutis:
 - Trocar palavras-chave por sinônimos quase idênticos mas logicamente incorretos.
 - Pequenas alterações em datas, valores numéricos muito próximos ou fórmulas.
 - Adicionar pequenas negações ou mudar condicionais (ex: "sempre" para "frequentemente").
-- Introduzir erros gramaticais ou de digitação plausíveis na resposta correta.`
+- Inverter de forma sutil alguma lógica ou condição da frase correta.
+NÃO utilize erros gramaticais, ortográficos ou de digitação para criar alternativas incorretas. Todas as opções devem ser escritas com gramática e grafia perfeitas.`
 			: `Modo NORMAL:
 Gere distratores que sejam alternativas incorretas plausíveis para o contexto da pergunta correspondente. Devem fazer sentido com o assunto abordado, mas estarem factualmente incorretas.`;
 
@@ -107,7 +117,7 @@ ${JSON.stringify(inputs, null, 2)}`;
 		{
 			method: "POST",
 			headers: {
-				"Authorization": `Bearer ${apiKey}`,
+				Authorization: `Bearer ${apiKey}`,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({

@@ -298,7 +298,7 @@ export function App() {
 	};
 
 	return (
-		<div className="flex min-h-screen w-full flex-col bg-base text-main md:flex-row">
+		<div className="flex h-screen w-full flex-col bg-base text-main md:flex-row overflow-hidden">
 			{/* Mobile Header Bar */}
 			<header className="sticky top-0 z-35 flex w-full items-center justify-between border-overlay border-b bg-surface px-6 py-4 shadow-sm md:hidden">
 				<div className="flex items-center gap-2">
@@ -332,7 +332,7 @@ export function App() {
 			{/* Persistent & Responsive Sidebar */}
 			<aside
 				className={cn(
-					"fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col border-overlay bg-surface p-6 shadow-xl transition-transform duration-300 md:static md:translate-x-0 md:shadow-none",
+					"fixed inset-y-0 left-0 z-50 flex w-64 h-full shrink-0 flex-col border-overlay bg-surface p-6 shadow-xl transition-transform duration-300 md:static md:translate-x-0 md:shadow-none md:overflow-hidden overflow-y-auto",
 					isSidebarOpen ? "translate-x-0" : "-translate-x-full",
 				)}
 			>
@@ -455,16 +455,18 @@ export function App() {
 			</aside>
 
 			{/* Main Content Area */}
-			<main className="mx-auto flex w-full max-w-4xl flex-1 flex-col overflow-y-auto p-4 md:p-8">
-				{/* Top bar with active page name */}
-				<header className="mb-6 flex items-center justify-between border-overlay border-b pb-4">
-					<h2 className="font-extrabold text-main text-xl tracking-tight">
-						{getActiveTabTitle()}
-					</h2>
-				</header>
+			<main className="flex-1 overflow-y-auto p-4 md:p-8 w-full">
+				<div className="mx-auto flex w-full max-w-3xl flex-col min-h-full">
+					{/* Top bar with active page name */}
+					<header className="mb-6 flex items-center justify-between border-overlay border-b pb-4">
+						<h2 className="font-extrabold text-main text-xl tracking-tight">
+							{getActiveTabTitle()}
+						</h2>
+					</header>
 
-				{/* Content Panel */}
-				<div className="grow">{renderContent()}</div>
+					{/* Content Panel */}
+					<div className="grow">{renderContent()}</div>
+				</div>
 			</main>
 
 			{/* Modal Dialogs */}

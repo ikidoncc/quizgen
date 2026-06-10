@@ -155,7 +155,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					aiProvider,
 					apiKey,
 					questionCount,
-					difficultyMode,
+					difficultyMode === "easy" ? "normal" : difficultyMode,
 				);
 				onGenerate(questions, timerEnabled, totalSeconds);
 			} catch (err) {
@@ -281,7 +281,12 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					<span className="mb-2 block font-semibold text-main text-sm">
 						{t("create.modeLabel")}
 					</span>
-					<div className="grid grid-cols-3 gap-3">
+					<div
+						className={cn(
+							"grid gap-3",
+							visibleModes.length === 2 ? "grid-cols-2" : "grid-cols-3",
+						)}
+					>
 						{visibleModes.map(({ id, icon: Icon, title, desc }) => (
 							<button
 								key={id}

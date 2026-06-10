@@ -55,6 +55,15 @@
 }
 
 @layer base {
+	html,
+	body,
+	#root {
+		height: 100%;
+		overflow: hidden;
+		margin: 0;
+		padding: 0;
+	}
+
 	html {
 		font-family: var(--font-sans);
 	}
@@ -62,7 +71,6 @@
 	body {
 		background-color: var(--base);
 		color: var(--text);
-		min-height: 100vh;
 		font-family: var(--font-sans);
 		transition:
 			background-color 0.3s ease,

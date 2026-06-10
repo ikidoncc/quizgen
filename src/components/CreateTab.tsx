@@ -1,25 +1,29 @@
 import {
-	Bot,
-	Brain,
-	ChevronDown,
-	Eye,
-	EyeOff,
-	Key,
-	Sparkles,
 	Wand2,
 	Zap,
+	Brain,
+	Sparkles,
+	Key,
+	Eye,
+	EyeOff,
+	Bot,
+	ChevronDown,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
-import type { AIProvider, DifficultyMode, Question } from "../types";
-import { cn } from "../utils/cn";
-import { parseQuizText, prepareQuizOptionsWithAI } from "../utils/quiz";
+import type { DifficultyMode, AIProvider } from "../types";
+import {
+	parseQuizText,
+	prepareQuizOptionsWithAI,
+	generateQuizFromText,
+} from "../utils/quiz";
 import { Checkbox } from "./Checkbox";
+import { cn } from "../utils/cn";
 
 interface CreateTabProps {
 	onGenerate: (
-		data: Question[],
+		data: any[],
 		timerEnabled: boolean,
 		timerDuration: number,
 	) => void;
@@ -33,7 +37,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 	onError,
 }) => {
 	const { t } = useTranslation();
+	const [inputType, setInputType] = useState<"formatted" | "raw">("formatted");
 	const [input, setInput] = useState("");
+	const [questionCount, setQuestionCount] = useState(5);
 	const [timerEnabled, setTimerEnabled] = useState(initialTimerEnabled);
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>("easy");
@@ -84,17 +90,6 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 		e.preventDefault();
 		if (isGenerating) return;
 
-		const parsed = parseQuizText(input);
-		if (parsed.length === 0) {
-			onError(t("create.error"));
-			return;
-		}
-
-		if (difficultyMode !== "easy" && !apiKey.trim()) {
-			onError(t("create.apiKeyWarning"));
-			return;
-		}
-
 		let totalSeconds = 60;
 		if (timerEnabled) {
 			totalSeconds = minutes * 60 + seconds;
@@ -104,20 +99,66 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 			}
 		}
 
-		setIsGenerating(true);
-		try {
-			const questions = await prepareQuizOptionsWithAI(
-				parsed,
-				difficultyMode,
-				aiProvider,
-				apiKey,
-			);
-			onGenerate(questions, timerEnabled, totalSeconds);
-		} catch (err) {
-			console.error(err);
-			onError(t("create.error"));
-		} finally {
-			setIsGenerating(false);
+		if (inputType === "formatted") {
+			const parsed = parseQuizText(input);
+			if (parsed.length === 0) {
+				onError(t("create.error"));
+				return;
+			}
+
+			if (difficultyMode !== "easy" && !apiKey.trim()) {
+				onError(t("create.apiKeyWarning"));
+				return;
+			}
+
+			setIsGenerating(true);
+			try {
+				const questions = await prepareQuizOptionsWithAI(
+					parsed,
+					difficultyMode,
+					aiProvider,
+					apiKey,
+				);
+				onGenerate(questions, timerEnabled, totalSeconds);
+			} catch (err) {
+				console.error(err);
+				onError(t("create.error"));
+			} finally {
+				setIsGenerating(false);
+			}
+		} else {
+			// Geração a partir de texto livre (Exige IA)
+			if (!input.trim()) {
+				onError(
+					t("flashcard.create.emptyInputError") ||
+						"Por favor, insira o texto para gerar o quiz.",
+				);
+				return;
+			}
+
+			if (!apiKey.trim()) {
+				onError(t("create.apiKeyWarning"));
+				return;
+			}
+
+			setIsGenerating(true);
+			try {
+				const questions = await generateQuizFromText(
+					input,
+					aiProvider,
+					apiKey,
+					questionCount,
+				);
+				onGenerate(questions, timerEnabled, totalSeconds);
+			} catch (err) {
+				console.error(err);
+				onError(
+					(err as Error).message ||
+						"Erro ao gerar o quiz. Verifique as configurações de IA ou chave de API.",
+				);
+			} finally {
+				setIsGenerating(false);
+			}
 		}
 	};
 
@@ -154,54 +195,133 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 		},
 	];
 
+	const showAiConfig = inputType === "raw" || difficultyMode !== "easy";
+
 	return (
 		<div className="fade-in slide-in-from-bottom-2 animate-in rounded-lg border border-overlay bg-surface p-6 shadow-md transition-all duration-300">
+			{/* Input Type Selector */}
+			<div className="mb-6">
+				<span className="mb-2 block font-semibold text-main text-sm">
+					{t("create.inputTypeLabel") || "Método de Geração"}
+				</span>
+				<div className="grid grid-cols-2 gap-2 rounded-xl bg-base p-1 border border-overlay">
+					<button
+						type="button"
+						onClick={() => setInputType("formatted")}
+						className={cn(
+							"rounded-lg py-2 text-xs font-bold transition-all cursor-pointer",
+							inputType === "formatted"
+								? "bg-surface text-primary shadow-sm font-extrabold"
+								: "text-muted hover:text-main",
+						)}
+					>
+						{t("create.inputFormatted") || "Texto Formatado (Q/A/O)"}
+					</button>
+					<button
+						type="button"
+						onClick={() => setInputType("raw")}
+						className={cn(
+							"rounded-lg py-2 text-xs font-bold transition-all cursor-pointer",
+							inputType === "raw"
+								? "bg-surface text-primary shadow-sm font-extrabold"
+								: "text-muted hover:text-main",
+						)}
+					>
+						{t("create.inputRaw") || "Texto Livre (Artigo, Resumo)"}
+					</button>
+				</div>
+			</div>
+
 			<h2 className="mb-4 font-semibold text-main text-xl">
-				{t("create.heading")}
+				{inputType === "formatted"
+					? t("create.heading")
+					: (t("create.headingRaw") || "Colar Conteúdo para IA")}
 			</h2>
-			<p className="mb-4 text-sm text-subtle">{t("create.formatLabel")}</p>
-			<pre className="mb-4 overflow-x-auto rounded border border-overlay bg-overlay p-2 text-muted text-xs">
-				{t("create.formatExample")}
-			</pre>
+
+			{inputType === "formatted" ? (
+				<>
+					<p className="mb-4 text-sm text-subtle">{t("create.formatLabel")}</p>
+					<pre className="mb-4 overflow-x-auto rounded border border-overlay bg-overlay p-2 text-muted text-xs">
+						{t("create.formatExample")}
+					</pre>
+				</>
+			) : (
+				<p className="mb-4 text-sm text-subtle">
+					{t("create.rawDescription") ||
+						"Cole seu texto (artigo, resumo, anotação) abaixo. A Inteligência Artificial lerá o conteúdo e criará perguntas de múltipla escolha factuais."}
+				</p>
+			)}
 
 			<form onSubmit={handleGenerate}>
 				<textarea
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
-					className="mb-4 h-64 w-full rounded-md border border-overlay bg-base p-3 text-main transition-all placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary"
-					placeholder={t("create.placeholder")}
+					className="mb-4 h-64 w-full rounded-md border border-overlay bg-base p-3 text-main transition-all placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+					placeholder={
+						inputType === "formatted"
+							? t("create.placeholder")
+							: (t("create.rawPlaceholder") ||
+								"Cole seu artigo, resumo ou anotações para gerar as perguntas do quiz...")
+					}
 				/>
 
-				{/* Selection mode cards */}
-				<div className="mb-6">
-					<span className="mb-2 block font-semibold text-main text-sm">
-						{t("create.modeLabel")}
-					</span>
-					<div className="grid grid-cols-3 gap-3">
-						{modes.map(({ id, icon: Icon, title, desc }) => (
-							<button
-								key={id}
-								type="button"
-								onClick={() => setDifficultyMode(id)}
-								className={cn(
-									"flex cursor-pointer flex-col items-center rounded-xl border p-3 text-center transition-all duration-200",
-									difficultyMode === id
-										? "scale-[1.02] border-primary bg-primary/5 text-primary shadow-sm"
-										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
-								)}
-							>
-								<Icon className="mb-1.5 h-5 w-5" />
-								<span className="font-bold text-xs">{title}</span>
-								<span className="mt-1 font-medium text-[9px] leading-tight opacity-80">
-									{desc}
-								</span>
-							</button>
-						))}
+				{/* Selection mode cards (Only for formatted input) */}
+				{inputType === "formatted" ? (
+					<div className="mb-6">
+						<span className="mb-2 block font-semibold text-main text-sm">
+							{t("create.modeLabel")}
+						</span>
+						<div className="grid grid-cols-3 gap-3">
+							{modes.map(({ id, icon: Icon, title, desc }) => (
+								<button
+									key={id}
+									type="button"
+									onClick={() => setDifficultyMode(id)}
+									className={cn(
+										"flex cursor-pointer flex-col items-center rounded-xl border p-3 text-center transition-all duration-200",
+										difficultyMode === id
+											? "scale-[1.02] border-primary bg-primary/5 text-primary shadow-sm font-extrabold"
+											: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
+									)}
+								>
+									<Icon className="mb-1.5 h-5 w-5" />
+									<span className="font-bold text-xs">{title}</span>
+									<span className="mt-1 font-medium text-[9px] leading-tight opacity-80">
+										{desc}
+									</span>
+								</button>
+							))}
+						</div>
 					</div>
-				</div>
+				) : (
+					/* Quantity selector for Raw input */
+					<div className="mb-6">
+						<label
+							htmlFor="question-count"
+							className="mb-2 block font-semibold text-main text-sm"
+						>
+							{t("create.questionCountLabel") || "Quantidade de Perguntas"}
+						</label>
+						<div className="relative flex items-center">
+							<input
+								id="question-count"
+								type="number"
+								min="3"
+								max="20"
+								value={questionCount}
+								onChange={(e) =>
+									setQuestionCount(
+										Math.max(3, Math.min(20, Number(e.target.value))),
+									)
+								}
+								className="w-full rounded-lg border border-overlay bg-base p-2.5 text-main text-sm outline-none transition-all focus:ring-1 focus:ring-primary"
+							/>
+						</div>
+					</div>
+				)}
 
 				{/* AI Configuration Section */}
-				{difficultyMode !== "easy" && (
+				{showAiConfig && (
 					<div className="fade-in slide-in-from-top-1 mb-6 animate-in duration-200">
 						{/* Custom AI Provider selector */}
 						<div className="mb-4">
@@ -277,7 +397,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 								href={getProviderLink()}
 								target="_blank"
 								rel="noreferrer"
-								className="text-primary text-xs hover:underline"
+								className="text-primary text-xs hover:underline font-bold"
 							>
 								{t("create.getApiKey")}
 							</a>
@@ -382,7 +502,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 
 				<button
 					disabled={isGenerating}
-					className="flex w-full items-center justify-center rounded bg-primary px-4 py-3 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+					className="flex w-full items-center justify-center rounded bg-primary px-4 py-3.5 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
 					type="submit"
 				>
 					<Wand2

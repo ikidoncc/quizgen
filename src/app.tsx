@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { CreateTab } from "./components/CreateTab";
 import { HistoryTab } from "./components/HistoryTab";
+import { CreateFlashcardTab } from "./components/CreateFlashcardTab";
+import { StudyFlashcardTab } from "./components/StudyFlashcardTab";
+import { FlashcardHistoryTab } from "./components/FlashcardHistoryTab";
 import { LangSelect } from "./components/LangSelect";
 import { Modal } from "./components/Modal";
 import { PlayTab } from "./components/PlayTab";
@@ -12,11 +15,20 @@ import { useTheme } from "./hooks/useTheme";
 import { useTranslation } from "./i18n/I18nProvider";
 import type { HistoryEntry, Question, Tab } from "./types";
 import { cn } from "./utils/cn";
+import {
+	Brain,
+	History,
+	Layers,
+	PlusCircle,
+	BookOpen,
+	Compass,
+	Settings,
+} from "lucide-react";
 
-function tabClass(currentTab: Tab, tab: Tab): string {
-	return currentTab === tab
-		? "text-primary border-primary opacity-100"
-		: "text-muted border-transparent opacity-60 hover:text-primary hover:opacity-100";
+function sidebarButtonClass(isActive: boolean): string {
+	return isActive
+		? "flex items-center gap-3 w-full px-4 py-2 text-xs font-extrabold text-primary bg-primary/10 border-l-4 border-primary rounded-r-lg select-none"
+		: "flex items-center gap-3 w-full px-4 py-2 text-xs font-semibold text-muted hover:text-main hover:bg-overlay/40 border-l-4 border-transparent rounded-r-lg transition-all select-none";
 }
 
 export function App() {
@@ -32,6 +44,12 @@ export function App() {
 		skipQuestion,
 		setTimeLeft,
 		setHistoryId,
+		// Flashcards actions
+		setFlashcardSet,
+		addFlashcardSet,
+		deleteFlashcardSet,
+		selectCardFeedback,
+		resetFlashcardStudy,
 	} = useQuizState();
 	const { entries, addEntry, updateEntry, deleteEntry } = useHistory();
 
@@ -115,58 +133,29 @@ export function App() {
 		updateEntry,
 	]);
 
-	return (
-		<div className="container mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-8">
-			<header className="mb-10 flex flex-col items-center">
-				<div className="flex w-full flex-col items-center gap-6">
-					<div className="group cursor-default text-center">
-						<h1 className="font-black text-4xl text-primary tracking-tight transition-transform group-hover:scale-105">
-							{t("app.title")}
-						</h1>
-						<p className="font-medium text-subtle">{t("app.subtitle")}</p>
-					</div>
-					<div className="flex items-center gap-2">
-						<LangSelect />
-						<ThemeSelect value={theme} onChange={setTheme} />
-					</div>
-				</div>
-			</header>
+	const getActiveTabTitle = () => {
+		switch (state.currentTab) {
+			case "quiz-create":
+				return t("nav.quizCreate") || "Criar Quiz";
+			case "quiz-play":
+				return t("nav.quizPlay") || "Jogar Quiz";
+			case "quiz-history":
+				return t("nav.quizHistory") || "Histórico de Quizzes";
+			case "flashcard-create":
+				return t("nav.flashcardCreate") || "Criar Flashcards";
+			case "flashcard-study":
+				return t("nav.flashcardStudy") || "Estudar Flashcards";
+			case "flashcard-history":
+				return t("nav.flashcardHistory") || "Histórico de Decks";
+			default:
+				return "";
+		}
+	};
 
-			<nav className="mb-8 flex border-overlay border-b">
-				<button
-					onClick={() => setTab("create")}
-					className={cn(
-						"-mb-0.5 border-b-2 px-6 py-3 font-bold transition-all",
-						tabClass(state.currentTab, "create"),
-					)}
-					type="button"
-				>
-					{t("nav.create")}
-				</button>
-				<button
-					onClick={() => setTab("play")}
-					className={cn(
-						"-mb-0.5 border-b-2 px-6 py-3 font-bold transition-all",
-						tabClass(state.currentTab, "play"),
-					)}
-					type="button"
-				>
-					{t("nav.play")}
-				</button>
-				<button
-					onClick={() => setTab("history")}
-					className={cn(
-						"-mb-0.5 border-b-2 px-6 py-3 font-bold transition-all",
-						tabClass(state.currentTab, "history"),
-					)}
-					type="button"
-				>
-					{t("nav.history")}
-				</button>
-			</nav>
-
-			<main className="grow">
-				{state.currentTab === "create" ? (
+	const renderContent = () => {
+		switch (state.currentTab) {
+			case "quiz-create":
+				return (
 					<CreateTab
 						onGenerate={handleGenerate}
 						initialTimerEnabled={state.isTimerEnabled}
@@ -179,31 +168,41 @@ export function App() {
 							})
 						}
 					/>
-				) : state.currentTab === "history" ? (
+				);
+			case "quiz-history":
+				return (
 					<HistoryTab
 						entries={entries}
 						onPlayAgain={handlePlayAgain}
 						onDelete={handleDeleteEntry}
 					/>
-				) : state.quizData.length === 0 ? (
-					<div className="rounded-3xl border border-overlay border-dashed bg-surface/50 py-16 text-center">
-						<p className="mb-6 font-medium text-muted">{t("empty.message")}</p>
-						<button
-							onClick={() => setTab("create")}
-							className="font-bold text-primary underline transition-all hover:opacity-80"
-							type="button"
-						>
-							{t("empty.action")}
-						</button>
-					</div>
-				) : isGameOver ? (
-					<ResultsTab
-						score={state.score}
-						totalQuestions={state.quizData.length}
-						skippedCount={state.skippedCount}
-						onNewQuiz={() => setTab("create")}
-					/>
-				) : (
+				);
+			case "quiz-play":
+				if (state.quizData.length === 0) {
+					return (
+						<div className="rounded-3xl border border-overlay border-dashed bg-surface/50 py-16 text-center">
+							<p className="mb-6 font-medium text-muted">{t("empty.message")}</p>
+							<button
+								onClick={() => setTab("quiz-create")}
+								className="font-bold text-primary underline transition-all hover:opacity-80 cursor-pointer"
+								type="button"
+							>
+								{t("empty.action")}
+							</button>
+						</div>
+					);
+				}
+				if (isGameOver) {
+					return (
+						<ResultsTab
+							score={state.score}
+							totalQuestions={state.quizData.length}
+							skippedCount={state.skippedCount}
+							onNewQuiz={() => setTab("quiz-create")}
+						/>
+					);
+				}
+				return (
 					<PlayTab
 						key={`${state.currentQuestionIndex}-${state.gameId}`}
 						quizData={state.quizData}
@@ -249,13 +248,164 @@ export function App() {
 							})
 						}
 					/>
-				)}
+				);
+			case "flashcard-create":
+				return (
+					<CreateFlashcardTab
+						onGenerate={addFlashcardSet}
+						onError={(msg) =>
+							showModal({
+								title: t("modal.title.error"),
+								message: msg,
+								confirmText: t("modal.ok"),
+								onConfirm: closeModal,
+							})
+						}
+					/>
+				);
+			case "flashcard-study":
+				return (
+					<StudyFlashcardTab
+						deck={state.currentFlashcardSet}
+						currentCardIndex={state.currentCardIndex}
+						cardsMastered={state.cardsMastered}
+						cardsToReview={state.cardsToReview}
+						onFeedback={selectCardFeedback}
+						onReset={resetFlashcardStudy}
+						onNavigateToCreate={() => setTab("flashcard-create")}
+					/>
+				);
+			case "flashcard-history":
+				return (
+					<FlashcardHistoryTab
+						entries={state.flashcardHistory}
+						onSelectDeck={setFlashcardSet}
+						onDelete={deleteFlashcardSet}
+					/>
+				);
+			default:
+				return null;
+		}
+	};
+
+	return (
+		<div className="flex min-h-screen w-full flex-col bg-base text-main md:flex-row">
+			{/* Persistent Sidebar */}
+			<aside className="flex w-full flex-col border-overlay bg-surface p-6 shrink-0 md:w-64 md:border-r">
+				{/* Logo / Header */}
+				<div className="mb-8 flex items-center gap-3">
+					<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-md">
+						<Compass className="h-5 w-5 text-surface animate-spin-slow" />
+					</div>
+					<div>
+						<h1 className="font-black text-xl text-primary tracking-tight">
+							{t("app.title")}
+						</h1>
+						<p className="text-[10px] font-medium text-subtle leading-none">
+							{t("app.subtitle")}
+						</p>
+					</div>
+				</div>
+
+				{/* Nav Tree */}
+				<nav className="flex flex-col gap-6 grow">
+					{/* Quiz Section */}
+					<div className="flex flex-col gap-1.5">
+						<span className="px-4 text-[10px] font-extrabold text-muted uppercase tracking-widest flex items-center gap-1.5 select-none">
+							<Brain className="h-3.5 w-3.5 text-primary" />
+							{t("nav.quiz") || "Quiz"}
+						</span>
+						<div className="flex flex-col gap-1">
+							<button
+								onClick={() => setTab("quiz-create")}
+								className={sidebarButtonClass(state.currentTab === "quiz-create")}
+								type="button"
+							>
+								<PlusCircle className="h-4 w-4" />
+								{t("nav.quizCreate") || "Criar"}
+							</button>
+							<button
+								onClick={() => setTab("quiz-play")}
+								className={sidebarButtonClass(state.currentTab === "quiz-play")}
+								type="button"
+							>
+								<Brain className="h-4 w-4" />
+								{t("nav.quizPlay") || "Jogar"}
+							</button>
+							<button
+								onClick={() => setTab("quiz-history")}
+								className={sidebarButtonClass(state.currentTab === "quiz-history")}
+								type="button"
+							>
+								<History className="h-4 w-4" />
+								{t("nav.quizHistory") || "Histórico"}
+							</button>
+						</div>
+					</div>
+
+					{/* Flashcards Section */}
+					<div className="flex flex-col gap-1.5">
+						<span className="px-4 text-[10px] font-extrabold text-muted uppercase tracking-widest flex items-center gap-1.5 select-none">
+							<Layers className="h-3.5 w-3.5 text-primary" />
+							{t("nav.flashcard") || "Flashcard"}
+						</span>
+						<div className="flex flex-col gap-1">
+							<button
+								onClick={() => setTab("flashcard-create")}
+								className={sidebarButtonClass(state.currentTab === "flashcard-create")}
+								type="button"
+							>
+								<PlusCircle className="h-4 w-4" />
+								{t("nav.flashcardCreate") || "Criar"}
+							</button>
+							<button
+								onClick={() => setTab("flashcard-study")}
+								className={sidebarButtonClass(state.currentTab === "flashcard-study")}
+								type="button"
+							>
+								<BookOpen className="h-4 w-4" />
+								{t("nav.flashcardStudy") || "Estudar"}
+							</button>
+							<button
+								onClick={() => setTab("flashcard-history")}
+								className={sidebarButtonClass(state.currentTab === "flashcard-history")}
+								type="button"
+							>
+								<History className="h-4 w-4" />
+								{t("nav.flashcardHistory") || "Histórico"}
+							</button>
+						</div>
+					</div>
+				</nav>
+
+				{/* Footer Settings & Copy */}
+				<div className="mt-8 flex flex-col gap-4 border-t border-overlay pt-6">
+					<div className="flex items-center justify-between gap-2">
+						<LangSelect />
+						<ThemeSelect value={theme} onChange={setTheme} />
+					</div>
+					<footer className="text-center font-semibold text-muted/30 text-[9px] select-none">
+						{t("footer")}
+					</footer>
+				</div>
+			</aside>
+
+			{/* Main Content Area */}
+			<main className="flex-1 flex flex-col p-6 overflow-y-auto max-w-4xl mx-auto w-full">
+				{/* Top bar with active page name */}
+				<header className="mb-6 flex items-center justify-between border-b border-overlay pb-4">
+					<h2 className="font-extrabold text-xl text-main tracking-tight">
+						{getActiveTabTitle()}
+					</h2>
+				</header>
+
+				{/* Content Panel */}
+				<div className="grow">
+					{renderContent()}
+				</div>
 			</main>
 
-			<footer className="mt-12 text-center font-medium text-muted/40 text-xs">
-				{t("footer")}
-			</footer>
-
+			{/* Modal Dialogs */}
 			<Modal
 				isOpen={modalConfig.isOpen}
 				title={modalConfig.title}

@@ -1,7 +1,7 @@
 import { generateFlashcardsWithGemini } from "../ai/gemini";
 import { generateFlashcardsWithGroq } from "../ai/groq";
 import { generateFlashcardsWithOpenAI } from "../ai/openai";
-import type { FlashcardSet, AIProvider } from "../types";
+import type { AIProvider, FlashcardSet } from "../types";
 
 export async function generateFlashcardSet(
 	text: string,
@@ -39,7 +39,9 @@ export async function generateFlashcardSet(
 	};
 }
 
-export function parseFlashcardText(text: string): { front: string; back: string }[] {
+export function parseFlashcardText(
+	text: string,
+): { front: string; back: string }[] {
 	const cards: { front: string; back: string }[] = [];
 	const lines = text.split("\n");
 	let currentFront = "";

@@ -325,4 +325,3 @@ ${text}`;
 
 	return result;
 }
-

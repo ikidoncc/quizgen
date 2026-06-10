@@ -1,29 +1,29 @@
 import {
-	Wand2,
-	Zap,
+	Bot,
 	Brain,
-	Sparkles,
-	Key,
+	ChevronDown,
 	Eye,
 	EyeOff,
-	Bot,
-	ChevronDown,
+	Key,
+	Sparkles,
+	Wand2,
+	Zap,
 } from "lucide-react";
 import type React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
-import type { DifficultyMode, AIProvider } from "../types";
+import type { AIProvider, DifficultyMode, Question } from "../types";
+import { cn } from "../utils/cn";
 import {
+	generateQuizFromText,
 	parseQuizText,
 	prepareQuizOptionsWithAI,
-	generateQuizFromText,
 } from "../utils/quiz";
 import { Checkbox } from "./Checkbox";
-import { cn } from "../utils/cn";
 
 interface CreateTabProps {
 	onGenerate: (
-		data: any[],
+		data: Question[],
 		timerEnabled: boolean,
 		timerDuration: number,
 	) => void;
@@ -204,14 +204,14 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 				<span className="mb-2 block font-semibold text-main text-sm">
 					{t("create.inputTypeLabel") || "Método de Geração"}
 				</span>
-				<div className="grid grid-cols-2 gap-2 rounded-xl bg-base p-1 border border-overlay">
+				<div className="grid grid-cols-2 gap-2 rounded-xl border border-overlay bg-base p-1">
 					<button
 						type="button"
 						onClick={() => setInputType("formatted")}
 						className={cn(
-							"rounded-lg py-2 text-xs font-bold transition-all cursor-pointer",
+							"cursor-pointer rounded-lg py-2 font-bold text-xs transition-all",
 							inputType === "formatted"
-								? "bg-surface text-primary shadow-sm font-extrabold"
+								? "bg-surface font-extrabold text-primary shadow-sm"
 								: "text-muted hover:text-main",
 						)}
 					>
@@ -221,9 +221,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 						type="button"
 						onClick={() => setInputType("raw")}
 						className={cn(
-							"rounded-lg py-2 text-xs font-bold transition-all cursor-pointer",
+							"cursor-pointer rounded-lg py-2 font-bold text-xs transition-all",
 							inputType === "raw"
-								? "bg-surface text-primary shadow-sm font-extrabold"
+								? "bg-surface font-extrabold text-primary shadow-sm"
 								: "text-muted hover:text-main",
 						)}
 					>
@@ -235,7 +235,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 			<h2 className="mb-4 font-semibold text-main text-xl">
 				{inputType === "formatted"
 					? t("create.heading")
-					: (t("create.headingRaw") || "Colar Conteúdo para IA")}
+					: t("create.headingRaw") || "Colar Conteúdo para IA"}
 			</h2>
 
 			{inputType === "formatted" ? (
@@ -256,12 +256,12 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 				<textarea
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
-					className="mb-4 h-64 w-full rounded-md border border-overlay bg-base p-3 text-main transition-all placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+					className="mb-4 h-64 w-full rounded-md border border-overlay bg-base p-3 text-main text-sm transition-all placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary"
 					placeholder={
 						inputType === "formatted"
 							? t("create.placeholder")
-							: (t("create.rawPlaceholder") ||
-								"Cole seu artigo, resumo ou anotações para gerar as perguntas do quiz...")
+							: t("create.rawPlaceholder") ||
+								"Cole seu artigo, resumo ou anotações para gerar as perguntas do quiz..."
 					}
 				/>
 
@@ -280,7 +280,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 									className={cn(
 										"flex cursor-pointer flex-col items-center rounded-xl border p-3 text-center transition-all duration-200",
 										difficultyMode === id
-											? "scale-[1.02] border-primary bg-primary/5 text-primary shadow-sm font-extrabold"
+											? "scale-[1.02] border-primary bg-primary/5 font-extrabold text-primary shadow-sm"
 											: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
 									)}
 								>
@@ -397,7 +397,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 								href={getProviderLink()}
 								target="_blank"
 								rel="noreferrer"
-								className="text-primary text-xs hover:underline font-bold"
+								className="font-bold text-primary text-xs hover:underline"
 							>
 								{t("create.getApiKey")}
 							</a>
@@ -502,7 +502,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 
 				<button
 					disabled={isGenerating}
-					className="flex w-full items-center justify-center rounded bg-primary px-4 py-3.5 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+					className="flex w-full cursor-pointer items-center justify-center rounded bg-primary px-4 py-3.5 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
 					type="submit"
 				>
 					<Wand2

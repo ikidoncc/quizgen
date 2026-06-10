@@ -1,23 +1,23 @@
 import {
-	Wand2,
 	Bot,
 	ChevronDown,
-	Key,
 	Eye,
 	EyeOff,
-	Layers,
 	FileText,
+	Key,
+	Layers,
+	Wand2,
 } from "lucide-react";
 import type React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
 import type { AIProvider, FlashcardSet } from "../types";
+import { cn } from "../utils/cn";
 import {
+	createFlashcardSetManual,
 	generateFlashcardSet,
 	parseFlashcardText,
-	createFlashcardSetManual,
 } from "../utils/flashcard";
-import { cn } from "../utils/cn";
 
 interface CreateFlashcardTabProps {
 	onGenerate: (deck: FlashcardSet) => void;
@@ -155,14 +155,14 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 				<span className="mb-2 block font-semibold text-main text-sm">
 					{t("create.inputTypeLabel") || "Método de Geração"}
 				</span>
-				<div className="grid grid-cols-2 gap-2 rounded-xl bg-base p-1 border border-overlay">
+				<div className="grid grid-cols-2 gap-2 rounded-xl border border-overlay bg-base p-1">
 					<button
 						type="button"
 						onClick={() => setInputType("ai")}
 						className={cn(
-							"rounded-lg py-2 text-xs font-bold transition-all cursor-pointer",
+							"cursor-pointer rounded-lg py-2 font-bold text-xs transition-all",
 							inputType === "ai"
-								? "bg-surface text-primary shadow-sm font-extrabold"
+								? "bg-surface font-extrabold text-primary shadow-sm"
 								: "text-muted hover:text-main",
 						)}
 					>
@@ -172,9 +172,9 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 						type="button"
 						onClick={() => setInputType("manual")}
 						className={cn(
-							"rounded-lg py-2 text-xs font-bold transition-all cursor-pointer",
+							"cursor-pointer rounded-lg py-2 font-bold text-xs transition-all",
 							inputType === "manual"
-								? "bg-surface text-primary shadow-sm font-extrabold"
+								? "bg-surface font-extrabold text-primary shadow-sm"
 								: "text-muted hover:text-main",
 						)}
 					>
@@ -187,8 +187,8 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 				<Layers className="h-5 w-5 text-primary" />
 				<h2 className="font-semibold text-main text-xl">
 					{inputType === "ai"
-						? (t("flashcard.create.heading") || "Gerar Flashcards com IA")
-						: (t("flashcard.create.headingManual") || "Criar Flashcards Manuais")}
+						? t("flashcard.create.heading") || "Gerar Flashcards com IA"
+						: t("flashcard.create.headingManual") || "Criar Flashcards Manuais"}
 				</h2>
 			</div>
 
@@ -204,7 +204,9 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 							"Insira seus flashcards abaixo no formato estruturado offline. Não é necessário chave de API."}
 					</p>
 					<pre className="mb-4 overflow-x-auto rounded border border-overlay bg-overlay p-2 text-muted text-xs">
-						{"Q: Pergunta ou conceito (Frente)\nA: Resposta ou explicação (Verso)"}
+						{
+							"Q: Pergunta ou conceito (Frente)\nA: Resposta ou explicação (Verso)"
+						}
 					</pre>
 				</>
 			)}
@@ -223,11 +225,11 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 						type="text"
 						value={deckTitle}
 						onChange={(e) => setDeckTitle(e.target.value)}
-						className="w-full rounded-lg border border-overlay bg-base p-2.5 text-main text-sm outline-none transition-all focus:ring-1 focus:ring-primary placeholder:text-muted/40"
+						className="w-full rounded-lg border border-overlay bg-base p-2.5 text-main text-sm outline-none transition-all placeholder:text-muted/40 focus:ring-1 focus:ring-primary"
 						placeholder={
 							inputType === "ai"
-								? (t("flashcard.create.titlePlaceholder") ||
-									"Deixe em branco para título automático...")
+								? t("flashcard.create.titlePlaceholder") ||
+									"Deixe em branco para título automático..."
 								: "Insira o título do seu deck..."
 						}
 					/>
@@ -236,11 +238,11 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 				<textarea
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
-					className="mb-4 h-64 w-full rounded-md border border-overlay bg-base p-3 text-main transition-all placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+					className="mb-4 h-64 w-full rounded-md border border-overlay bg-base p-3 text-main text-sm transition-all placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary"
 					placeholder={
 						inputType === "ai"
-							? (t("flashcard.create.placeholder") ||
-								"Cole o texto do qual deseja estudar conceitos e definições...")
+							? t("flashcard.create.placeholder") ||
+								"Cole o texto do qual deseja estudar conceitos e definições..."
 							: "Q: Frente do cartão 1\nA: Verso do cartão 1\n\nQ: Frente do cartão 2\nA: Verso do cartão 2"
 					}
 				/>
@@ -262,7 +264,9 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 								max="30"
 								value={cardCount}
 								onChange={(e) =>
-									setCardCount(Math.max(3, Math.min(30, Number(e.target.value))))
+									setCardCount(
+										Math.max(3, Math.min(30, Number(e.target.value))),
+									)
 								}
 								className="w-full rounded-lg border border-overlay bg-base p-2.5 text-main text-sm outline-none transition-all focus:ring-1 focus:ring-primary"
 							/>
@@ -362,7 +366,7 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 									<button
 										type="button"
 										onClick={() => setShowApiKey(!showApiKey)}
-										className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer p-1 text-muted transition-colors hover:text-main"
+										className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer p-1 text-muted transition-colors hover:text-main"
 									>
 										{showApiKey ? (
 											<EyeOff className="h-4 w-4" />
@@ -398,7 +402,8 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 					) : (
 						<>
 							<FileText className="h-4 w-4" />
-							{t("flashcard.create.submitManual") || "Criar Flashcards (Offline)"}
+							{t("flashcard.create.submitManual") ||
+								"Criar Flashcards (Offline)"}
 						</>
 					)}
 				</button>

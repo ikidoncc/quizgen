@@ -314,4 +314,3 @@ ${text}`;
 
 	return result;
 }
-

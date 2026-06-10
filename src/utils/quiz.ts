@@ -340,7 +340,13 @@ export async function generateQuizFromText(
 		throw new Error("Chave de API inválida ou ausente.");
 	}
 
-	let result;
+	let result: {
+		questions: {
+			question: string;
+			answer: string;
+			distractors: string[];
+		}[];
+	};
 	if (provider === "gemini") {
 		result = await generateQuizFromTextWithGemini(text, apiKey, quantity);
 	} else if (provider === "groq") {

@@ -279,6 +279,7 @@ export function App() {
 						currentCardIndex={state.currentCardIndex}
 						cardsMastered={state.cardsMastered}
 						cardsToReview={state.cardsToReview}
+						cardsPartial={state.cardsPartial || []}
 						onFeedback={selectCardFeedback}
 						onReset={resetFlashcardStudy}
 						onNavigateToCreate={() => handleTabSelect("flashcard-create")}

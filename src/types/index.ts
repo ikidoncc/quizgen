@@ -36,7 +36,7 @@ export interface FlashcardSet {
 	cards: Flashcard[];
 }
 
-export const STORAGE_VERSION = 6;
+export const STORAGE_VERSION = 7;
 
 export interface QuizState {
 	version: number;
@@ -56,6 +56,7 @@ export interface QuizState {
 	currentCardIndex: number;
 	cardsMastered: string[];
 	cardsToReview: string[];
+	cardsPartial: string[];
 }
 
 export interface HistoryEntry {

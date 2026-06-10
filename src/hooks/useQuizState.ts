@@ -20,6 +20,7 @@ const INITIAL_STATE: QuizState = {
 	currentCardIndex: 0,
 	cardsMastered: [],
 	cardsToReview: [],
+	cardsPartial: [],
 };
 
 function isQuizState(value: unknown): value is QuizState {
@@ -137,6 +138,7 @@ export function useQuizState() {
 				currentCardIndex: 0,
 				cardsMastered: [],
 				cardsToReview: [],
+				cardsPartial: [],
 				currentTab: set ? "flashcard-study" : s.currentTab,
 			}));
 		},
@@ -152,6 +154,7 @@ export function useQuizState() {
 				currentCardIndex: 0,
 				cardsMastered: [],
 				cardsToReview: [],
+				cardsPartial: [],
 				currentTab: "flashcard-study",
 			}));
 		},
@@ -175,7 +178,7 @@ export function useQuizState() {
 	);
 
 	const selectCardFeedback = useCallback(
-		(cardId: string, type: "master" | "review") => {
+		(cardId: string, type: "master" | "review" | "partial") => {
 			setState((s) => {
 				const mastered =
 					type === "master"
@@ -185,6 +188,10 @@ export function useQuizState() {
 					type === "review"
 						? [...s.cardsToReview.filter((id) => id !== cardId), cardId]
 						: s.cardsToReview.filter((id) => id !== cardId);
+				const partial =
+					type === "partial"
+						? [...(s.cardsPartial || []).filter((id) => id !== cardId), cardId]
+						: (s.cardsPartial || []).filter((id) => id !== cardId);
 
 				// Encontra o próximo card que ainda não está dominado
 				const cards = s.currentFlashcardSet?.cards || [];
@@ -203,6 +210,7 @@ export function useQuizState() {
 					...s,
 					cardsMastered: mastered,
 					cardsToReview: review,
+					cardsPartial: partial,
 					currentCardIndex: nextIndex,
 				};
 			});
@@ -220,10 +228,13 @@ export function useQuizState() {
 				let nextIndex = 0;
 
 				if (onlyReview) {
-					// As dominadas serão todas, EXCETO as que estão na lista de revisão
-					const reviewSet = new Set(s.cardsToReview);
+					// As dominadas serão todas, EXCETO as que estão na lista de revisão ou parcial
+					const reviewOrPartialSet = new Set([
+						...s.cardsToReview,
+						...(s.cardsPartial || []),
+					]);
 					nextMastered = cards
-						.filter((c) => !reviewSet.has(c.id))
+						.filter((c) => !reviewOrPartialSet.has(c.id))
 						.map((c) => c.id);
 
 					// Achar a primeira que precisa de revisão para começar dali
@@ -241,6 +252,7 @@ export function useQuizState() {
 					currentCardIndex: nextIndex,
 					cardsMastered: nextMastered,
 					cardsToReview: onlyReview ? s.cardsToReview : [],
+					cardsPartial: onlyReview ? s.cardsPartial || [] : [],
 				};
 			});
 		},

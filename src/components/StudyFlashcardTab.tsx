@@ -1,6 +1,7 @@
 import {
 	AlertCircle,
 	CheckCircle,
+	HelpCircle,
 	Layers,
 	RefreshCw,
 	RotateCw,
@@ -18,7 +19,8 @@ interface StudyFlashcardTabProps {
 	currentCardIndex: number;
 	cardsMastered: string[];
 	cardsToReview: string[];
-	onFeedback: (cardId: string, type: "master" | "review") => void;
+	cardsPartial: string[];
+	onFeedback: (cardId: string, type: "master" | "review" | "partial") => void;
 	onReset: (onlyReview?: boolean) => void;
 	onNavigateToCreate: () => void;
 }
@@ -28,6 +30,7 @@ export const StudyFlashcardTab: React.FC<StudyFlashcardTabProps> = ({
 	currentCardIndex,
 	cardsMastered,
 	cardsToReview,
+	cardsPartial,
 	onFeedback,
 	onReset,
 	onNavigateToCreate,
@@ -62,7 +65,7 @@ export const StudyFlashcardTab: React.FC<StudyFlashcardTabProps> = ({
 		setIsFlipped(!isFlipped);
 	};
 
-	const handleFeedbackClick = (type: "master" | "review") => {
+	const handleFeedbackClick = (type: "master" | "review" | "partial") => {
 		if (isFinished) return;
 		const activeCard = cards[currentCardIndex];
 		onFeedback(activeCard.id, type);
@@ -72,6 +75,7 @@ export const StudyFlashcardTab: React.FC<StudyFlashcardTabProps> = ({
 	if (isFinished) {
 		const totalMastered = cardsMastered.length;
 		const totalToReview = cardsToReview.length;
+		const totalPartial = cardsPartial.length;
 
 		return (
 			<div className="fade-in animate-in rounded-lg border border-overlay bg-surface p-8 text-center shadow-md">
@@ -84,13 +88,21 @@ export const StudyFlashcardTab: React.FC<StudyFlashcardTabProps> = ({
 						`Você terminou de revisar o deck: ${deck.title}`}
 				</p>
 
-				<div className="mb-8 grid grid-cols-2 gap-4">
+				<div className="mb-8 grid grid-cols-3 gap-3">
 					<div className="rounded-xl border border-success/20 bg-success/10 p-4 text-center">
 						<span className="block font-bold text-2xl text-success">
 							{totalMastered}
 						</span>
 						<span className="font-semibold text-muted text-xs">
 							{t("flashcard.study.finished.mastered") || "Dominados"}
+						</span>
+					</div>
+					<div className="rounded-xl border border-warning/20 bg-warning/10 p-4 text-center">
+						<span className="block font-bold text-2xl text-warning">
+							{totalPartial}
+						</span>
+						<span className="font-semibold text-muted text-xs">
+							{t("flashcard.study.finished.partial") || "Parciais"}
 						</span>
 					</div>
 					<div className="rounded-xl border border-danger/20 bg-danger/10 p-4 text-center">
@@ -113,7 +125,7 @@ export const StudyFlashcardTab: React.FC<StudyFlashcardTabProps> = ({
 						{t("flashcard.study.finished.restartAll") || "Estudar Todo o Deck"}
 					</button>
 
-					{totalToReview > 0 && (
+					{(totalToReview > 0 || totalPartial > 0) && (
 						<button
 							onClick={() => onReset(true)}
 							className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-overlay bg-overlay px-5 py-3 font-bold text-main transition-all hover:bg-overlay/80 active:scale-[0.98]"
@@ -121,7 +133,7 @@ export const StudyFlashcardTab: React.FC<StudyFlashcardTabProps> = ({
 						>
 							<AlertCircle className="h-4 w-4 text-danger" />
 							{t("flashcard.study.finished.restartReviewOnly") ||
-								"Revisar Apenas os que Errei"}
+								"Revisar Incorretos/Parciais"}
 						</button>
 					)}
 
@@ -229,22 +241,36 @@ export const StudyFlashcardTab: React.FC<StudyFlashcardTabProps> = ({
 						{t("flashcard.study.reveal") || "Revelar Resposta"}
 					</button>
 				) : (
-					<div className="fade-in grid w-full max-w-md animate-in grid-cols-2 gap-4">
+					<div className="fade-in grid w-full max-w-md animate-in grid-cols-3 gap-2">
 						<button
 							onClick={() => handleFeedbackClick("review")}
-							className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-danger/20 bg-danger/10 py-3.5 font-bold text-danger text-sm transition-all hover:bg-danger/25 active:scale-[0.97]"
+							className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-danger/20 bg-danger/10 py-3 font-bold text-danger transition-all hover:bg-danger/25 active:scale-[0.97]"
 							type="button"
 						>
 							<ThumbsDown className="h-4 w-4" />
-							{t("flashcard.study.feedback.review") || "Revisar (Errei)"}
+							<span className="text-[10px] font-medium leading-none sm:text-xs">
+								{t("flashcard.study.feedback.review") || "Errei"}
+							</span>
+						</button>
+						<button
+							onClick={() => handleFeedbackClick("partial")}
+							className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-warning/20 bg-warning/10 py-3 font-bold text-warning transition-all hover:bg-warning/25 active:scale-[0.97]"
+							type="button"
+						>
+							<HelpCircle className="h-4 w-4" />
+							<span className="text-[10px] font-medium leading-none sm:text-xs">
+								{t("flashcard.study.feedback.partial") || "Quase"}
+							</span>
 						</button>
 						<button
 							onClick={() => handleFeedbackClick("master")}
-							className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-success/20 bg-success/10 py-3.5 font-bold text-sm text-success transition-all hover:bg-success/25 active:scale-[0.97]"
+							className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-success/20 bg-success/10 py-3 font-bold text-success transition-all hover:bg-success/25 active:scale-[0.97]"
 							type="button"
 						>
 							<ThumbsUp className="h-4 w-4" />
-							{t("flashcard.study.feedback.master") || "Dominado (Acertei)"}
+							<span className="text-[10px] font-medium leading-none sm:text-xs">
+								{t("flashcard.study.feedback.master") || "Acertei"}
+							</span>
 						</button>
 					</div>
 				)}

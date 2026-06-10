@@ -150,9 +150,10 @@
 				"title": "Deck Concluído!",
 				"subtitle": "Você terminou de revisar o deck: {{deck}}",
 				"mastered": "Dominados",
+				"partial": "Parciais",
 				"toReview": "Revisar",
 				"restartAll": "Estudar Todo o Deck",
-				"restartReviewOnly": "Revisar Apenas os que Errei",
+				"restartReviewOnly": "Revisar Incorretos/Parciais",
 				"newDeck": "Criar outro deck de Flashcards"
 			},
 			"studying": "Estudando deck",
@@ -165,6 +166,7 @@
 			},
 			"feedback": {
 				"review": "Revisar (Errei)",
+				"partial": "Parcial (Quase)",
 				"master": "Dominado (Acertei)"
 			}
 		},

@@ -150,9 +150,10 @@
 				"title": "Deck Finished!",
 				"subtitle": "You finished reviewing the deck: {{deck}}",
 				"mastered": "Mastered",
+				"partial": "Partial",
 				"toReview": "To Review",
 				"restartAll": "Study All Cards",
-				"restartReviewOnly": "Review Incorrect Only",
+				"restartReviewOnly": "Review Incorrect/Partial",
 				"newDeck": "Create another Flashcard deck"
 			},
 			"studying": "Studying deck",
@@ -165,6 +166,7 @@
 			},
 			"feedback": {
 				"review": "Review (Wrong)",
+				"partial": "Partial (Almost)",
 				"master": "Mastered (Correct)"
 			}
 		},

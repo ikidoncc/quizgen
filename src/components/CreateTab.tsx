@@ -1,14 +1,4 @@
-import {
-	Wand2,
-	Zap,
-	Brain,
-	Sparkles,
-	Key,
-	Eye,
-	EyeOff,
-	Bot,
-	ChevronDown,
-} from "lucide-react";
+import { Wand2, Zap, Brain, Sparkles, Key, Eye, EyeOff, Bot, ChevronDown } from "lucide-react";
 import type React from "react";
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
@@ -16,13 +6,12 @@ import type { Question, DifficultyMode, AIProvider } from "../types";
 import {
 	parseQuizText,
 	prepareQuizOptionsWithAI,
-	TIMER_DURATION,
 } from "../utils/quiz";
 import { Checkbox } from "./Checkbox";
 import { cn } from "../utils/cn";
 
 interface CreateTabProps {
-	onGenerate: (data: Question[], timerEnabled: boolean) => void;
+	onGenerate: (data: Question[], timerEnabled: boolean, timerDuration: number) => void;
 	initialTimerEnabled: boolean;
 	onError: (message: string) => void;
 }
@@ -43,6 +32,9 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 	const [apiKey, setApiKey] = useState("");
 	const [showApiKey, setShowApiKey] = useState(false);
 	const [isProviderOpen, setIsProviderOpen] = useState(false);
+	
+	const [minutes, setMinutes] = useState(1);
+	const [seconds, setSeconds] = useState(0);
 
 	const providerRef = useRef<HTMLDivElement>(null);
 
@@ -92,6 +84,15 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 			return;
 		}
 
+		let totalSeconds = 60;
+		if (timerEnabled) {
+			totalSeconds = minutes * 60 + seconds;
+			if (totalSeconds <= 0) {
+				onError(t("create.timerZeroError"));
+				return;
+			}
+		}
+
 		setIsGenerating(true);
 		try {
 			const questions = await prepareQuizOptionsWithAI(
@@ -100,7 +101,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 				aiProvider,
 				apiKey,
 			);
-			onGenerate(questions, timerEnabled);
+			onGenerate(questions, timerEnabled, totalSeconds);
 		} catch (err) {
 			console.error(err);
 			onError(t("create.error"));
@@ -175,7 +176,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 									"flex flex-col items-center rounded-xl border p-3 text-center transition-all duration-200 cursor-pointer",
 									difficultyMode === id
 										? "border-primary bg-primary/5 text-primary scale-[1.02] shadow-sm"
-										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
+										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main"
 								)}
 							>
 								<Icon className="mb-1.5 h-5 w-5" />
@@ -196,10 +197,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 							<span className="mb-2 block font-semibold text-main text-sm">
 								{t("create.providerLabel")}
 							</span>
-							<div
-								className="relative inline-block w-full text-left"
-								ref={providerRef}
-							>
+							<div className="relative inline-block w-full text-left" ref={providerRef}>
 								<button
 									onClick={() => setIsProviderOpen(!isProviderOpen)}
 									className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-overlay bg-base p-2.5 text-main text-sm outline-none transition-all hover:bg-overlay/50 active:scale-[0.99]"
@@ -224,10 +222,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 								{isProviderOpen && (
 									<div className="fade-in slide-in-from-top-1 absolute left-0 z-50 mt-1 w-full animate-in overflow-hidden rounded-lg border border-overlay bg-surface shadow-lg duration-200">
 										{[
-											{
-												value: "gemini" as const,
-												label: "Gemini (Google AI Studio)",
-											},
+											{ value: "gemini" as const, label: "Gemini (Google AI Studio)" },
 											{ value: "groq" as const, label: "Groq (Llama 3.1)" },
 											{ value: "openai" as const, label: "OpenAI (ChatGPT)" },
 										].map((prov) => (
@@ -236,8 +231,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 												key={prov.value}
 												className={cn(
 													"flex w-full cursor-pointer items-center px-4 py-3 text-left text-main text-sm transition-colors hover:bg-overlay",
-													aiProvider === prov.value &&
-														"bg-overlay/50 font-bold",
+													aiProvider === prov.value && "bg-overlay/50 font-bold",
 												)}
 												onClick={() => {
 													handleProviderChange(prov.value);
@@ -302,18 +296,62 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					</div>
 				)}
 
-				<div className="mb-6 flex items-center">
-					<Checkbox
-						id="timer-checkbox"
-						checked={timerEnabled}
-						onChange={setTimerEnabled}
-					/>
-					<label
-						htmlFor="timer-checkbox"
-						className="ml-2 cursor-pointer select-none font-medium text-main text-sm"
-					>
-						{t("create.timerLabel", { count: TIMER_DURATION / 60 })}
-					</label>
+				{/* Timer Configuration Section */}
+				<div className="mb-6">
+					<div className="flex items-center">
+						<Checkbox
+							id="timer-checkbox"
+							checked={timerEnabled}
+							onChange={setTimerEnabled}
+						/>
+						<label
+							htmlFor="timer-checkbox"
+							className="ml-2 cursor-pointer select-none font-medium text-main text-sm"
+						>
+							{t("create.timerLabel")}
+						</label>
+					</div>
+
+					{timerEnabled && (
+						<div className="fade-in animate-in slide-in-from-top-1 mt-3 flex items-center gap-4 duration-200">
+							<div className="flex flex-col">
+								<span className="mb-1 text-muted text-xs font-semibold">
+									{t("create.timerMinutes")}
+								</span>
+								<div className="relative flex items-center">
+									<input
+										type="number"
+										min="0"
+										max="59"
+										value={minutes}
+										onChange={(e) => setMinutes(Math.max(0, Math.min(59, Number(e.target.value))))}
+										className="w-20 rounded-md border border-overlay bg-base py-1.5 pl-3 pr-8 text-main transition-all focus:outline-none focus:ring-2 focus:ring-primary text-sm font-semibold text-center"
+									/>
+									<span className="absolute right-2 text-muted text-xs font-medium pointer-events-none">
+										m
+									</span>
+								</div>
+							</div>
+							<div className="flex flex-col">
+								<span className="mb-1 text-muted text-xs font-semibold">
+									{t("create.timerSeconds")}
+								</span>
+								<div className="relative flex items-center">
+									<input
+										type="number"
+										min="0"
+										max="59"
+										value={seconds}
+										onChange={(e) => setSeconds(Math.max(0, Math.min(59, Number(e.target.value))))}
+										className="w-20 rounded-md border border-overlay bg-base py-1.5 pl-3 pr-8 text-main transition-all focus:outline-none focus:ring-2 focus:ring-primary text-sm font-semibold text-center"
+									/>
+									<span className="absolute right-2 text-muted text-xs font-medium pointer-events-none">
+										s
+									</span>
+								</div>
+							</div>
+						</div>
+					)}
 				</div>
 
 				<button
@@ -321,10 +359,10 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					className="flex w-full items-center justify-center rounded bg-primary px-4 py-3 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
 					type="submit"
 				>
-					<Wand2
-						className={cn("mr-2 h-5 w-5", isGenerating && "animate-spin")}
-					/>
-					{isGenerating ? t("create.generatingWithAI") : t("create.submit")}
+					<Wand2 className={cn("mr-2 h-5 w-5", isGenerating && "animate-spin")} />
+					{isGenerating
+						? t("create.generatingWithAI")
+						: t("create.submit")}
 				</button>
 			</form>
 		</div>

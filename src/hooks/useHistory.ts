@@ -42,7 +42,11 @@ export function useHistory() {
 	);
 
 	const addEntry = useCallback(
-		(quizData: Question[], timerEnabled: boolean): string => {
+		(
+			quizData: Question[],
+			timerEnabled: boolean,
+			timerDuration?: number,
+		): string => {
 			const id = generateId();
 			const entry: HistoryEntry = {
 				id,
@@ -50,6 +54,7 @@ export function useHistory() {
 				title: quizData[0]?.question.slice(0, 60) ?? "Untitled",
 				questionCount: quizData.length,
 				isTimerEnabled: timerEnabled,
+				timerDuration,
 				quizData,
 			};
 			setEntries((prev) => [entry, ...prev].slice(0, MAX_ENTRIES));

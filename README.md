@@ -8,39 +8,25 @@ Create quizzes and flashcards from text. Built with React 19, TypeScript, Tailwi
 
 ## Features
 
-* ✨ **Quiz Generation** — paste text in `Q: Question? / A: Correct Answer / O: Incorrect Option` format
-* 🎮 **Play Mode** — answer questions with instant feedback and optional per-question timer
-* 📊 **Results Summary** — track correct, incorrect, and skipped answers
-* 🕒 **History** — generated quizzes are automatically saved to localStorage (up to 20 entries)
-
-  * Replay previous quizzes
-  * Copy quiz content to clipboard
-  * Download quiz as `.txt`
+* ✨ **Quiz Generation** — paste text in `Q: Question? / A: Correct Answer / O: Incorrect Option` format or generate from raw text using AI
+* 🎴 **Flashcards** — create flashcard decks manually (`Q: Front / A: Back`) or automatically extract them from text with AI. Study them with interactive flip animations and review/mastery states
+* 🤖 **AI-Powered Options** — generate plausible distractors in Normal or Hard difficulty using Gemini, Groq, or OpenAI API keys
+* 🎮 **Play Mode** — answer quiz questions with instant feedback and customizable per-question timers
+* 📊 **Results Summary** — track correct, incorrect, and skipped answers for quizzes, and deck progress for flashcards
+* 🕒 **History** — generated quizzes and flashcard decks are automatically saved locally to localStorage
+  * Replay previous quizzes or re-study decks
+  * Copy content to clipboard
+  * Download content as `.txt`
 * 🎨 **Theme Support** — Light, Dark, and Auto (system preference)
 * 🌐 **Internationalization (i18n)** — English and Brazilian Portuguese
-* 📱 **Responsive Design** — optimized for desktop and mobile devices
-* ⚡ **Fast & Lightweight** — no external state management or i18n libraries
-
----
-
-## Screenshots
-
-### Desktop
-
-<picture><img alt="Desktop Create" src="./doc/screenshots/creation-desktop.png" /></picture>
-<picture><img alt="Desktop Quiz" src="./doc/screenshots/quiz-desktop.png" /></picture>
-<picture><img alt="Desktop History" src="./doc/screenshots/history-desktop.png" /></picture>
-
-### Mobile
-
-<picture><img alt="Mobile Create" src="./doc/screenshots/creation-mobile.png" /></picture>
-<picture><img alt="Mobile Quiz" src="./doc/screenshots/quiz-mobile.png" /></picture>
-<picture><img alt="Mobile History" src="./doc/screenshots/history-mobile.png" /></picture>
+* 📱 **Responsive Design** — optimized for desktop and mobile devices with a fixed sidebar layout and responsive slide-out drawer
+* ⚡ **Fast & Lightweight** — no heavy external state management or i18n libraries
 
 ---
 
 ## Example Input
 
+### Quiz Format (Manual)
 ```text
 Q: What is the capital of Brazil?
 A: Brasília
@@ -55,15 +41,20 @@ O: Java
 O: C#
 ```
 
+### Flashcard Format (Manual)
+```text
+Q: Front of card (Question or concept)
+A: Back of card (Answer or definition)
+```
+
 ---
 
 ## How It Works
 
-1. Write your questions using the `Q/A/O` format.
-2. Generate the quiz.
-3. Answer each question.
-4. Review your score and performance.
-5. Access previous quizzes from the History tab.
+1. Write your questions or flashcards using the structured manual format, or select raw text input and paste an article/summary to use AI.
+2. Select your generation settings (difficulty mode, provider, API key, timer, card count).
+3. Play the quiz or flip flashcards to study concepts.
+4. Review your results and track history directly on the sidebar.
 
 ---
 
@@ -91,18 +82,18 @@ O: C#
 ### Prerequisites
 
 * Node.js 20+
-* npm
+* pnpm 9+
 
 ### Installation
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Open:
@@ -117,11 +108,11 @@ http://localhost:5173
 
 | Command           | Description                            |
 | ----------------- | -------------------------------------- |
-| `npm run dev`     | Start Vite development server          |
-| `npm run build`   | Type-check and create production build |
-| `npm run preview` | Preview production build locally       |
-| `npm run lint`    | Run Biome lint                         |
-| `npm run format`  | Format code with Biome                 |
+| `pnpm run dev`     | Start Vite development server          |
+| `pnpm run build`   | Type-check and create production build |
+| `pnpm run preview` | Preview production build locally       |
+| `pnpm run lint`    | Run Biome lint                         |
+| `pnpm run format`  | Format code with Biome                 |
 
 ---
 
@@ -129,7 +120,8 @@ http://localhost:5173
 
 ```text
 src/
-├── components/     # UI components
+├── ai/             # AI API integration providers (Gemini, Groq, OpenAI)
+├── components/     # UI components and tabs
 ├── hooks/          # Custom hooks
 ├── i18n/           # Internationalization provider
 ├── locales/        # Translation files

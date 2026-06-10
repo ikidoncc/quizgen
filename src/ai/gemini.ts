@@ -160,3 +160,85 @@ ${JSON.stringify(inputs, null, 2)}`;
 
 	return dict;
 }
+
+export interface FlashcardGenerationResult {
+	title: string;
+	cards: {
+		front: string;
+		back: string;
+	}[];
+}
+
+export async function generateFlashcardsWithGemini(
+	text: string,
+	apiKey: string,
+): Promise<FlashcardGenerationResult> {
+	const prompt = `Você é um gerador especialista em material didático e flashcards de estudo.
+Sua tarefa é analisar o texto enviado pelo usuário e gerar um conjunto de flashcards contendo conceitos importantes, perguntas e respostas diretas presentes no texto.
+
+Regras de Geração:
+1. Extraia de 5 a 12 flashcards, focando em termos-chave, definições, fórmulas ou conceitos cruciais presentes no texto.
+2. Cada flashcard deve conter:
+   - "front": Uma pergunta clara ou o nome de um conceito (máximo de 120 caracteres).
+   - "back": A resposta exata, definição ou explicação resumida (máximo de 300 caracteres).
+3. Mantenha as frases diretas e adequadas para memorização rápida.
+4. Use o mesmo idioma do texto fornecido.
+5. Retorne a resposta estritamente como um objeto JSON válido contendo o título do deck e a lista de cards no formato esperado.
+
+Esquema de Saída JSON esperado:
+{
+  "title": "Assunto Principal ou Título do Deck",
+  "cards": [
+    {
+      "front": "Pergunta ou conceito?",
+      "back": "Resposta ou explicação detalhada."
+    }
+  ]
+}
+
+Texto fornecido:
+${text}`;
+
+	const response = await fetch(
+		`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				contents: [
+					{
+						parts: [
+							{
+								text: prompt,
+							},
+						],
+					},
+				],
+				generationConfig: {
+					responseMimeType: "application/json",
+				},
+			}),
+		},
+	);
+
+	if (!response.ok) {
+		const errorText = await response.text();
+		throw new Error(`Gemini API error (${response.status}): ${errorText}`);
+	}
+
+	const data = await response.json();
+	const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+	if (!responseText) {
+		throw new Error("No response text returned from Gemini API");
+	}
+
+	const result: FlashcardGenerationResult = JSON.parse(responseText.trim());
+	if (!result.title || !Array.isArray(result.cards)) {
+		throw new Error("Invalid response format from Gemini API");
+	}
+
+	return result;
+}
+

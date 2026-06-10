@@ -156,3 +156,80 @@ ${JSON.stringify(inputs, null, 2)}`;
 
 	return dict;
 }
+
+export interface FlashcardGenerationResult {
+	title: string;
+	cards: {
+		front: string;
+		back: string;
+	}[];
+}
+
+export async function generateFlashcardsWithOpenAI(
+	text: string,
+	apiKey: string,
+): Promise<FlashcardGenerationResult> {
+	const prompt = `Você é um gerador especialista em material didático e flashcards de estudo.
+Sua tarefa é analisar o texto enviado pelo usuário e gerar um conjunto de flashcards contendo conceitos importantes, perguntas e respostas diretas presentes no texto.
+
+Regras de Geração:
+1. Extraia de 5 a 12 flashcards, focando em termos-chave, definições, fórmulas ou conceitos cruciais presentes no texto.
+2. Cada flashcard deve conter:
+   - "front": Uma pergunta clara ou o nome de um conceito (máximo de 120 caracteres).
+   - "back": A resposta exata, definição ou explicação resumida (máximo de 300 caracteres).
+3. Mantenha as frases diretas e adequadas para memorização rápida.
+4. Use o mesmo idioma do texto fornecido.
+5. Retorne a resposta estritamente como um objeto JSON válido contendo o título do deck e a lista de cards no formato esperado.
+
+Esquema de Saída JSON esperado:
+{
+  "title": "Assunto Principal ou Título do Deck",
+  "cards": [
+    {
+      "front": "Pergunta ou conceito?",
+      "back": "Resposta ou explicação detalhada."
+    }
+  ]
+}
+
+Texto fornecido:
+${text}`;
+
+	const response = await fetch("https://api.openai.com/v1/chat/completions", {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${apiKey}`,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			model: "gpt-4o-mini",
+			messages: [
+				{
+					role: "user",
+					content: prompt,
+				},
+			],
+			response_format: { type: "json_object" },
+			temperature: 0.2,
+		}),
+	});
+
+	if (!response.ok) {
+		const errorText = await response.text();
+		throw new Error(`OpenAI API error (${response.status}): ${errorText}`);
+	}
+
+	const data = await response.json();
+	const responseText = data.choices?.[0]?.message?.content;
+	if (!responseText) {
+		throw new Error("No response text returned from OpenAI API");
+	}
+
+	const result: FlashcardGenerationResult = JSON.parse(responseText.trim());
+	if (!result.title || !Array.isArray(result.cards)) {
+		throw new Error("Invalid response format from OpenAI API");
+	}
+
+	return result;
+}
+

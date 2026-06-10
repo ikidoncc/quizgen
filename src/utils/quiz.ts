@@ -99,12 +99,61 @@ function fillWithDistractors(
 	return result;
 }
 
+function isYesNoAnswer(answer: string): boolean {
+	const normalized = answer.trim().toLowerCase();
+	return ["sim", "não", "nao", "yes", "no"].includes(normalized);
+}
+
+function getYesNoOptions(
+	qId: string,
+	answer: string,
+): { correctOptionId: string; options: Option[] } {
+	const normalized = answer.trim().toLowerCase();
+	const isPt = ["sim", "não", "nao"].includes(normalized);
+
+	let option1Text = "";
+	let option2Text = "";
+
+	if (isPt) {
+		option1Text = "Sim";
+		option2Text = "Não";
+	} else {
+		option1Text = "Yes";
+		option2Text = "No";
+	}
+
+	const opt1Id = `${qId}-opt-0`;
+	const opt2Id = `${qId}-opt-1`;
+
+	const options = [
+		{ id: opt1Id, text: option1Text },
+		{ id: opt2Id, text: option2Text },
+	];
+
+	const isCorrectSimOrYes = normalized === "sim" || normalized === "yes";
+	const correctOptionId = isCorrectSimOrYes ? opt1Id : opt2Id;
+
+	return {
+		correctOptionId,
+		options,
+	};
+}
+
 export function prepareQuizOptions(
 	data: Omit<Question, "options" | "correctOptionId">[],
 ): Question[] {
 	const allAnswers = data.map((q) => q.answer);
 
 	return data.map((q) => {
+		if (isYesNoAnswer(q.answer)) {
+			const { correctOptionId, options } = getYesNoOptions(q.id, q.answer);
+			return {
+				...q,
+				correctOptionId,
+				options,
+			};
+		}
+
 		const uniqueOptions = collectUniqueOptions(q);
 		const filledOptions = fillWithDistractors(
 			uniqueOptions,
@@ -146,6 +195,15 @@ export async function prepareQuizOptionsWithAI(
 		const allAnswers = data.map((q) => q.answer);
 
 		return data.map((q) => {
+			if (isYesNoAnswer(q.answer)) {
+				const { correctOptionId, options } = getYesNoOptions(q.id, q.answer);
+				return {
+					...q,
+					correctOptionId,
+					options,
+				};
+			}
+
 			const uniqueOptions = collectUniqueOptions(q);
 
 			// Add AI generated distractors if they exist for this question

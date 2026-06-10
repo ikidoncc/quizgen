@@ -1,0 +1,236 @@
+import {
+	RotateCw,
+	ThumbsUp,
+	ThumbsDown,
+	CheckCircle,
+	AlertCircle,
+	RefreshCw,
+	Layers,
+} from "lucide-react";
+import type React from "react";
+import { useState } from "react";
+import { useTranslation } from "../i18n/I18nProvider";
+import type { FlashcardSet } from "../types";
+import { cn } from "../utils/cn";
+
+interface StudyFlashcardTabProps {
+	deck: FlashcardSet | null;
+	currentCardIndex: number;
+	cardsMastered: string[];
+	cardsToReview: string[];
+	onFeedback: (cardId: string, type: "master" | "review") => void;
+	onReset: (onlyReview?: boolean) => void;
+	onNavigateToCreate: () => void;
+}
+
+export const StudyFlashcardTab: React.FC<StudyFlashcardTabProps> = ({
+	deck,
+	currentCardIndex,
+	cardsMastered,
+	cardsToReview,
+	onFeedback,
+	onReset,
+	onNavigateToCreate,
+}) => {
+	const { t } = useTranslation();
+	const [isFlipped, setIsFlipped] = useState(false);
+
+	if (!deck) {
+		return (
+			<div className="rounded-3xl border border-overlay border-dashed bg-surface/50 py-16 text-center">
+				<Layers className="mx-auto mb-4 h-12 w-12 text-muted/40" />
+				<p className="mb-6 font-medium text-muted">
+					{t("flashcard.study.empty.message") || "Nenhum deck selecionado para estudar no momento."}
+				</p>
+				<button
+					onClick={onNavigateToCreate}
+					className="font-bold text-primary underline transition-all hover:opacity-80 cursor-pointer"
+					type="button"
+				>
+					{t("flashcard.study.empty.action") || "Criar um novo deck de Flashcards"}
+				</button>
+			</div>
+		);
+	}
+
+	const cards = deck.cards;
+	const isFinished = currentCardIndex >= cards.length;
+
+	const handleFlip = () => {
+		setIsFlipped(!isFlipped);
+	};
+
+	const handleFeedbackClick = (type: "master" | "review") => {
+		if (isFinished) return;
+		const activeCard = cards[currentCardIndex];
+		onFeedback(activeCard.id, type);
+		setIsFlipped(false); // Reseta a rotação para o próximo cartão
+	};
+
+	if (isFinished) {
+		const totalMastered = cardsMastered.length;
+		const totalToReview = cardsToReview.length;
+
+		return (
+			<div className="fade-in animate-in rounded-lg border border-overlay bg-surface p-8 text-center shadow-md">
+				<CheckCircle className="mx-auto mb-4 h-16 w-16 text-primary" />
+				<h2 className="mb-2 font-bold text-main text-2xl">
+					{t("flashcard.study.finished.title") || "Deck Concluído!"}
+				</h2>
+				<p className="mb-6 text-sm text-subtle">
+					{t("flashcard.study.finished.subtitle", { deck: deck.title }) || `Você terminou de revisar o deck: ${deck.title}`}
+				</p>
+
+				<div className="mb-8 grid grid-cols-2 gap-4">
+					<div className="rounded-xl bg-success/10 border border-success/20 p-4 text-center">
+						<span className="block text-2xl font-bold text-success">{totalMastered}</span>
+						<span className="text-xs font-semibold text-muted">
+							{t("flashcard.study.finished.mastered") || "Dominados"}
+						</span>
+					</div>
+					<div className="rounded-xl bg-danger/10 border border-danger/20 p-4 text-center">
+						<span className="block text-2xl font-bold text-danger">{totalToReview}</span>
+						<span className="text-xs font-semibold text-muted">
+							{t("flashcard.study.finished.toReview") || "Revisar"}
+						</span>
+					</div>
+				</div>
+
+				<div className="flex flex-col gap-3">
+					<button
+						onClick={() => onReset(false)}
+						className="flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-bold text-surface shadow-sm transition-all hover:bg-primary/95 active:scale-[0.98] cursor-pointer"
+						type="button"
+					>
+						<RefreshCw className="h-4 w-4" />
+						{t("flashcard.study.finished.restartAll") || "Estudar Todo o Deck"}
+					</button>
+
+					{totalToReview > 0 && (
+						<button
+							onClick={() => onReset(true)}
+							className="flex items-center justify-center gap-2 rounded-xl bg-overlay border border-overlay px-5 py-3 font-bold text-main transition-all hover:bg-overlay/80 active:scale-[0.98] cursor-pointer"
+							type="button"
+						>
+							<AlertCircle className="h-4 w-4 text-danger" />
+							{t("flashcard.study.finished.restartReviewOnly") || "Revisar Apenas os que Errei"}
+						</button>
+					)}
+
+					<button
+						onClick={onNavigateToCreate}
+						className="mt-2 text-sm font-bold text-primary hover:underline cursor-pointer"
+						type="button"
+					>
+						{t("flashcard.study.finished.newDeck") || "Criar outro deck de Flashcards"}
+					</button>
+				</div>
+			</div>
+		);
+	}
+
+	const activeCard = cards[currentCardIndex];
+	const progressPercent = Math.min(100, Math.round((currentCardIndex / cards.length) * 100));
+
+	return (
+		<div className="fade-in animate-in rounded-lg border border-overlay bg-surface p-6 shadow-md">
+			<div className="mb-4 flex items-center justify-between">
+				<div className="max-w-[70%]">
+					<span className="text-xs font-bold text-muted uppercase tracking-wider">
+						{t("flashcard.study.studying") || "Estudando deck"}
+					</span>
+					<h3 className="truncate font-semibold text-main text-sm">
+						{deck.title}
+					</h3>
+				</div>
+				<span className="text-xs font-bold text-muted">
+					{t("flashcard.study.progress", { current: currentCardIndex + 1, total: cards.length }) || `${currentCardIndex + 1} / ${cards.length}`}
+				</span>
+			</div>
+
+			{/* Progress bar */}
+			<div className="mb-8 h-2 w-full rounded-full bg-base overflow-hidden">
+				<div
+					className="h-full bg-primary transition-all duration-300"
+					style={{ width: `${progressPercent}%` }}
+				/>
+			</div>
+
+			{/* 3D Flashcard Container */}
+			<div className="mb-8 flex justify-center">
+				<div
+					className="card-perspective h-80 w-full max-w-md cursor-pointer"
+					onClick={handleFlip}
+				>
+					<div
+						className={cn(
+							"card-inner h-full w-full rounded-3xl border border-overlay shadow-lg transition-transform duration-500 ease-out",
+							isFlipped && "flipped"
+						)}
+					>
+						{/* Front Side */}
+						<div className="card-face card-front flex flex-col items-center justify-center bg-base p-6 text-center">
+							<span className="absolute top-4 font-bold text-muted text-xs tracking-widest uppercase">
+								{t("flashcard.study.card.front") || "Conceito / Pergunta"}
+							</span>
+							<p className="font-semibold text-main text-lg leading-relaxed max-h-56 overflow-y-auto">
+								{activeCard.front}
+							</p>
+							<div className="absolute bottom-4 flex items-center gap-1.5 text-xs text-muted font-medium">
+								<RotateCw className="h-3 w-3 animate-pulse" />
+								{t("flashcard.study.card.tapToFlip") || "Clique para ver a resposta"}
+							</div>
+						</div>
+
+						{/* Back Side */}
+						<div className="card-face card-back flex flex-col items-center justify-center bg-overlay p-6 text-center">
+							<span className="absolute top-4 font-bold text-muted text-xs tracking-widest uppercase">
+								{t("flashcard.study.card.back") || "Explicação / Resposta"}
+							</span>
+							<p className="font-medium text-main text-base leading-relaxed max-h-56 overflow-y-auto">
+								{activeCard.back}
+							</p>
+							<div className="absolute bottom-4 flex items-center gap-1.5 text-xs text-muted font-medium">
+								<RotateCw className="h-3 w-3 animate-pulse" />
+								{t("flashcard.study.card.tapToFlip") || "Clique para voltar"}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* Control actions */}
+			<div className="flex flex-col items-center gap-3">
+				{!isFlipped ? (
+					<button
+						onClick={handleFlip}
+						className="flex items-center gap-2 rounded-xl bg-primary/10 border border-primary/20 text-primary px-6 py-3 font-bold text-sm hover:bg-primary/20 active:scale-[0.98] transition-all cursor-pointer"
+						type="button"
+					>
+						<RotateCw className="h-4 w-4" />
+						{t("flashcard.study.reveal") || "Revelar Resposta"}
+					</button>
+				) : (
+					<div className="fade-in animate-in grid w-full grid-cols-2 gap-4 max-w-md">
+						<button
+							onClick={() => handleFeedbackClick("review")}
+							className="flex items-center justify-center gap-2 rounded-xl bg-danger/10 border border-danger/20 text-danger py-3.5 font-bold text-sm hover:bg-danger/25 active:scale-[0.97] transition-all cursor-pointer"
+							type="button"
+						>
+							<ThumbsDown className="h-4 w-4" />
+							{t("flashcard.study.feedback.review") || "Revisar (Errei)"}
+						</button>
+						<button
+							onClick={() => handleFeedbackClick("master")}
+							className="flex items-center justify-center gap-2 rounded-xl bg-success/10 border border-success/20 text-success py-3.5 font-bold text-sm hover:bg-success/25 active:scale-[0.97] transition-all cursor-pointer"
+							type="button"
+						>
+							<ThumbsUp className="h-4 w-4" />
+							{t("flashcard.study.feedback.master") || "Dominado (Acertei)"}
+						</button>
+					</div>
+				)}
+			</div>
+		</div>
+	);
+};

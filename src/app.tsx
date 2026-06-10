@@ -444,7 +444,7 @@ export function App() {
 
 				{/* Footer Settings & Copy */}
 				<div className="mt-8 flex flex-col gap-4 border-overlay border-t pt-6">
-					<div className="flex items-center justify-between gap-2">
+					<div className="flex flex-col gap-2">
 						<LangSelect />
 						<ThemeSelect value={theme} onChange={setTheme} />
 					</div>

@@ -7,6 +7,7 @@ import { cn } from "../utils/cn";
 export const LangSelect: React.FC = () => {
 	const { t, language, setLanguage } = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
+	const [openUpward, setOpenUpward] = useState(false);
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const langs = useMemo(
@@ -33,27 +34,42 @@ export const LangSelect: React.FC = () => {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
+	useEffect(() => {
+		if (isOpen && containerRef.current) {
+			const rect = containerRef.current.getBoundingClientRect();
+			const spaceBelow = window.innerHeight - rect.bottom;
+			setOpenUpward(spaceBelow < 120);
+		}
+	}, [isOpen]);
+
 	return (
-		<div className="relative inline-block text-left" ref={containerRef}>
+		<div className="relative w-full text-left" ref={containerRef}>
 			<button
 				onClick={() => setIsOpen(!isOpen)}
-				className="flex w-10 cursor-pointer items-center justify-center rounded-lg border border-overlay bg-surface p-2 text-main text-xs outline-none transition-all hover:bg-overlay active:scale-95 sm:w-32 sm:justify-between"
+				className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-overlay bg-surface p-2.5 text-main text-xs outline-none transition-all hover:bg-overlay active:scale-95"
 				type="button"
 			>
 				<span className="flex items-center">
 					<Globe className="h-4 w-4" />
-					<span className="ml-2 hidden sm:inline">{selectedLang.label}</span>
+					<span className="ml-2 font-medium">{selectedLang.label}</span>
 				</span>
 				<ChevronDown
 					className={cn(
-						"ml-1 hidden h-4 w-4 transition-transform duration-200 sm:block",
+						"ml-1 h-4 w-4 transition-transform duration-200",
 						isOpen && "rotate-180",
 					)}
 				/>
 			</button>
 
 			{isOpen && (
-				<div className="fade-in slide-in-from-top-1 absolute right-0 z-50 mt-2 w-32 animate-in overflow-hidden rounded-lg border border-overlay bg-surface shadow-lg duration-200">
+				<div
+					className={cn(
+						"fade-in absolute left-0 z-50 w-full animate-in overflow-hidden rounded-lg border border-overlay bg-surface shadow-lg duration-200",
+						openUpward
+							? "bottom-full mb-2 slide-in-from-bottom-1"
+							: "top-full mt-2 slide-in-from-top-1",
+					)}
+				>
 					{langs.map((lang) => (
 						<button
 							type="button"

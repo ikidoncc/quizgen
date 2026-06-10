@@ -40,6 +40,7 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 	const [apiKey, setApiKey] = useState("");
 	const [showApiKey, setShowApiKey] = useState(false);
 	const [isProviderOpen, setIsProviderOpen] = useState(false);
+	const [openUpward, setOpenUpward] = useState(false);
 
 	const providerRef = useRef<HTMLDivElement>(null);
 
@@ -63,6 +64,14 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
+
+	useEffect(() => {
+		if (isProviderOpen && providerRef.current) {
+			const rect = providerRef.current.getBoundingClientRect();
+			const spaceBelow = window.innerHeight - rect.bottom;
+			setOpenUpward(spaceBelow < 180);
+		}
+	}, [isProviderOpen]);
 
 	const handleApiKeyChange = (val: string) => {
 		setApiKey(val);
@@ -304,7 +313,14 @@ export const CreateFlashcardTab: React.FC<CreateFlashcardTabProps> = ({
 									</button>
 
 									{isProviderOpen && (
-										<div className="fade-in slide-in-from-top-1 absolute left-0 z-50 mt-1 w-full animate-in overflow-hidden rounded-lg border border-overlay bg-surface shadow-lg duration-200">
+										<div
+											className={cn(
+												"fade-in absolute left-0 z-50 w-full animate-in overflow-hidden rounded-lg border border-overlay bg-surface shadow-lg duration-200",
+												openUpward
+													? "bottom-full mb-1 slide-in-from-bottom-1"
+													: "top-full mt-1 slide-in-from-top-1",
+											)}
+										>
 											{[
 												{
 													value: "gemini" as const,

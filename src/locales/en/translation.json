@@ -26,6 +26,13 @@
 	},
 	"footer": "Boron © 2026 • Made with React + Tailwind v4",
 	"create": {
+		"inputTypeLabel": "Generation Method",
+		"inputFormatted": "Formatted Text (Q/A/O)",
+		"inputRaw": "Raw Text (Article, Summary)",
+		"headingRaw": "Paste Content for AI",
+		"rawDescription": "Paste your text (article, summary, notes) below. Artificial Intelligence will read the content and create factual multiple-choice questions.",
+		"rawPlaceholder": "Paste your article, summary or notes to generate quiz questions...",
+		"questionCountLabel": "Number of Questions",
 		"heading": "Paste Content",
 		"formatLabel": "Format:",
 		"formatExample": "Q: Question?\nA: Answer\nO: Incorrect Option (Optional)",
@@ -114,13 +121,25 @@
 		"delete": "Delete"
 	},
 	"flashcard": {
+		"inputType": {
+			"ai": "Artificial Intelligence (AI)",
+			"manual": "Manual / Offline (Q/A)"
+		},
 		"create": {
 			"heading": "Generate Flashcards with AI",
-			"description": "Paste a running text (article, summary, notes) below. The artificial intelligence will read and synthesize 5 to 12 flashcards containing key terms and definitions.",
+			"headingManual": "Create Manual Flashcards",
+			"description": "Paste a running text (article, summary, notes) below. The artificial intelligence will read and synthesize the chosen amount of flashcards containing key terms and definitions.",
+			"descriptionManual": "Enter your flashcards below in the offline structured format. No API key required.",
+			"titleLabel": "Deck Title (Optional)",
+			"titlePlaceholder": "Leave blank for automatic title...",
+			"countLabel": "Number of Flashcards",
 			"placeholder": "Paste the text you want to study concepts and definitions from...",
 			"generating": "Analyzing text and generating cards...",
 			"submit": "Generate Flashcards",
-			"emptyInputError": "Please enter the text to generate flashcards."
+			"submitManual": "Create Flashcards (Offline)",
+			"emptyInputError": "Please enter the text to generate flashcards.",
+			"formatError": "No cards found. Use the format Q: Front and A: Back.",
+			"defaultTitle": "Manual Deck"
 		},
 		"study": {
 			"empty": {

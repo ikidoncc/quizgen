@@ -26,6 +26,13 @@
 	},
 	"footer": "Boron © 2026 • Feito com React + Tailwind v4",
 	"create": {
+		"inputTypeLabel": "Método de Geração",
+		"inputFormatted": "Texto Formatado (Q/A/O)",
+		"inputRaw": "Texto Livre (Artigo, Resumo)",
+		"headingRaw": "Colar Conteúdo para IA",
+		"rawDescription": "Cole seu texto (artigo, resumo, anotação) abaixo. A Inteligência Artificial lerá o conteúdo e criará perguntas de múltipla escolha factuais.",
+		"rawPlaceholder": "Cole seu artigo, resumo ou anotações para gerar as perguntas do quiz...",
+		"questionCountLabel": "Quantidade de Perguntas",
 		"heading": "Colar Conteúdo",
 		"formatLabel": "Formato:",
 		"formatExample": "Q: Pergunta?\nA: Resposta\nO: Opção Incorreta (Opcional)",
@@ -114,13 +121,25 @@
 		"delete": "Excluir"
 	},
 	"flashcard": {
+		"inputType": {
+			"ai": "Inteligência Artificial (IA)",
+			"manual": "Manual / Offline (Q/A)"
+		},
 		"create": {
 			"heading": "Gerar Flashcards com IA",
-			"description": "Cole um texto corrido (artigo, resumo, anotação) abaixo. A inteligência artificial irá ler e sintetizar de 5 a 12 cartões de memorização contendo termos e definições fundamentais.",
+			"headingManual": "Criar Flashcards Manuais",
+			"description": "Cole um texto corrido (artigo, resumo, anotação) abaixo. A inteligência artificial irá ler e sintetizar a quantidade escolhida de cartões de memorização contendo termos e definições fundamentais.",
+			"descriptionManual": "Insira seus flashcards abaixo no formato estruturado offline. Não é necessário chave de API.",
+			"titleLabel": "Título do Deck (Opcional)",
+			"titlePlaceholder": "Deixe em branco para título automático...",
+			"countLabel": "Quantidade de Flashcards",
 			"placeholder": "Cole o texto do qual deseja estudar conceitos e definições...",
 			"generating": "Analisando texto e gerando cartões...",
 			"submit": "Gerar Flashcards",
-			"emptyInputError": "Por favor, insira o texto para gerar os flashcards."
+			"submitManual": "Criar Flashcards (Offline)",
+			"emptyInputError": "Por favor, insira o texto para gerar os flashcards.",
+			"formatError": "Nenhum cartão encontrado. Use o formato Q: Frente e A: Verso.",
+			"defaultTitle": "Deck Manual"
 		},
 		"study": {
 			"empty": {

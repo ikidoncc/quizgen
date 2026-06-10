@@ -1,4 +1,14 @@
-import { Wand2, Zap, Brain, Sparkles, Key, Eye, EyeOff, Bot, ChevronDown } from "lucide-react";
+import {
+	Wand2,
+	Zap,
+	Brain,
+	Sparkles,
+	Key,
+	Eye,
+	EyeOff,
+	Bot,
+	ChevronDown,
+} from "lucide-react";
 import type React from "react";
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "../i18n/I18nProvider";
@@ -33,7 +43,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 	const [apiKey, setApiKey] = useState("");
 	const [showApiKey, setShowApiKey] = useState(false);
 	const [isProviderOpen, setIsProviderOpen] = useState(false);
-	
+
 	const providerRef = useRef<HTMLDivElement>(null);
 
 	// Load the API Key for the selected provider when it changes
@@ -165,7 +175,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 									"flex flex-col items-center rounded-xl border p-3 text-center transition-all duration-200 cursor-pointer",
 									difficultyMode === id
 										? "border-primary bg-primary/5 text-primary scale-[1.02] shadow-sm"
-										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main"
+										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
 								)}
 							>
 								<Icon className="mb-1.5 h-5 w-5" />
@@ -186,7 +196,10 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 							<span className="mb-2 block font-semibold text-main text-sm">
 								{t("create.providerLabel")}
 							</span>
-							<div className="relative inline-block w-full text-left" ref={providerRef}>
+							<div
+								className="relative inline-block w-full text-left"
+								ref={providerRef}
+							>
 								<button
 									onClick={() => setIsProviderOpen(!isProviderOpen)}
 									className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-overlay bg-base p-2.5 text-main text-sm outline-none transition-all hover:bg-overlay/50 active:scale-[0.99]"
@@ -211,7 +224,10 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 								{isProviderOpen && (
 									<div className="fade-in slide-in-from-top-1 absolute left-0 z-50 mt-1 w-full animate-in overflow-hidden rounded-lg border border-overlay bg-surface shadow-lg duration-200">
 										{[
-											{ value: "gemini" as const, label: "Gemini (Google AI Studio)" },
+											{
+												value: "gemini" as const,
+												label: "Gemini (Google AI Studio)",
+											},
 											{ value: "groq" as const, label: "Groq (Llama 3.1)" },
 											{ value: "openai" as const, label: "OpenAI (ChatGPT)" },
 										].map((prov) => (
@@ -220,7 +236,8 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 												key={prov.value}
 												className={cn(
 													"flex w-full cursor-pointer items-center px-4 py-3 text-left text-main text-sm transition-colors hover:bg-overlay",
-													aiProvider === prov.value && "bg-overlay/50 font-bold",
+													aiProvider === prov.value &&
+														"bg-overlay/50 font-bold",
 												)}
 												onClick={() => {
 													handleProviderChange(prov.value);
@@ -304,10 +321,10 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					className="flex w-full items-center justify-center rounded bg-primary px-4 py-3 font-bold text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
 					type="submit"
 				>
-					<Wand2 className={cn("mr-2 h-5 w-5", isGenerating && "animate-spin")} />
-					{isGenerating
-						? t("create.generatingWithAI")
-						: t("create.submit")}
+					<Wand2
+						className={cn("mr-2 h-5 w-5", isGenerating && "animate-spin")}
+					/>
+					{isGenerating ? t("create.generatingWithAI") : t("create.submit")}
 				</button>
 			</form>
 		</div>

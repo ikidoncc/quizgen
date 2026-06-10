@@ -209,7 +209,10 @@ export async function prepareQuizOptionsWithAI(
 	}
 
 	try {
-		let distractorMap: Record<string, { distractors: string[]; correctOption?: string }> = {};
+		let distractorMap: Record<
+			string,
+			{ distractors: string[]; correctOption?: string }
+		> = {};
 		if (provider === "gemini") {
 			distractorMap = await generateDistractorsWithGemini(data, mode, apiKey);
 		} else if (provider === "groq") {

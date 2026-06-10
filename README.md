@@ -1,8 +1,8 @@
-# QuizGen
+# Boron
 
-Create quizzes from text using a simple `Q/A/O` format. Built with React 19, TypeScript, Tailwind CSS v4, and Vite.
+Create quizzes and flashcards from text. Built with React 19, TypeScript, Tailwind CSS v4, and Vite.
 
-🔗 **Live Demo:** [https://ikidon.github.io/quizgen/](https://ikidon.github.io/quizgen/)
+🔗 **Live Demo:** [https://ikidon.github.io/boron/](https://ikidon.github.io/boron/)
 
 ---
 

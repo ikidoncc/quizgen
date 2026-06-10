@@ -1,10 +1,10 @@
 {
 	"app": {
-		"title": "QuizGen",
+		"title": "Boron",
 		"subtitle": "Create your quiz from a text"
 	},
 	"seo": {
-		"title": "QuizGen - Quiz Generator"
+		"title": "Boron"
 	},
 	"lang": {
 		"pt-BR": "Português",
@@ -19,7 +19,7 @@
 		"message": "No quiz generated yet.",
 		"action": "Go to Create Quiz"
 	},
-	"footer": "QuizGen © 2026 • Made with React + Tailwind v4",
+	"footer": "Boron © 2026 • Made with React + Tailwind v4",
 	"create": {
 		"heading": "Paste Content",
 		"formatLabel": "Format:",

@@ -30,12 +30,20 @@
 		"submit": "Gerar Quizz",
 		"error": "Nenhuma pergunta encontrada. Use o formato Q: Pergunta e A: Resposta.",
 		"modeLabel": "Modo de Geração de Alternativas",
-		"mode.easy.title": "Fácil (Atual)",
-		"mode.easy.desc": "Offline, utiliza outras respostas do quizz.",
-		"mode.normal.title": "Normal (IA)",
-		"mode.normal.desc": "IA gera opções plausíveis para a questão.",
-		"mode.hard.title": "Difícil (IA)",
-		"mode.hard.desc": "IA gera distratores modificando a resposta levemente.",
+		"mode": {
+			"easy": {
+				"title": "Fácil (Atual)",
+				"desc": "Offline, utiliza outras respostas do quizz."
+			},
+			"normal": {
+				"title": "Normal (IA)",
+				"desc": "IA gera opções plausíveis para a questão."
+			},
+			"hard": {
+				"title": "Difícil (IA)",
+				"desc": "IA gera distratores modificando a resposta levemente."
+			}
+		},
 		"providerLabel": "Provedor de IA",
 		"apiKeyLabel": "Chave de API do {{provider}}",
 		"getApiKey": "Obter Chave Grátis",

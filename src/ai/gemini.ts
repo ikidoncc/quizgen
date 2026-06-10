@@ -12,6 +12,11 @@ interface DistractorResult {
 	distractors: string[];
 }
 
+function isYesNoAnswer(answer: string): boolean {
+	const normalized = answer.trim().toLowerCase();
+	return ["sim", "não", "nao", "yes", "no"].includes(normalized);
+}
+
 /**
  * Generates distractors for multiple questions in batch using the Gemini API.
  * Returns a mapping of question ID to the list of generated distractors.
@@ -25,8 +30,9 @@ export async function generateDistractorsWithGemini(
 		return {};
 	}
 
-	// Filter questions that actually need distractors
+	// Filter questions that actually need distractors (excluding yes/no questions)
 	const inputs: QuestionInput[] = questions
+		.filter((q) => !isYesNoAnswer(q.answer))
 		.map((q) => ({
 			id: q.id,
 			question: q.question,

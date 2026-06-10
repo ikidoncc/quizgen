@@ -46,7 +46,11 @@ export function App() {
 	const handlePlayAgain = useCallback(
 		(entry: HistoryEntry) => {
 			const duration = entry.timerDuration ?? 60;
-			const historyId = addEntry(entry.quizData, entry.isTimerEnabled, duration);
+			const historyId = addEntry(
+				entry.quizData,
+				entry.isTimerEnabled,
+				duration,
+			);
 			setQuizData(entry.quizData, entry.isTimerEnabled, duration, historyId);
 			setHistoryId(historyId);
 		},

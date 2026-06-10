@@ -1,12 +1,12 @@
 import { useCallback } from "react";
-import type { Question, QuizState, Tab } from "../types";
+import type { FlashcardSet, Question, QuizState, Tab } from "../types";
 import { STORAGE_VERSION } from "../types";
 import { usePersistedState } from "./usePersistedState";
 
 const INITIAL_STATE: QuizState = {
 	version: STORAGE_VERSION,
 	gameId: 0,
-	currentTab: "create",
+	currentTab: "quiz-create",
 	quizData: [],
 	currentQuestionIndex: 0,
 	score: 0,
@@ -15,6 +15,11 @@ const INITIAL_STATE: QuizState = {
 	timerDuration: 60,
 	timeLeft: 60,
 	currentHistoryId: "",
+	flashcardHistory: [],
+	currentFlashcardSet: null,
+	currentCardIndex: 0,
+	cardsMastered: [],
+	cardsToReview: [],
 };
 
 function isQuizState(value: unknown): value is QuizState {
@@ -27,7 +32,7 @@ function isQuizState(value: unknown): value is QuizState {
 
 export function useQuizState() {
 	const [state, setState] = usePersistedState<QuizState>(
-		"quizgen_state",
+		"boron_state", // Atualizado para a nova marca do projeto
 		INITIAL_STATE,
 		isQuizState,
 	);
@@ -55,7 +60,7 @@ export function useQuizState() {
 				score: 0,
 				skippedCount: 0,
 				timeLeft: timerDuration,
-				currentTab: "play",
+				currentTab: "quiz-play",
 				gameId: s.gameId + 1,
 				currentHistoryId: historyId ?? s.currentHistoryId,
 			}));
@@ -75,7 +80,17 @@ export function useQuizState() {
 	}, [setState]);
 
 	const deleteQuiz = useCallback(() => {
-		setState(() => ({ ...INITIAL_STATE }));
+		setState((s) => ({
+			...s,
+			gameId: s.gameId + 1,
+			quizData: [],
+			currentQuestionIndex: 0,
+			score: 0,
+			skippedCount: 0,
+			timeLeft: s.timerDuration || 60,
+			currentHistoryId: "",
+			currentTab: "quiz-create",
+		}));
 	}, [setState]);
 
 	const setHistoryId = useCallback(
@@ -113,6 +128,117 @@ export function useQuizState() {
 		[setState],
 	);
 
+	// Flashcards Actions
+	const setFlashcardSet = useCallback(
+		(set: FlashcardSet | null) => {
+			setState((s) => ({
+				...s,
+				currentFlashcardSet: set,
+				currentCardIndex: 0,
+				cardsMastered: [],
+				cardsToReview: [],
+				currentTab: set ? "flashcard-study" : s.currentTab,
+			}));
+		},
+		[setState],
+	);
+
+	const addFlashcardSet = useCallback(
+		(set: FlashcardSet) => {
+			setState((s) => ({
+				...s,
+				flashcardHistory: [set, ...s.flashcardHistory],
+				currentFlashcardSet: set,
+				currentCardIndex: 0,
+				cardsMastered: [],
+				cardsToReview: [],
+				currentTab: "flashcard-study",
+			}));
+		},
+		[setState],
+	);
+
+	const deleteFlashcardSet = useCallback(
+		(id: string) => {
+			setState((s) => {
+				const nextHistory = s.flashcardHistory.filter((x) => x.id !== id);
+				const isCurrent = s.currentFlashcardSet?.id === id;
+				return {
+					...s,
+					flashcardHistory: nextHistory,
+					currentFlashcardSet: isCurrent ? null : s.currentFlashcardSet,
+					currentTab: isCurrent ? "flashcard-history" : s.currentTab,
+				};
+			});
+		},
+		[setState],
+	);
+
+	const selectCardFeedback = useCallback(
+		(cardId: string, type: "master" | "review") => {
+			setState((s) => {
+				const mastered = type === "master"
+					? [...s.cardsMastered.filter((id) => id !== cardId), cardId]
+					: s.cardsMastered.filter((id) => id !== cardId);
+				const review = type === "review"
+					? [...s.cardsToReview.filter((id) => id !== cardId), cardId]
+					: s.cardsToReview.filter((id) => id !== cardId);
+
+				// Encontra o próximo card que ainda não está dominado
+				const cards = s.currentFlashcardSet?.cards || [];
+				let nextIndex = s.currentCardIndex + 1;
+				
+				// Procuramos o próximo index que não esteja no novo set de dominados
+				const masteredSet = new Set(mastered);
+				while (nextIndex < cards.length && masteredSet.has(cards[nextIndex].id)) {
+					nextIndex++;
+				}
+
+				return {
+					...s,
+					cardsMastered: mastered,
+					cardsToReview: review,
+					currentCardIndex: nextIndex,
+				};
+			});
+		},
+		[setState],
+	);
+
+	const resetFlashcardStudy = useCallback(
+		(onlyReview = false) => {
+			setState((s) => {
+				if (!s.currentFlashcardSet) return s;
+				const cards = s.currentFlashcardSet.cards;
+
+				let nextMastered: string[] = [];
+				let nextIndex = 0;
+
+				if (onlyReview) {
+					// As dominadas serão todas, EXCETO as que estão na lista de revisão
+					const reviewSet = new Set(s.cardsToReview);
+					nextMastered = cards
+						.filter((c) => !reviewSet.has(c.id))
+						.map((c) => c.id);
+					
+					// Achar a primeira que precisa de revisão para começar dali
+					const masteredSet = new Set(nextMastered);
+					while (nextIndex < cards.length && masteredSet.has(cards[nextIndex].id)) {
+						nextIndex++;
+					}
+				}
+
+				return {
+					...s,
+					currentCardIndex: nextIndex,
+					cardsMastered: nextMastered,
+					cardsToReview: onlyReview ? s.cardsToReview : [],
+				};
+			});
+		},
+		[setState],
+	);
+
 	return {
 		state,
 		setTab,
@@ -123,5 +249,11 @@ export function useQuizState() {
 		skipQuestion,
 		setTimeLeft,
 		setHistoryId,
+		// Flashcards
+		setFlashcardSet,
+		addFlashcardSet,
+		deleteFlashcardSet,
+		selectCardFeedback,
+		resetFlashcardStudy,
 	};
 }

@@ -17,7 +17,7 @@ export interface Question {
 	options: Option[];
 }
 
-export const STORAGE_VERSION = 4;
+export const STORAGE_VERSION = 5;
 
 export interface QuizState {
 	version: number;
@@ -28,6 +28,7 @@ export interface QuizState {
 	score: number;
 	skippedCount: number;
 	isTimerEnabled: boolean;
+	timerDuration: number;
 	timeLeft: number;
 	currentHistoryId: string;
 }
@@ -41,5 +42,6 @@ export interface HistoryEntry {
 	score?: number;
 	skippedCount?: number;
 	isTimerEnabled: boolean;
+	timerDuration?: number;
 	quizData: Question[];
 }

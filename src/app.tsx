@@ -36,17 +36,18 @@ export function App() {
 	const { entries, addEntry, updateEntry, deleteEntry } = useHistory();
 
 	const handleGenerate = useCallback(
-		(data: Question[], timerEnabled: boolean) => {
-			const historyId = addEntry(data, timerEnabled);
-			setQuizData(data, timerEnabled, historyId);
+		(data: Question[], timerEnabled: boolean, timerDuration: number) => {
+			const historyId = addEntry(data, timerEnabled, timerDuration);
+			setQuizData(data, timerEnabled, timerDuration, historyId);
 		},
 		[addEntry, setQuizData],
 	);
 
 	const handlePlayAgain = useCallback(
 		(entry: HistoryEntry) => {
-			const historyId = addEntry(entry.quizData, entry.isTimerEnabled);
-			setQuizData(entry.quizData, entry.isTimerEnabled, historyId);
+			const duration = entry.timerDuration ?? 60;
+			const historyId = addEntry(entry.quizData, entry.isTimerEnabled, duration);
+			setQuizData(entry.quizData, entry.isTimerEnabled, duration, historyId);
 			setHistoryId(historyId);
 		},
 		[addEntry, setQuizData, setHistoryId],

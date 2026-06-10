@@ -1,5 +1,6 @@
 export type Tab = "create" | "play" | "history";
 export type Theme = "light" | "dark" | "auto";
+export type DifficultyMode = "easy" | "normal" | "hard";
 
 export interface Option {
 	id: string;

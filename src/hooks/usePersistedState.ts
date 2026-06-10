@@ -8,7 +8,13 @@ export function usePersistedState<T>(
 ): [T, Dispatch<SetStateAction<T>>] {
 	const [state, setState] = useState<T>(() => {
 		try {
-			const saved = localStorage.getItem(key);
+			let saved = localStorage.getItem(key);
+			// Fallback to older localStorage keys for seamless migration if boron_state is empty
+			if (!saved && key === "boron_state") {
+				saved =
+					localStorage.getItem("quizgen_state") ||
+					localStorage.getItem("quiz_state");
+			}
 			if (saved) {
 				const parsed = JSON.parse(saved);
 				if (!validate || validate(parsed)) {

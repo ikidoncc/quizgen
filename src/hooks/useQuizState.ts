@@ -24,11 +24,34 @@ const INITIAL_STATE: QuizState = {
 };
 
 function isQuizState(value: unknown): value is QuizState {
-	return (
-		typeof value === "object" &&
-		value !== null &&
-		(value as QuizState).version === STORAGE_VERSION
-	);
+	if (typeof value !== "object" || value === null) return false;
+	// biome-ignore lint/suspicious/noExplicitAny: needed for dynamic state schema migration
+	const val = value as any;
+
+	// Automatic state migration to current version structure
+	if (val.version !== STORAGE_VERSION) {
+		val.version = STORAGE_VERSION;
+		if (!Array.isArray(val.flashcardHistory)) {
+			val.flashcardHistory = [];
+		}
+		if (val.currentFlashcardSet === undefined) {
+			val.currentFlashcardSet = null;
+		}
+		if (typeof val.currentCardIndex !== "number") {
+			val.currentCardIndex = 0;
+		}
+		if (!Array.isArray(val.cardsMastered)) {
+			val.cardsMastered = [];
+		}
+		if (!Array.isArray(val.cardsToReview)) {
+			val.cardsToReview = [];
+		}
+		if (!Array.isArray(val.cardsPartial)) {
+			val.cardsPartial = [];
+		}
+	}
+
+	return true;
 }
 
 export function useQuizState() {

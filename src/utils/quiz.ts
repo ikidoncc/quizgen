@@ -99,27 +99,47 @@ function fillWithDistractors(
 	return result;
 }
 
-function isYesNoAnswer(answer: string): boolean {
+function isBooleanAnswer(answer: string): boolean {
 	const normalized = answer.trim().toLowerCase();
-	return ["sim", "não", "nao", "yes", "no"].includes(normalized);
+	return [
+		"sim",
+		"não",
+		"nao",
+		"yes",
+		"no",
+		"verdadeiro",
+		"falso",
+		"true",
+		"false",
+	].includes(normalized);
 }
 
-function getYesNoOptions(
+function getBooleanOptions(
 	qId: string,
 	answer: string,
 ): { correctOptionId: string; options: Option[] } {
 	const normalized = answer.trim().toLowerCase();
-	const isPt = ["sim", "não", "nao"].includes(normalized);
 
 	let option1Text = "";
 	let option2Text = "";
+	let isCorrectOption1 = false;
 
-	if (isPt) {
+	if (["sim", "não", "nao"].includes(normalized)) {
 		option1Text = "Sim";
 		option2Text = "Não";
-	} else {
+		isCorrectOption1 = normalized === "sim";
+	} else if (["yes", "no"].includes(normalized)) {
 		option1Text = "Yes";
 		option2Text = "No";
+		isCorrectOption1 = normalized === "yes";
+	} else if (["verdadeiro", "falso"].includes(normalized)) {
+		option1Text = "Verdadeiro";
+		option2Text = "Falso";
+		isCorrectOption1 = normalized === "verdadeiro";
+	} else {
+		option1Text = "True";
+		option2Text = "False";
+		isCorrectOption1 = normalized === "true";
 	}
 
 	const opt1Id = `${qId}-opt-0`;
@@ -130,8 +150,7 @@ function getYesNoOptions(
 		{ id: opt2Id, text: option2Text },
 	];
 
-	const isCorrectSimOrYes = normalized === "sim" || normalized === "yes";
-	const correctOptionId = isCorrectSimOrYes ? opt1Id : opt2Id;
+	const correctOptionId = isCorrectOption1 ? opt1Id : opt2Id;
 
 	return {
 		correctOptionId,
@@ -145,8 +164,8 @@ export function prepareQuizOptions(
 	const allAnswers = data.map((q) => q.answer);
 
 	return data.map((q) => {
-		if (isYesNoAnswer(q.answer)) {
-			const { correctOptionId, options } = getYesNoOptions(q.id, q.answer);
+		if (isBooleanAnswer(q.answer)) {
+			const { correctOptionId, options } = getBooleanOptions(q.id, q.answer);
 			return {
 				...q,
 				correctOptionId,
@@ -195,8 +214,53 @@ export async function prepareQuizOptionsWithAI(
 		const allAnswers = data.map((q) => q.answer);
 
 		return data.map((q) => {
-			if (isYesNoAnswer(q.answer)) {
-				const { correctOptionId, options } = getYesNoOptions(q.id, q.answer);
+			const isBool = isBooleanAnswer(q.answer);
+
+			// Handle boolean questions with AI generated justifications
+			if (isBool) {
+				const aiResult = distractorMap[q.id];
+				if (
+					aiResult?.correctOption &&
+					aiResult.distractors &&
+					aiResult.distractors.length >= 3
+				) {
+					const correctText = aiResult.correctOption;
+					const distractorsText = aiResult.distractors.slice(0, 3);
+
+					const uniqueOptions = new Map<
+						string,
+						{ text: string; isCorrect: boolean }
+					>();
+					uniqueOptions.set(correctText.toLowerCase().trim(), {
+						text: correctText,
+						isCorrect: true,
+					});
+					for (const d of distractorsText) {
+						uniqueOptions.set(d.toLowerCase().trim(), {
+							text: d,
+							isCorrect: false,
+						});
+					}
+
+					const entries = shuffle(Array.from(uniqueOptions.entries()));
+					let correctOptionId = "";
+					const options: Option[] = entries.map(
+						([_, { text, isCorrect }], i) => {
+							const id = `${q.id}-opt-${i}`;
+							if (isCorrect) correctOptionId = id;
+							return { id, text };
+						},
+					);
+
+					return {
+						...q,
+						correctOptionId,
+						options,
+					};
+				}
+
+				// Fallback to offline 2-option version if AI didn't return complete data
+				const { correctOptionId, options } = getBooleanOptions(q.id, q.answer);
 				return {
 					...q,
 					correctOptionId,
@@ -207,7 +271,8 @@ export async function prepareQuizOptionsWithAI(
 			const uniqueOptions = collectUniqueOptions(q);
 
 			// Add AI generated distractors if they exist for this question
-			const aiDistractors = distractorMap[q.id] || [];
+			const aiResult = distractorMap[q.id];
+			const aiDistractors = aiResult?.distractors || [];
 			for (const distractor of aiDistractors) {
 				if (uniqueOptions.size >= 4) break;
 				const key = distractor.toLowerCase().trim();

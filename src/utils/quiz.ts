@@ -335,6 +335,7 @@ export async function generateQuizFromText(
 	provider: AIProvider,
 	apiKey: string,
 	quantity = 5,
+	mode: DifficultyMode = "normal",
 ): Promise<Question[]> {
 	if (!apiKey.trim()) {
 		throw new Error("Chave de API inválida ou ausente.");
@@ -348,11 +349,11 @@ export async function generateQuizFromText(
 		}[];
 	};
 	if (provider === "gemini") {
-		result = await generateQuizFromTextWithGemini(text, apiKey, quantity);
+		result = await generateQuizFromTextWithGemini(text, apiKey, quantity, mode);
 	} else if (provider === "groq") {
-		result = await generateQuizFromTextWithGroq(text, apiKey, quantity);
+		result = await generateQuizFromTextWithGroq(text, apiKey, quantity, mode);
 	} else if (provider === "openai") {
-		result = await generateQuizFromTextWithOpenAI(text, apiKey, quantity);
+		result = await generateQuizFromTextWithOpenAI(text, apiKey, quantity, mode);
 	} else {
 		throw new Error("Provedor de IA desconhecido");
 	}

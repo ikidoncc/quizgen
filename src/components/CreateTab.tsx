@@ -148,6 +148,7 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					aiProvider,
 					apiKey,
 					questionCount,
+					difficultyMode,
 				);
 				onGenerate(questions, timerEnabled, totalSeconds);
 			} catch (err) {
@@ -265,36 +266,36 @@ export const CreateTab: React.FC<CreateTabProps> = ({
 					}
 				/>
 
-				{/* Selection mode cards (Only for formatted input) */}
-				{inputType === "formatted" ? (
-					<div className="mb-6">
-						<span className="mb-2 block font-semibold text-main text-sm">
-							{t("create.modeLabel")}
-						</span>
-						<div className="grid grid-cols-3 gap-3">
-							{modes.map(({ id, icon: Icon, title, desc }) => (
-								<button
-									key={id}
-									type="button"
-									onClick={() => setDifficultyMode(id)}
-									className={cn(
-										"flex cursor-pointer flex-col items-center rounded-xl border p-3 text-center transition-all duration-200",
-										difficultyMode === id
-											? "scale-[1.02] border-primary bg-primary/5 font-extrabold text-primary shadow-sm"
-											: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
-									)}
-								>
-									<Icon className="mb-1.5 h-5 w-5" />
-									<span className="font-bold text-xs">{title}</span>
-									<span className="mt-1 font-medium text-[9px] leading-tight opacity-80">
-										{desc}
-									</span>
-								</button>
-							))}
-						</div>
+				{/* Selection mode cards */}
+				<div className="mb-6">
+					<span className="mb-2 block font-semibold text-main text-sm">
+						{t("create.modeLabel")}
+					</span>
+					<div className="grid grid-cols-3 gap-3">
+						{modes.map(({ id, icon: Icon, title, desc }) => (
+							<button
+								key={id}
+								type="button"
+								onClick={() => setDifficultyMode(id)}
+								className={cn(
+									"flex cursor-pointer flex-col items-center rounded-xl border p-3 text-center transition-all duration-200",
+									difficultyMode === id
+										? "scale-[1.02] border-primary bg-primary/5 font-extrabold text-primary shadow-sm"
+										: "border-overlay bg-base text-muted hover:border-primary/50 hover:text-main",
+								)}
+							>
+								<Icon className="mb-1.5 h-5 w-5" />
+								<span className="font-bold text-xs">{title}</span>
+								<span className="mt-1 font-medium text-[9px] leading-tight opacity-80">
+									{desc}
+								</span>
+							</button>
+						))}
 					</div>
-				) : (
-					/* Quantity selector for Raw input */
+				</div>
+
+				{/* Quantity selector for Raw input */}
+				{inputType === "raw" && (
 					<div className="mb-6">
 						<label
 							htmlFor="question-count"

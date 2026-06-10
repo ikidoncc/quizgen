@@ -257,7 +257,18 @@ export async function generateQuizFromTextWithGemini(
 	text: string,
 	apiKey: string,
 	quantity: number,
+	mode: DifficultyMode,
 ): Promise<AIQuizGenerationResult> {
+	const promptModeDescription =
+		mode === "easy"
+			? `Modo FÁCIL:
+Gere perguntas diretas sobre conceitos simples do texto. As alternativas incorretas (distratores) devem ser fáceis de diferenciar da resposta correta, utilizando conceitos claramente distintos ou incorretos.`
+			: mode === "hard"
+				? `Modo DIFÍCIL:
+Gere perguntas profundas ou interpretativas baseadas no texto. Os distratores devem ser gerados modificando a resposta correta LEVEMENTE de maneira sutil, de forma que seja extremamente difícil distinguir qual é a correta (ex: trocando palavras por sinônimos quase idênticos mas logicamente incorretos, fazendo alterações leves de valores, etc.). NÃO utilize erros gramaticais, ortográficos ou de digitação para criar alternativas incorretas. Todas as opções devem ser escritas com gramática e grafia perfeitas.`
+				: `Modo NORMAL:
+Gere perguntas sobre conceitos principais e detalhes relevantes do texto. As alternativas incorretas (distratores) devem ser opções plausíveis para o contexto da pergunta, mas factualmente incorretas.`;
+
 	const prompt = `Você é um gerador especialista em quizzes e avaliações didáticas.
 Sua tarefa é analisar o texto enviado pelo usuário e gerar um conjunto de perguntas de múltipla escolha com alto rigor pedagógico.
 
@@ -266,9 +277,10 @@ Regras de Geração:
 2. Cada pergunta deve ser um enunciado claro e objetivo.
 3. Para cada pergunta, você deve fornecer:
    - "question": O enunciado da pergunta.
-   - "answer": A alternativa correta e factual.
-   - "distractors": Uma lista contendo exatamente 3 alternativas incorretas (distratores) plausíveis mas falsas.
-4. Garanta que NÃO haja erros ortográficos ou gramaticais em nenhuma das alternativas.
+   - "answer": A alternativa correta e factual baseada no texto.
+   - "distractors": Uma lista contendo exatamente 3 alternativas incorretas (distratores).
+4. O nível de dificuldade deve seguir a seguinte especificação:
+${promptModeDescription}
 5. Use o mesmo idioma do texto fornecido.
 6. Retorne a resposta estritamente como um objeto JSON válido contendo a chave "questions" com a lista de perguntas geradas.
 
